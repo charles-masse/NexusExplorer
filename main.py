@@ -8,8 +8,6 @@ from PyQt6.QtGui import QCursor, QPixmap, QIcon
 
 import worldSelect
 
-from main import Settings
-
 def Settings():
     # Load settings
     with open('settings.json', 'r') as f:

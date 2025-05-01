@@ -1,2 +1,16 @@
 # NexusExplorer
 Explore the worlds of the defunct MMORPG Wildstar
+
+## Installation
+- You will need the files from the game extracted with a tool like [NexusVault](https://github.com/MarbleBag/NexusVault-CLI).
+- You will also need to edit the `settings.json` with the path of the exported files :
+  ```JSON
+  {
+      "gameFiles" : "utils/Nexusvault/output/export"
+  }
+  ```
+
+## How to use NexusExplorer
+- Run `main.py`
+- Use the World Select window to choose the world you want to load :
+![World Select window](https://https://github.com/charlesmasse/NexusExplorer/raw/master/images/worldSelect.png "World Select")
