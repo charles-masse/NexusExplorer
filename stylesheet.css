@@ -1,0 +1,100 @@
+
+* {
+
+    background-color: qlineargradient(x1:0 y1:0, x2:0 y2:1, stop:0 rgb(32, 30, 29), stop:1 rgb(24, 25, 23));
+
+}
+
+QGraphicsView  {
+
+    background-color: black;
+    
+}
+
+QListWidget, QTreeWidget, QPlainTextEdit {
+
+    border: 2px solid rgb(41, 118, 112);
+    outline: 0;
+    color: rgb(125, 251, 182);
+
+}
+
+QTreeWidget QHeaderView {
+
+    font-size: 10pt;
+
+}
+
+QListWidget, QListWidget QScrollBar, QTreeWidget,  QTreeWidget QScrollBar, QPlainTextEdit{
+
+    background-color: qlineargradient(x1:0 y1:0, x2:0 y2:1, stop:0 rgb(36, 102, 98), stop:1 rgb(9, 21, 20));
+
+}
+
+QListWidget QScrollBar, QTreeWidget QScrollBar {
+
+    width: 2px;
+
+}
+
+QListView::item:selected {
+
+    background: rgb(63, 126, 91);
+    color: rgb(125, 251, 182);
+
+}
+
+QScrollBar::add-page, QScrollBar::sub-page{
+
+    background: none;
+
+}
+
+QListWidget QScrollBar::add-line, QListWidget QScrollBar::sub-line, QTreeWidget QScrollBar::add-line, QTreeWidget QScrollBar::sub-line {
+
+    height: 0px;
+
+}
+
+QListWidget QScrollBar::handle, QTreeWidget QScrollBar::handle {
+
+    background: rgb(25, 222, 223);
+
+}
+
+QPushButton, QLineEdit {
+
+    background-color: qlineargradient(x1:0 y1:0, x2:0 y2:1, stop:0 rgb(36, 139, 39), stop:0.25 rgb(18, 75, 33), stop:1 rgb(16, 76, 45));
+    color: rgb(79, 204, 60);
+    border: 1px solid rgb(35, 140, 37);
+
+}
+
+QPushButton {
+
+    border-radius: 1.5ex;
+    padding: 3px;
+    font-weight: bold;
+
+}
+
+QPushButton:pressed {
+
+    background-color: rgb(36, 139, 39);
+
+}
+
+QProgressBar {
+
+    background-color: qlineargradient(x1:0 y1:0, x2:1 y2:0, stop:0 rgb(0, 0, 0), stop:0.5 rgb(20, 19, 15),  stop:1 rgb(0, 0, 0));
+    border-radius: 0.5ex;
+
+}
+
+QProgressBar::chunk {
+
+    background-color: rgb(63, 235, 55);
+    border: 3px solid rgba(63, 235, 55, 150);
+    border-radius: 0.5ex;
+
+}
