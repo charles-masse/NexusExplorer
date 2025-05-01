@@ -13,4 +13,5 @@ Explore the worlds of the defunct MMORPG Wildstar
 ## How to use NexusExplorer
 - Run `main.py`
 - Use the World Select window to choose the world you want to load :
-![World Select window](https://https://github.com/charlesmasse/NexusExplorer/raw/master/images/worldSelect.png "World Select")
+
+![World Select window](https://github.com/charlesmasse/NexusExplorer/blob/main/images/worldSelect.png "World Select")
