@@ -14,4 +14,9 @@ Explore the worlds of the defunct MMORPG Wildstar
 - Run `main.py`
 - Use the World Select window to choose the world you want to load :
 
-![World Select window](https://github.com/charlesmasse/NexusExplorer/blob/main/images/worldSelect.png "World Select")
+![WorldSelect window](https://github.com/charlesmasse/NexusExplorer/blob/main/images/worldSelect.png "WorldSelect")
+
+- Then explore the features on the map by clicking on the colored circles. 
+[x] Pro-tip : By clicking somewhere on the map, the command to teleport to this area on the map will be copied to your clipboard :
+
+![MapViewer window](https://github.com/charlesmasse/NexusExplorer/blob/main/images/mapViewer.png "MapViewer")
