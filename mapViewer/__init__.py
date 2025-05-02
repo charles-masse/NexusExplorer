@@ -21,7 +21,9 @@ __all__ = ['WorldMap', 'chunkCoords' 'locsToPos', 'worldCoords', 'screenPos']
 import locationReader
 
 class worldThread(QThread):
-
+    """
+    Thread for the loading bar
+    """
     setMax = pyqtSignal(int)
     setProgress = pyqtSignal(int)
     worldGenerated = pyqtSignal(object)
@@ -43,7 +45,9 @@ class worldThread(QThread):
         self.worldGenerated.emit(im)
 
 class loadingBar(QWidget):
-
+    """
+    Simple loading
+    """
     def __init__(self):
         super().__init__()
 
@@ -62,7 +66,9 @@ class loadingBar(QWidget):
         self.progressBar.setMaximum(value)
 
 class locationCircle(QGraphicsEllipseItem):
-
+    """
+    A circle on the map that retains map features
+    """
     def __init__(self, locData, color, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -73,12 +79,17 @@ class locationCircle(QGraphicsEllipseItem):
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
 
     def mouseReleaseEvent(self, event):
+        """
+        Open popup on click
+        """
         super(locationCircle, self).mouseReleaseEvent(event)
 
         self.popup = locationReader.Window(self.locData)
 
 class Window(QGraphicsScene):
-
+    """
+    The map viewer
+    """
     def __init__(self, world, parent=None):
         super().__init__(parent)
 
@@ -102,7 +113,9 @@ class Window(QGraphicsScene):
         self.thread.run() # Fix this one day
 
     def drawMap(self, generatedWorld):
-
+        """
+        Display the map when it's done generating/opening
+        """
         # Get the generated map
         self.generatedWorld = generatedWorld
 
@@ -130,7 +143,9 @@ class Window(QGraphicsScene):
         QTimer.singleShot(0, lambda: self.view.centerOn(QPointF(scaledHalf, scaledHalf)))
 
     def drawLocation(self, data, worldX, worldY, radius=256, color=None):
-
+        """
+        Place a locationCircle to the specified position
+        """
         if color == None :
             color = QColor(random.randint(0, 255), random.randint(0, 255), random.randint(0, 255), 200)
 
@@ -142,6 +157,9 @@ class Window(QGraphicsScene):
         self.addItem(location)
 
     def mouseMoveEvent(self, event):
+        """
+        Display the map coords on the mouse
+        """
         super().mouseMoveEvent(event)
 
         coords = event.scenePos()
@@ -152,6 +170,9 @@ class Window(QGraphicsScene):
         self.coordsText.setHtml(f"<div style='background-color:rgba(24, 25, 23, 100);'>&nbsp;&nbsp;({self.mouseX}, {self.mouseY})&nbsp;</div>")
     # Save coords to clipboard to teleport in the game
     def mousePressEvent(self, event):
+        """
+        Copy the teleport command for the current coords on click
+        """
         super().mousePressEvent(event)
 
         pyperclip.copy(f"!tele {self.mouseX} 0 {self.mouseY} {self.generatedWorld.world['itemId']}")

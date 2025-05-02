@@ -23,7 +23,9 @@ MAP_SCALE = settings['mapScale']
 CLUSTER_DISTANCE = settings['clusterDistance']
 
 def chunkCoords(chunkName):
-
+    """
+    Parse the minimap chunk name into map coords
+    """
     chunkCoords = chunkName.split('.')[-1]
     xChunk = int(chunkCoords[2:4], 16)
     yChunk = int(chunkCoords[0:2], 16)
@@ -31,16 +33,27 @@ def chunkCoords(chunkName):
     return [xChunk, yChunk]
 
 def locsToPos(locationList):
+    """
+    Return the position of all locations in the list
+    """
     return [(float(location['position0']), float(location['position2'])) for location in locationList]
 
 def worldCoords(posX, posY):
+    """
+    Map coords to world coords
+    """
     return -int(HALF_MAP - (posX * MAP_SCALE)), -int(HALF_MAP - (posY * MAP_SCALE))
 
 def screenPos(worldX, worldY):
+    """
+    World coords to map coords
+    """
     return (HALF_MAP + float(worldX)) / MAP_SCALE, (HALF_MAP + float(worldY)) / MAP_SCALE
 
 class WorldMap:
-
+    """
+    Generate the stitched minimap and retain world data
+    """
     def __init__(self, world, maxCallback, progressCallback):
 
         self.world = world
@@ -79,13 +92,15 @@ class WorldMap:
 
         self.clusterLocations()
 
-    def clusterLocations(self, distance=512, debug=False):
-
+    def clusterLocations(self):
+        """
+        Use sklearn to cluster the different world locations
+        """
         self.locations = [loc for loc in self.world['WorldLocation2'].values()]
         # Finding lone locations
         if len(self.locations) > 1:
 
-            findLoners = DBSCAN(eps=distance, min_samples=1)
+            findLoners = DBSCAN(eps=CLUSTER_DISTANCE, min_samples=1)
             findLoners.fit_predict(locsToPos(self.locations), sample_weight=[int('QuestHub' in location or 'WorldZone' in location) for location in self.locations])
 
             loners = [self.locations[i] for i, label in enumerate(findLoners.labels_) if label == -1]
@@ -93,7 +108,7 @@ class WorldMap:
             unnamedHubs = {}
             # Clustering them into unnamed hubs
             if len(loners) > 1:
-                clusterLoners = AgglomerativeClustering(n_clusters=None, distance_threshold=distance)
+                clusterLoners = AgglomerativeClustering(n_clusters=None, distance_threshold=CLUSTER_DISTANCE)
                 clusterLoners.fit_predict(locsToPos(loners))
 
                 for i, label in enumerate(clusterLoners.labels_):

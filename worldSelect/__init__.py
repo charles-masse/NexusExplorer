@@ -33,8 +33,8 @@ class Window(QWidget):
         # Window settings
         self.setWindowTitle("World Select")
         screen = QScreen.availableGeometry(QApplication.primaryScreen())
-        self.move(screen.x(), screen.y())
         self.setFixedSize(350, screen.height() - self.style().PixelMetric(QStyle.PixelMetric.PM_TitleBarHeight))
+        self.move(screen.x(), screen.y())
         # Main Layout
         layout = QVBoxLayout(self)
         # Add WorldList
