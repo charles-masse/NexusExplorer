@@ -7,6 +7,8 @@ from PyQt6.QtWidgets import *
 
 from dataReader import challengeReader, datacubeReader, eventReader, questReader
 
+from main import Settings
+
 class ContentItem(QTreeWidgetItem):
 
     def __init__(self, data, dataType, *args, **kwargs):

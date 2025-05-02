@@ -3,7 +3,7 @@ import os
 
 import csv
 
-from main import Settings
+from main import settings
 
 def linkDb(mainDb, fieldName, refDb):
     """
@@ -60,7 +60,7 @@ class Worlds:
         """
         dbDict = {'-1':{'dbName':db}}
 
-        self.gameFiles = Settings()['gameFiles']
+        self.gameFiles = settings['gameFiles']
         with open('/'.join([self.gameFiles, folder, db, db + '.csv']).replace('//', '/'), encoding='utf') as f:
             next(f) # Start at line 2 for col names
 

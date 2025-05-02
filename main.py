@@ -8,15 +8,32 @@ from PyQt6.QtGui import QCursor, QPixmap, QIcon
 
 import worldSelect
 
-def Settings():
-    # Load settings
-    with open('settings.json', 'r') as f:
-        settings = json.load(f)
+class Settings:
+    _instance = None
 
-    return settings
+    def __new__(cls):
+
+        if cls._instance is None:
+            cls._instance = super(Settings, cls).__new__(cls)
+
+            with open('settings.json') as f:
+                cls._instance._data = json.load(f)
+
+        return cls._instance
+
+    def __getitem__(self, key):
+        return self._data.get(key)
+
+    def __getattr__(self, key):
+
+        if key in self._data:
+            return self._data[key]
+
+settings = Settings()
 
 def main():
-    gameFiles = Settings()['gameFiles']
+
+    gameFiles = settings['gameFiles']
 
     app = QApplication(sys.argv)
     # Add visual theme

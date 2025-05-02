@@ -10,14 +10,17 @@ from PyQt6.QtCore import QCoreApplication
 
 from PIL import Image, ImageOps, ImageFile
 
-from main import Settings
+from main import settings
 
 # def calculateBounds(bounds0, bounds1, bounds2, bounds3):
-#     return int(bounds0) * (32 / self.mapScale), int(bounds1) * (32 / self.mapScale), int(bounds2) * (32 / self.mapScale), int(bounds3) * (32 / self.mapScale)
+#     return int(bounds0) * (32 / MAP_SCALE), int(bounds1) * (32 / MAP_SCALE), int(bounds2) * (32 / MAP_SCALE), int(bounds3) * (32 / MAP_SCALE)
 
 MAP_SIZE = 128
 MAP_CHUNK_RESOLUTION = 512
 HALF_MAP = int(((MAP_SIZE / 2) * MAP_CHUNK_RESOLUTION))
+
+MAP_SCALE = settings['mapScale']
+CLUSTER_DISTANCE = settings['clusterDistance']
 
 def chunkCoords(chunkName):
 
@@ -30,12 +33,17 @@ def chunkCoords(chunkName):
 def locsToPos(locationList):
     return [(float(location['position0']), float(location['position2'])) for location in locationList]
 
+def worldCoords(posX, posY):
+    return -int(HALF_MAP - (posX * MAP_SCALE)), -int(HALF_MAP - (posY * MAP_SCALE))
+
+def screenPos(worldX, worldY):
+    return (HALF_MAP + float(worldX)) / MAP_SCALE, (HALF_MAP + float(worldY)) / MAP_SCALE
+
 class WorldMap:
 
-    def __init__(self, world, maxCallback, progressCallback, mapScale=8.0):
+    def __init__(self, world, maxCallback, progressCallback):
 
         self.world = world
-        self.mapScale = mapScale
 
         mapPath = world['assetPath'].replace('\\', '/')
         cachePath = f'./cache/{mapPath}.png'
@@ -51,8 +59,8 @@ class WorldMap:
             maxCallback(len(chunks))
             QCoreApplication.processEvents()
             # Create Image
-            xMax = int((max(chunks, key=lambda x: x[1])[1] * MAP_CHUNK_RESOLUTION) / self.mapScale)
-            yMax = int((max(chunks, key=lambda x: x[2])[2] * MAP_CHUNK_RESOLUTION) / self.mapScale)
+            xMax = int((max(chunks, key=lambda x: x[1])[1] * MAP_CHUNK_RESOLUTION) / MAP_SCALE)
+            yMax = int((max(chunks, key=lambda x: x[2])[2] * MAP_CHUNK_RESOLUTION) / MAP_SCALE)
             self.im = Image.new('RGB', (xMax, yMax))
 
             for chunkId, (chunkName, xChunk, yChunk) in enumerate(chunks):
@@ -62,20 +70,14 @@ class WorldMap:
                 # Load chunk
                 with Image.open('/'.join([chunkPath, chunkName, chunkName + '.png'])) as imChunk:
                     # Scale map and paste at the right postion
-                    imChunk = ImageOps.scale(imChunk, 1 / self.mapScale)
-                    scaledPos = int(MAP_CHUNK_RESOLUTION / self.mapScale)
+                    imChunk = ImageOps.scale(imChunk, 1 / MAP_SCALE)
+                    scaledPos = int(MAP_CHUNK_RESOLUTION / MAP_SCALE)
                     self.im.paste(imChunk, (xChunk * scaledPos, yChunk * scaledPos))
             # Save map for faster loading
             os.makedirs(os.path.dirname(cachePath), exist_ok=True)
             self.im.save(cachePath)
 
         self.clusterLocations()
-
-    def worldCoords(self, posX, posY):
-        return -int(HALF_MAP - (posX * self.mapScale)), -int(HALF_MAP - (posY * self.mapScale))
-
-    def screenPos(self, worldX, worldY):
-        return (HALF_MAP + float(worldX)) / self.mapScale, (HALF_MAP + float(worldY)) / self.mapScale
 
     def clusterLocations(self, distance=512, debug=False):
 

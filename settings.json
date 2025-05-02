@@ -1,3 +1,5 @@
 {
-    "gameFiles" : "utils/Nexusvault/output/export"
+    "gameFiles" : "utils/Nexusvault/output/export",
+    "mapScale" : 8.0,
+    "clusterDistance" : 512
 }

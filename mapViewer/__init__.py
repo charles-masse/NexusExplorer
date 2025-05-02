@@ -14,9 +14,9 @@ from PyQt6.QtWidgets import *
 from PIL import Image
 from PIL.ImageQt import ImageQt
 
-from .utilities import WorldMap, chunkCoords, locsToPos, HALF_MAP
+from .utilities import WorldMap, chunkCoords, locsToPos, worldCoords, screenPos, HALF_MAP, MAP_SCALE, CLUSTER_DISTANCE
 
-__all__ = ['WorldMap', 'chunkCoords' 'locsToPos']
+__all__ = ['WorldMap', 'chunkCoords' 'locsToPos', 'worldCoords', 'screenPos']
 
 import locationReader
 
@@ -106,7 +106,7 @@ class Window(QGraphicsScene):
         # Get the generated map
         self.generatedWorld = generatedWorld
 
-        scaledHalf = int(HALF_MAP / self.generatedWorld.mapScale)
+        scaledHalf = int(HALF_MAP / MAP_SCALE)
         self.setSceneRect(0, 0, scaledHalf * 2, scaledHalf * 2)
 
         self.loadBar.close()
@@ -134,7 +134,7 @@ class Window(QGraphicsScene):
         if color == None :
             color = QColor(random.randint(0, 255), random.randint(0, 255), random.randint(0, 255), 200)
 
-        posX, posY = self.generatedWorld.screenPos(worldX, worldY)
+        posX, posY = screenPos(worldX, worldY)
         radiusScaled = float(radius) / 10
         halfRadius = radiusScaled / 2
 
@@ -146,7 +146,7 @@ class Window(QGraphicsScene):
 
         coords = event.scenePos()
         
-        self.mouseX, self.mouseY = self.generatedWorld.worldCoords(coords.x(), coords.y())
+        self.mouseX, self.mouseY = worldCoords(coords.x(), coords.y())
 
         self.coordsText.setPos(coords.x() + 18, coords.y())
         self.coordsText.setHtml(f"<div style='background-color:rgba(24, 25, 23, 100);'>&nbsp;&nbsp;({self.mouseX}, {self.mouseY})&nbsp;</div>")
