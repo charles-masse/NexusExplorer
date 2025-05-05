@@ -1,11 +1,13 @@
 
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QIcon, QFont, QScreen
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTreeWidget, QTreeWidgetItem, QStyle, QApplication
+import re
+
+from PyQt6.QtCore import *
+from PyQt6.QtGui import *
+from PyQt6.QtWidgets import *
 
 from windows import contentReader
 
-from singletons import settings, localizedStrings
+from singletons import settings, localizedStrings, creatures
 
 from pprint import pprint
 
@@ -20,6 +22,24 @@ CONTENT_TYPES = {
                  'QuestObjective' : {'name': 'Quest Objectives', 'icon': 'Map/Node/UI_Map_Quests/UI_Map_Quests.png', 'text': 'localizedTextIdShort'}
                 }
 
+def paleFire(text):
+
+    matches = re.finditer(r'(?:<text[^>]*?>)?\$\w*\((\w+)=(\d+)\)(?:<\/text>)?', text)
+    
+    for match in matches:
+
+        fullMath = match.group(0)
+        key = match.group(1)
+        idValue = match.group(2)
+
+        if key == 'creature':
+            text = text.replace(fullMath, f'<b>[{localizedStrings[creatures[idValue]['localizedTextIdName']]}]</b>')
+
+        else:
+            text = text.replace(fullMath, '<b>[This is a linked asset]</b>')
+
+    return text
+
 class ContentItem(QTreeWidgetItem):
     """
     Tree item that retains data
@@ -29,6 +49,36 @@ class ContentItem(QTreeWidgetItem):
 
         self.data = data
         self.dataType = dataType
+
+class htmlDelegate(QStyledItemDelegate):
+
+    def paint(self, painter, option, index):
+
+        if not index.parent().isValid():
+            super().paint(painter, option, index)
+            return
+        
+        painter.save()
+
+        doc = QTextDocument()
+
+        text = index.data()
+        if len(text) == 0:
+            text = '[ - Empty - ]'
+
+        if option.state & QStyle.StateFlag.State_MouseOver:
+            doc.setHtml(f"<p style='color: rgb(125, 251, 182); background-color: rgba(0, 100, 180, 50);'>{text}</p>")
+       
+        else:
+            doc.setHtml(f"<p style='color: rgb(125, 251, 182);'>{text}</p>")
+
+        doc.setTextWidth(option.rect.width())
+        doc.setDocumentMargin(0)
+
+        painter.translate(option.rect.topLeft())
+        doc.drawContents(painter)
+
+        painter.restore()
 
 class Window(QWidget):
     """
@@ -47,6 +97,7 @@ class Window(QWidget):
         # Add Tree
         tree = QTreeWidget()
         tree.setHeaderHidden(True)
+        tree.setItemDelegate(htmlDelegate())
         layout.addWidget(tree)
         tree.itemClicked.connect(self.popup)
 
@@ -65,6 +116,9 @@ class Window(QWidget):
             for item in locData[content].values():
 
                 name = localizedStrings[item[CONTENT_TYPES[content]['text']]]
+                
+                if name and '$' in name:
+                    name = paleFire(name)
 
                 # if name:
                 if content == 'QuestObjective':
@@ -89,8 +143,6 @@ class Window(QWidget):
         self.show()
 
     def popup(self, item):
-        """
-        This needs to change
-        """
+
         # contentReader.Window(item.data)
         print(item.data)

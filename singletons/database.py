@@ -10,8 +10,6 @@ from sklearn.cluster import DBSCAN, AgglomerativeClustering
 
 from singletons import settings
 
-
-
 def linkDb(linkDb, fieldName, sourceDbs):
     """
     Link referenced data ids to the actual data held by another database.
@@ -97,6 +95,28 @@ class LocalizedStrings:
             return None
 
 localizedStrings = LocalizedStrings()
+
+class Creatures:
+    _instance = None
+
+    def __new__(cls):
+
+        if cls._instance is None:
+            cls._instance = super(Creatures, cls).__new__(cls)
+
+            cls._instance._data = readCSV('Creature2')
+
+        return cls._instance
+
+    def __getitem__(self, key):
+
+        if key in self._data:
+            return self._data[key]
+
+        else:
+            return None
+
+creatures = Creatures()
 
 class Worlds:
     """
