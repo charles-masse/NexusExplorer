@@ -175,4 +175,5 @@ cython_debug/
 
 # My stuff
 cache/
-utils/
+Nexusvault/
+wssf2p/

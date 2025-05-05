@@ -1,8 +1,4 @@
 
-import os
-
-import time
-
 import random
 
 import pyperclip
@@ -11,14 +7,30 @@ from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
 
-from PIL import Image
 from PIL.ImageQt import ImageQt
 
-from .utilities import WorldMap, chunkCoords, locsToPos, worldCoords, screenPos, HALF_MAP, MAP_SCALE, CLUSTER_DISTANCE
+from singletons import settings
 
-__all__ = ['WorldMap', 'chunkCoords' 'locsToPos', 'worldCoords', 'screenPos']
+from actions.mapViewer import generateMapImage, clusterLocations, MAP_SIZE, MAP_CHUNK_RESOLUTION
 
-import locationReader
+from windows import locationReader
+
+HALF_MAP = int(((MAP_SIZE / 2) * MAP_CHUNK_RESOLUTION))
+
+# def calculateBounds(bounds0, bounds1, bounds2, bounds3):
+#     return int(bounds0) * (32 / settings['mapScale']), int(bounds1) * (32 / settings['mapScale']), int(bounds2) * (32 / settings['mapScale']), int(bounds3) * (32 / settings['mapScale'])
+
+def worldCoords(posX, posY):
+    """
+    Map coords to world coords
+    """
+    return -int(HALF_MAP - (posX * settings['mapScale'])), -int(HALF_MAP - (posY * settings['mapScale']))
+
+def screenPos(worldX, worldY):
+    """
+    World coords to map coords
+    """
+    return (HALF_MAP + float(worldX)) / settings['mapScale'], (HALF_MAP + float(worldY)) / settings['mapScale']
 
 class worldThread(QThread):
     """
@@ -41,7 +53,7 @@ class worldThread(QThread):
         def progressCallback(progress):
             self.setProgress.emit(progress)
 
-        im = WorldMap(self.world, maxCallback, progressCallback)
+        im = generateMapImage(self.world, maxCallback, progressCallback)
         self.worldGenerated.emit(im)
 
 class loadingBar(QWidget):
@@ -93,6 +105,8 @@ class Window(QGraphicsScene):
     def __init__(self, world, parent=None):
         super().__init__(parent)
 
+        self.world = world
+
         self.view = QGraphicsView(self)
         self.view.setMouseTracking(True)
         self.view.setWindowTitle("Map Viewer")
@@ -106,33 +120,34 @@ class Window(QGraphicsScene):
         y = int((screenGeometry.height() / 2) - (loadBarSize.height() / 2))
         self.loadBar.move(x, y)
         # Generate world on thread
-        self.thread = worldThread(world)
+        self.thread = worldThread(self.world)
         self.thread.setMax.connect(self.loadBar.setMax)
         self.thread.setProgress.connect(self.loadBar.setProgress)
         self.thread.worldGenerated.connect(self.drawMap)
         self.thread.run() # Fix this one day
 
-    def drawMap(self, generatedWorld):
+    def drawMap(self, worldIm):
         """
         Display the map when it's done generating/opening
         """
-        # Get the generated map
-        self.generatedWorld = generatedWorld
-
-        scaledHalf = int(HALF_MAP / MAP_SCALE)
-        self.setSceneRect(0, 0, scaledHalf * 2, scaledHalf * 2)
-
         self.loadBar.close()
+
+        scaledHalf = int(HALF_MAP / settings['mapScale'])
+        self.setSceneRect(0, 0, scaledHalf * 2, scaledHalf * 2)
         # Add map to scene
-        self.mapQt = ImageQt(self.generatedWorld.im)
+        self.mapQt = ImageQt(worldIm)
         pixMap = QPixmap.fromImage(self.mapQt)
         bgImg = self.addPixmap(pixMap)
         # Add locations to map
-        for location in self.generatedWorld.locations:
+        locations = clusterLocations(self.world['WorldLocation2'].values())
+        # locations = self.world['WorldLocation2'].values()
+        # pprint(locations)
+        for location in locations:
             self.drawLocation(location, location['position0'], location['position2'])
         # Add coords on mouse pointer
         self.coordsText = QGraphicsTextItem()
         self.coordsText.setDefaultTextColor(QColor(79, 204, 60))
+
         font = QFont()
         font.setBold(True)
         self.coordsText.setFont(font)
@@ -175,4 +190,4 @@ class Window(QGraphicsScene):
         """
         super().mousePressEvent(event)
 
-        pyperclip.copy(f"!tele {self.mouseX} 0 {self.mouseY} {self.generatedWorld.world['itemId']}")
+        pyperclip.copy(f"!tele {self.mouseX} 0 {self.mouseY} {self.world['itemId']}")

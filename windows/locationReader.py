@@ -3,9 +3,11 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon, QFont, QScreen
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTreeWidget, QTreeWidgetItem, QStyle, QApplication
 
-from dataReader import challengeReader, datacubeReader, eventReader, questReader
+from windows import contentReader
 
-from main import Settings
+from singletons import settings, localizedStrings
+
+from pprint import pprint
 
 WINDOW_WIDTH = 450
 
@@ -25,8 +27,8 @@ class ContentItem(QTreeWidgetItem):
     def __init__(self, data, dataType, *args, **kwargs):
         super(ContentItem, self).__init__(*args, **kwargs)
 
-        self.dataType = dataType
         self.data = data
+        self.dataType = dataType
 
 class Window(QWidget):
     """
@@ -51,21 +53,24 @@ class Window(QWidget):
         for content in [content for content in locData if content in CONTENT_TYPES.keys()]:
             # Add section header
             category = QTreeWidgetItem([CONTENT_TYPES[content]['name']])
-            category.setIcon(0, QIcon(f"{Settings()['gameFiles']}/UI/Icon/{CONTENT_TYPES[content]['icon']}"))
-            category.setExpanded(True)
+            category.setIcon(0, QIcon(f"{settings['gameFiles']}/UI/Icon/{CONTENT_TYPES[content]['icon']}"))
 
             categoryFont = QFont()
             categoryFont.setBold(True)
             category.setFont(0, categoryFont)
 
             tree.addTopLevelItem(category)
+            category.setExpanded(True)
             # Add content
             for item in locData[content].values():
 
+                name = localizedStrings[item[CONTENT_TYPES[content]['text']]]
+
+                # if name:
                 if content == 'QuestObjective':
 
                     try:
-                        category.addChild(ContentItem(item['Quest2'], content, [item[CONTENT_TYPES[content]['text']]]))
+                        category.addChild(ContentItem(item['Quest2'], content, [name]))
                     
                     except:
                         pass
@@ -73,13 +78,13 @@ class Window(QWidget):
                 elif content == 'PublicEventObjective':
 
                     try:
-                        category.addChild(ContentItem(item['publicEventId'], content, [item[CONTENT_TYPES[content]['text']]]))
+                        category.addChild(ContentItem(item['publicEventId'], content, [name]))
 
                     except:
                         pass
 
                 else:
-                    category.addChild(ContentItem(item, content, [item[CONTENT_TYPES[content]['text']]]))
+                    category.addChild(ContentItem(item, content, [name]))
 
         self.show()
 
@@ -87,18 +92,5 @@ class Window(QWidget):
         """
         This needs to change
         """
-        try:
-            if item.dataType == 'Challenge':
-                challengeReader.window(item.data)
-
-            elif item.dataType == 'Datacube':
-                datacubeReader.window(item.data)
-
-            elif item.dataType == 'PublicEvent' or item.dataType == 'PublicEventObjective':
-                eventReader.window(item.data)
-
-            elif item.dataType == 'Quest2' or item.dataType == 'QuestObjective':
-                questReader.window(item.data)
-
-        except:
-            pass
+        # contentReader.Window(item.data)
+        print(item.data)

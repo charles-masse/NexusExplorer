@@ -1,12 +1,9 @@
 
-from PyQt6.QtGui import *
-from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
+from PyQt6.QtGui import QScreen
 
-from .utilities import Worlds, linkDb
-__all__ = ['worlds', 'linkDb']
-
-import mapViewer
+from singletons import Worlds, localizedStrings
+from windows import mapViewer
 
 class WorldListItem(QListWidgetItem):
     """
@@ -18,8 +15,8 @@ class WorldListItem(QListWidgetItem):
         # Keep world data
         self.worldData = worldData
         # Set text
-        worldId = f'[{worldData['itemId']}]'
-        worldName = worldData['localizedTextIdName'] or f'"{worldData['assetPath'].split('\\')[-1]}"'
+        worldId = f"[{worldData['itemId']}]"
+        worldName = localizedStrings[worldData['localizedTextIdName']] or worldData['assetPath'].replace('\\', '/')
         worldLocations = f'({len(worldData.get('WorldLocation2', []))})'
 
         self.setText(' '.join([worldId, worldName, worldLocations]))
