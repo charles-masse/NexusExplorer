@@ -1,12 +1,12 @@
 
 import re
 
-from PyQt6.QtCore import *
 from PyQt6.QtGui import *
+from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
 
+from ui import HtmlDelegate
 from windows import contentReader
-
 from singletons import settings, localizedStrings, creatures, items
 
 from pprint import pprint
@@ -52,45 +52,6 @@ class ContentItem(QTreeWidgetItem):
 
         self.data = data
         self.dataType = dataType
-
-class HtmlDelegate(QStyledItemDelegate):
-
-    def paint(self, painter, option, index):
-
-        painter.save()
-        painter.setClipRect(option.rect)
-        # Skip category header to retain icons
-        if not index.parent().isValid():
-            super().paint(painter, option, index)
-            return
-
-        doc = QTextDocument()
-        doc.setDefaultFont(option.font)
-        doc.setHtml(index.data())
-        doc.setTextWidth(option.rect.width())
-        doc.setDocumentMargin(0)
-
-        context = doc.documentLayout().PaintContext()
-        context.palette.setColor(QPalette.ColorRole.Text, QColor(125, 251, 182))
-
-        if option.state & QStyle.StateFlag.State_MouseOver:
-            painter.fillRect(option.rect, QColor(0, 100, 180, 50))
-
-        painter.translate(option.rect.topLeft())
-        
-        doc.documentLayout().draw(painter, context)
-
-        painter.restore()
-
-    def sizeHint(self, option, index):
-
-        doc = QTextDocument()
-        doc.setDefaultFont(option.font)
-        doc.setHtml(index.data())
-        doc.setTextWidth(option.rect.width())
-        doc.setDocumentMargin(0)
-
-        return doc.size().toSize()
 
 class Window(QWidget):
     """

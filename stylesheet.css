@@ -43,13 +43,6 @@ QListWidget QScrollBar, QTreeWidget QScrollBar {
 
 }
 
-QListView::item:selected {
-
-    background: rgb(63, 126, 91);
-    color: rgb(125, 251, 182);
-
-}
-
 QScrollBar::add-page, QScrollBar::sub-page{
 
     background: none;
