@@ -16,7 +16,7 @@ def main():
     app.setWindowIcon(QIcon(f"{settings['gameFiles']}/UI/Icon/launcher_desktop_icon/launcher_desktop_icon.png"))
     app.setOverrideCursor(QCursor(QPixmap(f"{settings['gameFiles']}/UI/Cursors/Point/Point.png"), hotX=2, hotY=2))
 
-    gui = worldSelect.Window() # test
+    gui = worldSelect.Window()
     gui.show()
 
     sys.exit(app.exec())

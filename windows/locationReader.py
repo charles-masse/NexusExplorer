@@ -11,7 +11,7 @@ from singletons import settings, localizedStrings, creatures, items
 
 from pprint import pprint
 
-WINDOW_WIDTH = 500
+WINDOW_WIDTH = 600
 
 CONTENT_TYPES = {
                  'Challenge' : {'name': 'Challenges', 'icon': 'Map/Node/UI_Map_Challenges/UI_Map_Challenges.png', 'text': 'localizedTextIdName'},
@@ -24,13 +24,13 @@ CONTENT_TYPES = {
 
 def paleFire(text):
 
-    matches = re.finditer(r'(?:<text[^>]*?>)?\$\w*\((\w+)=(\d+)\)(?:<\/text>)?', text)
+    matches = re.finditer(r'(?:<text[^>]*?>)?\$(?:\w*\((\w+)=(\d+)\)|(\w+)=(\d+))(?:</text>)?', text)
     
     for match in matches:
 
         fullMath = match.group(0)
-        key = match.group(1)
-        idValue = match.group(2)
+        key = match.group(1) or match.group(3)
+        idValue = match.group(2) or match.group(4)
 
         if key == 'creature':
             text = text.replace(fullMath, f'<b>[{localizedStrings[creatures[idValue].get('localizedTextIdName', '')]}]</b>')
@@ -59,16 +59,14 @@ class HtmlDelegate(QStyledItemDelegate):
 
         painter.save()
         painter.setClipRect(option.rect)
-
+        # Skip category header to retain icons
         if not index.parent().isValid():
             super().paint(painter, option, index)
             return
 
-        text = index.data()
-
         doc = QTextDocument()
         doc.setDefaultFont(option.font)
-        doc.setHtml(text)
+        doc.setHtml(index.data())
         doc.setTextWidth(option.rect.width())
         doc.setDocumentMargin(0)
 
@@ -79,17 +77,16 @@ class HtmlDelegate(QStyledItemDelegate):
             painter.fillRect(option.rect, QColor(0, 100, 180, 50))
 
         painter.translate(option.rect.topLeft())
+        
         doc.documentLayout().draw(painter, context)
 
         painter.restore()
 
     def sizeHint(self, option, index):
 
-        text = index.data()
-
         doc = QTextDocument()
         doc.setDefaultFont(option.font)
-        doc.setHtml(text)
+        doc.setHtml(index.data())
         doc.setTextWidth(option.rect.width())
         doc.setDocumentMargin(0)
 
@@ -117,11 +114,11 @@ class Window(QWidget):
         tree.setHeaderHidden(True)
         tree.itemClicked.connect(self.popup)
 
-        for content in [content for content in locData if content in CONTENT_TYPES.keys()]:
+        for contentType in [c for c in locData if c in CONTENT_TYPES.keys()]:
             # Add section header
-            categoryName = CONTENT_TYPES[content].get('name', '')
+            categoryName = CONTENT_TYPES[contentType]['name']
             category = QTreeWidgetItem([categoryName])
-            category.setIcon(0, QIcon(f"{settings['gameFiles']}/UI/Icon/{CONTENT_TYPES[content]['icon']}"))
+            category.setIcon(0, QIcon(f"{settings['gameFiles']}/UI/Icon/{CONTENT_TYPES[contentType]['icon']}"))
 
             categoryFont = QFont()
             categoryFont.setBold(True)
@@ -130,38 +127,26 @@ class Window(QWidget):
             tree.addTopLevelItem(category)
             category.setExpanded(True)
             # Add content
-            for item in locData[content].values():
+            for location in locData[contentType].values():
 
-                # pprint(item)
-
-                name = localizedStrings[item[CONTENT_TYPES[content].get('text', '')]]
-                
+                name = localizedStrings[location[CONTENT_TYPES[contentType]['text']]]
+                # Replace game object link
                 if name and '$' in name:
                     name = paleFire(name)
 
-                # # if name:
-                # if content == 'QuestObjective':
-
-                #     try:
-                #         test = item['Quest2']
+                elif not name:
+                    name = '<b>[Unnamed]</b>'
+                # Get parent for objectives--might go away at some point
+                if contentType == 'QuestObjective':
+                    content = location.get('Quest2', {})
                     
-                #     except Exception as e:
-                #         print(e)
-                #         pass
+                elif contentType == 'PublicEventObjective':
+                    content = location.get('publicEventId', {})
 
-                # elif content == 'PublicEventObjective':
+                else:
+                    content = location
 
-                #     try:
-                #         test = item['publicEventId']
-
-                #     except Exception as e:
-                #         print(e)
-                #         pass
-
-                # else:
-                #     test = item
-
-                category.addChild(QTreeWidgetItem([name])) # None, content, 
+                category.addChild(ContentItem(content, contentType, [name])) 
 
         layout.addWidget(tree)
 

@@ -84,13 +84,11 @@ class LocationCircle(QObject):
         super().__init__(parent)
         self.locData = locData
 
-        # Create the actual graphics item
         self.graphicsItem = QGraphicsEllipseItem(rect)
         self.graphicsItem.setPen(QPen(color))
         self.graphicsItem.setBrush(QBrush(color))
         self.graphicsItem.setFlag(QGraphicsEllipseItem.GraphicsItemFlag.ItemIsSelectable)
 
-        # Install event handler by monkey-patching
         self.graphicsItem.mouseReleaseEvent = self.mouseReleaseEvent
 
     def mouseReleaseEvent(self, event):
