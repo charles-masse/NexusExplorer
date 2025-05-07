@@ -1,6 +1,19 @@
 # NexusExplorer
 Explore the worlds of the defunct MMORPG Wildstar
 
+## Requirements
+- `numpy`
+- `PyQt6`
+- `Pillow`
+- `trimesh`
+- `PyOpenGL`
+- `scikit-learn`
+
+You can install them with:
+```bash
+pip install -r requirements.txt
+```
+
 ## Installation
 - You will need the files from the game extracted with a tool like [NexusVault](https://github.com/MarbleBag/NexusVault-CLI).
 - You will also need to edit the `settings.json` with the path of the exported files :
@@ -13,11 +26,11 @@ Explore the worlds of the defunct MMORPG Wildstar
 ## How to use NexusExplorer
 - Run `main.py`
 - Use the World Select window to choose the world you want to load.
-   - [x] [WORLD_ID] MAP_NAME (FEATURE_NUMBER)
+  - [x] [WORLD_ID] MAP_NAME (FEATURE_NUMBER)
 
 ![WorldSelect window](https://github.com/charlesmasse/NexusExplorer/blob/main/images/worldSelect.png "WorldSelect")
 
 - Explore the features on the map by clicking on the colored circles.
-   - [x] Pro-tip : By clicking somewhere on the map, the teleport command for this area will be copied to your clipboard.
+  - [x] Pro-tip : By clicking somewhere on the map, the teleport command for this area will be copied to your clipboard.
 
 ![MapViewer window](https://github.com/charlesmasse/NexusExplorer/blob/main/images/mapViewer.png "MapViewer")
