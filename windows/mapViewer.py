@@ -17,8 +17,11 @@ from windows import locationReader
 
 HALF_MAP = int(((MAP_SIZE / 2) * MAP_CHUNK_RESOLUTION))
 
-# def calculateBounds(bounds0, bounds1, bounds2, bounds3):
-#     return int(bounds0) * (32 / settings['mapScale']), int(bounds1) * (32 / settings['mapScale']), int(bounds2) * (32 / settings['mapScale']), int(bounds3) * (32 / settings['mapScale'])
+def calculateBounds(bounds0, bounds1, bounds2, bounds3):
+    """
+    Calculate the map bound (not used atm)
+    """
+    return int(bounds0) * (32 / settings['mapScale']), int(bounds1) * (32 / settings['mapScale']), int(bounds2) * (32 / settings['mapScale']), int(bounds3) * (32 / settings['mapScale'])
 
 def worldCoords(posX, posY):
     """
@@ -58,7 +61,7 @@ class worldThread(QThread):
 
 class loadingBar(QWidget):
     """
-    Simple loading
+    Simple loading bar
     """
     def __init__(self):
         super().__init__()
@@ -78,10 +81,14 @@ class loadingBar(QWidget):
         self.progressBar.setMaximum(value)
 
 class LocationCircle(QObject):
+    """
+    A clickable circle on the map that retains map features
+    """
     clicked = pyqtSignal(dict)
 
     def __init__(self, locData, color, rect, parent=None):
         super().__init__(parent)
+        
         self.locData = locData
 
         self.graphicsItem = QGraphicsEllipseItem(rect)
@@ -124,11 +131,6 @@ class Window(QGraphicsScene):
         self.thread.worldGenerated.connect(self.drawMap)
         self.thread.run() # Fix this one day
 
-    def openLocation(self, locData):
-
-        self.popup = locationReader.Window(locData)
-        self.popup.show()
-
     def drawMap(self, worldIm):
         """
         Display the map when it's done generating/opening
@@ -142,7 +144,7 @@ class Window(QGraphicsScene):
         pixMap = QPixmap.fromImage(self.mapQt)
         bgImg = self.addPixmap(pixMap)
         # Add locations to map
-        locations = clusterLocations(self.world['WorldLocation2'].values())
+        locations = clusterLocations(self.world.get('WorldLocation2', {}).values())
         # locations = self.world['WorldLocation2'].values()
         # pprint(locations)
         for location in locations:
@@ -159,7 +161,7 @@ class Window(QGraphicsScene):
         self.view.showMaximized()
         # Center view to world center
         QTimer.singleShot(0, lambda: self.view.centerOn(QPointF(scaledHalf, scaledHalf)))
-
+    # Location circles
     def drawLocation(self, data, worldX, worldY, radius=256, color=None):
         """
         Place a locationCircle to the specified position
@@ -175,6 +177,11 @@ class Window(QGraphicsScene):
         circle.clicked.connect(self.openLocation)
         self.addItem(circle.graphicsItem)
 
+    def openLocation(self, locData):
+
+        self.popup = locationReader.Window(locData)
+        self.popup.show()
+    # Mouse coords
     def mouseMoveEvent(self, event):
         """
         Display the map coords on the mouse
@@ -187,10 +194,10 @@ class Window(QGraphicsScene):
 
         self.coordsText.setPos(coords.x() + 18, coords.y())
         self.coordsText.setHtml(f"<div style='background-color:rgba(24, 25, 23, 100);'>&nbsp;&nbsp;({self.mouseX}, {self.mouseY})&nbsp;</div>")
-    # Save coords to clipboard to teleport in the game
+
     def mousePressEvent(self, event):
         """
-        Copy the teleport command for the current coords on click
+        Copy the teleport command for the current coords on click to teleport in-game
         """
         super().mousePressEvent(event)
 

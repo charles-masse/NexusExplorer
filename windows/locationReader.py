@@ -9,8 +9,6 @@ from ui import HtmlDelegate
 from windows import contentReader
 from singletons import settings, localizedStrings, creatures, items
 
-from pprint import pprint
-
 WINDOW_WIDTH = 600
 
 CONTENT_TYPES = {
@@ -23,7 +21,9 @@ CONTENT_TYPES = {
                 }
 
 def paleFire(text):
-
+    """
+    Change me please
+    """
     matches = re.finditer(r'(?:<text[^>]*?>)?\$(?:\w*\((\w+)=(\d+)\)|(\w+)=(\d+))(?:</text>)?', text)
     
     for match in matches:
@@ -32,11 +32,11 @@ def paleFire(text):
         key = match.group(1) or match.group(3)
         idValue = match.group(2) or match.group(4)
 
-        if key == 'creature':
-            text = text.replace(fullMath, f'<b>[{localizedStrings[creatures[idValue].get('localizedTextIdName', '')]}]</b>')
+        if key.lower() == 'creature':
+            text = text.replace(fullMath, f'<b>[{localizedStrings[creatures[idValue].get('localizedTextIdName', "Can't find creature")]}]</b>')
 
-        elif key == 'vitem':
-            text = text.replace(fullMath, f'<b>[{localizedStrings[items[idValue].get('localizedTextIdName', '')]}]</b>')
+        elif key.lower() == 'vitem':
+            text = text.replace(fullMath, f'<b>[{localizedStrings[items[idValue].get('localizedTextIdName', "Can't find item")]}]</b>')
 
         else:
             text = text.replace(fullMath, f'<b>[{key}:{idValue}]</b>')
@@ -47,11 +47,10 @@ class ContentItem(QTreeWidgetItem):
     """
     Tree item that retains data
     """
-    def __init__(self, data, dataType, *args, **kwargs):
+    def __init__(self, data, *args, **kwargs): # dataType,
         super(ContentItem, self).__init__(*args, **kwargs)
 
         self.data = data
-        self.dataType = dataType
 
 class Window(QWidget):
     """
@@ -97,21 +96,12 @@ class Window(QWidget):
 
                 elif not name:
                     name = '<b>[Unnamed]</b>'
-                # Get parent for objectives--might go away at some point
-                if contentType == 'QuestObjective':
-                    content = location.get('Quest2', {})
-                    
-                elif contentType == 'PublicEventObjective':
-                    content = location.get('publicEventId', {})
 
-                else:
-                    content = location
-
-                category.addChild(ContentItem(content, contentType, [name])) 
+                category.addChild(ContentItem(location, [name]))
 
         layout.addWidget(tree)
 
     def popup(self, item):
 
-        # contentReader.Window(item.data)
-        print(item.data)
+        self.popup = contentReader.Window(item.data)
+        self.popup.show()
