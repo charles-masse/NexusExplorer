@@ -1,8 +1,8 @@
 
 import re
 
-from PyQt6.QtGui import *
-from PyQt6.QtCore import *
+from PyQt6.QtGui import QIcon, QFont, QScreen
+from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import *
 
 from ui import HtmlDelegate
@@ -15,9 +15,9 @@ CONTENT_TYPES = {
                  'Challenge' : {'name': 'Challenges', 'icon': 'Map/Node/UI_Map_Challenges/UI_Map_Challenges.png', 'text': 'localizedTextIdName'},
                  'Datacube' : {'name': 'Datacubes', 'icon': 'Missions/Scientist_DatacubeDiscovery/Scientist_DatacubeDiscovery.png', 'text': 'localizedTextIdTitle'},
                  'PublicEvent' : {'name': 'Public Events', 'icon': 'Map/Node/UI_Map_Events/UI_Map_Events.png', 'text': 'localizedTextIdName'},
-                 'PublicEventObjective' : {'name': 'Public Event Objectives', 'icon': 'Map/Node/UI_Map_Events/UI_Map_Events.png', 'text': 'localizedTextIdShort'},
+                 # 'PublicEventObjective' : {'name': 'Public Event Objectives', 'icon': 'Map/Node/UI_Map_Events/UI_Map_Events.png', 'text': 'localizedTextIdShort'},
                  'Quest2' : {'name': 'Quests', 'icon': 'Map/Node/UI_Map_Quests/UI_Map_Quests.png', 'text': 'localizedTextIdTitle'},
-                 'QuestObjective' : {'name': 'Quest Objectives', 'icon': 'Map/Node/UI_Map_Quests/UI_Map_Quests.png', 'text': 'localizedTextIdShort'}
+                 # 'QuestObjective' : {'name': 'Quest Objectives', 'icon': 'Map/Node/UI_Map_Quests/UI_Map_Quests.png', 'text': 'localizedTextIdShort'}
                 }
 
 def paleFire(text):
@@ -90,12 +90,12 @@ class Window(QWidget):
             for location in locData[contentType].values():
 
                 name = localizedStrings[location[CONTENT_TYPES[contentType]['text']]]
-                # Replace game object link
-                if name and '$' in name:
-                    name = paleFire(name)
 
-                elif not name:
+                if not name:
                     name = '<b>[Unnamed]</b>'
+                # Replace game object link
+                if '$' in name:
+                    name = paleFire(name)
 
                 category.addChild(ContentItem(location, [name]))
 

@@ -8,7 +8,7 @@ from PyQt6.QtCore import QCoreApplication
 from sklearn.neighbors import KDTree
 from sklearn.cluster import DBSCAN, AgglomerativeClustering
 
-from PIL import Image, ImageOps, ImageFile
+from PIL import Image, ImageOps
 
 from singletons import settings, localizedStrings
 

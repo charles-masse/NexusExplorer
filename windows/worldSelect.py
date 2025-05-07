@@ -1,6 +1,6 @@
 
-from PyQt6.QtGui import *
-from PyQt6.QtCore import *
+from PyQt6.QtGui import QScreen
+from PyQt6.QtCore import QCoreApplication, QTimer, Qt
 from PyQt6.QtWidgets import *
 
 from ui import HtmlDelegate

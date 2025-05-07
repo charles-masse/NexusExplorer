@@ -7,6 +7,7 @@ Explore the worlds of the defunct MMORPG Wildstar
 - `Pillow`
 - `trimesh`
 - `PyOpenGL`
+- `pyperclip`
 - `scikit-learn`
 
 You can install them with:
@@ -30,7 +31,7 @@ pip install -r requirements.txt
 
 ![WorldSelect window](https://github.com/charlesmasse/NexusExplorer/blob/main/images/worldSelect.png "WorldSelect")
 
-- Explore the features on the map by clicking on the colored circles.
+- Explore the features on the map by clicking on different icons.
   - [x] Pro-tip : By clicking somewhere on the map, the teleport command for this area will be copied to your clipboard.
 
 ![MapViewer window](https://github.com/charlesmasse/NexusExplorer/blob/main/images/mapViewer.png "MapViewer")

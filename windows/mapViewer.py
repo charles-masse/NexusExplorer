@@ -3,8 +3,8 @@ import random
 
 import pyperclip
 
-from PyQt6.QtGui import *
-from PyQt6.QtCore import *
+from PyQt6.QtGui import QColor, QFont, QIcon, QPixmap, QScreen
+from PyQt6.QtCore import QObject, QThread, QTimer, QPointF, pyqtSignal
 from PyQt6.QtWidgets import *
 
 from PIL.ImageQt import ImageQt
@@ -16,6 +16,14 @@ from actions.mapViewer import generateMapImage, clusterLocations, MAP_SIZE, MAP_
 from windows import locationReader
 
 HALF_MAP = int(((MAP_SIZE / 2) * MAP_CHUNK_RESOLUTION))
+
+CONTENT_TYPES = {
+                 'QuestHub' : '/UI/Icon/Map/Node/Map_QuestHub/Map_QuestHub.png',
+                 'Datacube' : '/UI/Icon/Map/Node/UI_Map_Scientist/UI_Map_Scientist.png',
+                 'Quest2' : '/UI/Icon/Map/Node/UI_Map_Quests/UI_Map_Quests.png',
+                 'PublicEvent' : '/UI/Icon/Map/Node/UI_Map_Events/UI_Map_Events.png',
+                 'Challenge' : '/UI/Icon/Map/Node/UI_Map_Challenges/UI_Map_Challenges.png'
+                }
 
 def calculateBounds(bounds0, bounds1, bounds2, bounds3):
     """
@@ -80,27 +88,30 @@ class loadingBar(QWidget):
     def setMax(self, value):
         self.progressBar.setMaximum(value)
 
-class LocationCircle(QObject):
+class LocationIcon(QObject):
     """
-    A clickable circle on the map that retains map features
+    A clickable icon on the map that retains map features
     """
-    clicked = pyqtSignal(dict)
+    clicked = pyqtSignal(dict, QPixmap)
 
-    def __init__(self, locData, color, rect, parent=None):
+    def __init__(self, locData, posX, posY, parent=None):
         super().__init__(parent)
-        
+
         self.locData = locData
 
-        self.graphicsItem = QGraphicsEllipseItem(rect)
-        self.graphicsItem.setPen(QPen(color))
-        self.graphicsItem.setBrush(QBrush(color))
-        self.graphicsItem.setFlag(QGraphicsEllipseItem.GraphicsItemFlag.ItemIsSelectable)
+        for type in CONTENT_TYPES.keys():
+            if type in self.locData.keys():
 
-        self.graphicsItem.mouseReleaseEvent = self.mouseReleaseEvent
+                self.pixmap = QPixmap(f'{settings['gameFiles']}{CONTENT_TYPES[type]}')
+                break
 
-    def mouseReleaseEvent(self, event):
-        self.clicked.emit(self.locData)
-        QGraphicsEllipseItem.mouseReleaseEvent(self.graphicsItem, event)
+        self.icon = QGraphicsPixmapItem(self.pixmap)
+        self.icon.setPos(posX, posY)
+        self.icon.setFlags(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
+        self.icon.mouseReleaseEvent = self._clickIcon
+
+    def _clickIcon(self, event):
+        self.clicked.emit(self.locData, self.pixmap)
 
 class Window(QGraphicsScene):
     """
@@ -110,7 +121,6 @@ class Window(QGraphicsScene):
         super().__init__(parent)
 
         self.world = world
-        self.allLocations = []
 
         self.view = QGraphicsView(self)
         self.view.setMouseTracking(True)
@@ -121,8 +131,10 @@ class Window(QGraphicsScene):
         # Center loading bar
         screenGeometry = QApplication.primaryScreen().availableGeometry()
         loadBarSize = self.loadBar.size()
+
         x = int((screenGeometry.width() / 2) - (loadBarSize.width() / 2))
         y = int((screenGeometry.height() / 2) - (loadBarSize.height() / 2))
+
         self.loadBar.move(x, y)
         # Generate world on thread
         self.thread = worldThread(self.world)
@@ -145,8 +157,6 @@ class Window(QGraphicsScene):
         bgImg = self.addPixmap(pixMap)
         # Add locations to map
         locations = clusterLocations(self.world.get('WorldLocation2', {}).values())
-        # locations = self.world['WorldLocation2'].values()
-        # pprint(locations)
         for location in locations:
             self.drawLocation(location, location['position0'], location['position2'])
         # Add coords on mouse pointer
@@ -162,24 +172,22 @@ class Window(QGraphicsScene):
         # Center view to world center
         QTimer.singleShot(0, lambda: self.view.centerOn(QPointF(scaledHalf, scaledHalf)))
     # Location circles
-    def drawLocation(self, data, worldX, worldY, radius=256, color=None):
+    def drawLocation(self, data, worldX, worldY):
         """
-        Place a locationCircle to the specified position
+        Place a location on the map
         """
-        if color == None :
-            color = QColor(random.randint(0, 255), random.randint(0, 255), random.randint(0, 255), 200)
-
         posX, posY = screenPos(worldX, worldY)
-        radiusScaled = float(radius) / 10
-        halfRadius = radiusScaled / 2
 
-        circle = LocationCircle(data, color, QRectF(posX - halfRadius, posY - halfRadius, radiusScaled, radiusScaled))
+        circle = LocationIcon(data, posX, posY)
+        self.addItem(circle.icon)
         circle.clicked.connect(self.openLocation)
-        self.addItem(circle.graphicsItem)
 
-    def openLocation(self, locData):
-
+    def openLocation(self, locData, locIcon):
+        """
+        Open the window with current location's content
+        """
         self.popup = locationReader.Window(locData)
+        self.popup.setWindowIcon(QIcon(locIcon))
         self.popup.show()
     # Mouse coords
     def mouseMoveEvent(self, event):

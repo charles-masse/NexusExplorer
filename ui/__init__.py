@@ -1,7 +1,7 @@
 
-from PyQt6.QtGui import *
-from PyQt6.QtCore import *
-from PyQt6.QtWidgets import *
+from PyQt6.QtGui import QColor, QPalette, QPainter, QTextDocument
+from PyQt6.QtCore import Qt, QRect
+from PyQt6.QtWidgets import QStyledItemDelegate, QStyle, QTreeView
 
 class HtmlDelegate(QStyledItemDelegate):
 

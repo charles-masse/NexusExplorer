@@ -3,11 +3,6 @@ import os
 
 import csv
 
-import numpy
-
-from sklearn.neighbors import KDTree
-from sklearn.cluster import DBSCAN, AgglomerativeClustering
-
 from singletons import settings
 
 def linkDb(linkDb, fieldName, sourceDbs):
@@ -30,20 +25,13 @@ def linkDb(linkDb, fieldName, sourceDbs):
 
     return linkDb
 
-# def linkDbReversed(linkDb, fieldName, sourceDb, linkedField):
+class DBDict(dict):
 
-#     # for dbDict in sourceDbs:
-#     for itemId, item in sourceDb.items():
-#         for key in [k for k in item if fieldName.lower() in k.lower()]:
+    def __init__(self, name):
+        super().__init__()
 
-#             try:
-#                 linkDb[item[key]].setdefault(linkedField, {})[item['itemId']] = item
+        self.name = name
 
-#             except:
-#                 pass
-
-#     return linkDb
-    
 def readCSV(dbName, folder='DB'):
     """
     Read a .csv file
@@ -67,13 +55,7 @@ def readCSV(dbName, folder='DB'):
 
     return dbDict
 
-class DBDict(dict):
-
-    def __init__(self, name):
-        super().__init__()
-
-        self.name = name
-
+# Rework these guys
 class LocalizedStrings:
     _instance = None
 
@@ -189,14 +171,14 @@ class Worlds:
         events = readCSV('PublicEvent')
         eventObjectives = readCSV('PublicEventObjective')
 
-        for objective in eventObjectives.values():
+        # for objective in eventObjectives.values():
 
-            try:
-                events[objective['publicEventId']].setdefault('PublicEventObjective', {})[objective['itemId']] = objective
-                objective['publicEventId'] = events[objective['publicEventId']]
+        #     try:
+        #         events[objective['publicEventId']].setdefault('PublicEventObjective', {})[objective['itemId']] = objective
+        #         objective['publicEventId'] = events[objective['publicEventId']]
 
-            except:
-                pass
+        #     except:
+        #         pass
 
         return events, eventObjectives
 
@@ -207,15 +189,15 @@ class Worlds:
         quests = readCSV('Quest2')
         questObjectives = readCSV('QuestObjective')
 
-        for quest in quests.values():
-            for key in [key for key in quest if 'objective' in key]:
+        # for quest in quests.values():
+        #     for key in [key for key in quest if 'objective' in key]:
 
-                try:
-                    quest[key] = questObjectives[quest[key]]
-                    questObjectives[quest[key]['itemId']]['Quest2'] = quest
+        #         try:
+        #             quest[key] = questObjectives[quest[key]]
+        #             questObjectives[quest[key]['itemId']]['Quest2'] = quest
 
-                except:
-                    pass
+        #         except:
+        #             pass
 
         return quests, questObjectives
 
@@ -223,7 +205,7 @@ class Worlds:
         """
         Link all content to their location.
         """
-        locations = linkDb(readCSV('WorldLocation2'), 'worldlocation', [self.zones, self.challenges, self.datacubes, self.events, self.eventObjectives, self.quests, self.questHubs, self.questObjectives])
+        locations = linkDb(readCSV('WorldLocation2'), 'worldlocation', [self.zones, self.challenges, self.datacubes, self.events, self.quests, self.questHubs]) # self.eventObjectives, self.questObjectives
         locations = linkDb(locations, 'worldlocation2idexit', [self.zones])
         
         return {location['itemId']:location for location in locations.values() if len(location) > 13}
