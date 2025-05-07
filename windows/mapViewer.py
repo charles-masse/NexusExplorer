@@ -77,26 +77,25 @@ class loadingBar(QWidget):
     def setMax(self, value):
         self.progressBar.setMaximum(value)
 
-class locationCircle(QGraphicsEllipseItem):
-    """
-    A circle on the map that retains map features
-    """
-    def __init__(self, locData, color, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+class LocationCircle(QObject):
+    clicked = pyqtSignal(dict)
 
+    def __init__(self, locData, color, rect, parent=None):
+        super().__init__(parent)
         self.locData = locData
 
-        self.setPen(QPen(color))
-        self.setBrush(QBrush(color))
-        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
+        # Create the actual graphics item
+        self.graphicsItem = QGraphicsEllipseItem(rect)
+        self.graphicsItem.setPen(QPen(color))
+        self.graphicsItem.setBrush(QBrush(color))
+        self.graphicsItem.setFlag(QGraphicsEllipseItem.GraphicsItemFlag.ItemIsSelectable)
+
+        # Install event handler by monkey-patching
+        self.graphicsItem.mouseReleaseEvent = self.mouseReleaseEvent
 
     def mouseReleaseEvent(self, event):
-        """
-        Open popup on click
-        """
-        super(locationCircle, self).mouseReleaseEvent(event)
-
-        self.popup = locationReader.Window(self.locData)
+        self.clicked.emit(self.locData)
+        QGraphicsEllipseItem.mouseReleaseEvent(self.graphicsItem, event)
 
 class Window(QGraphicsScene):
     """
@@ -106,6 +105,7 @@ class Window(QGraphicsScene):
         super().__init__(parent)
 
         self.world = world
+        self.allLocations = []
 
         self.view = QGraphicsView(self)
         self.view.setMouseTracking(True)
@@ -125,6 +125,11 @@ class Window(QGraphicsScene):
         self.thread.setProgress.connect(self.loadBar.setProgress)
         self.thread.worldGenerated.connect(self.drawMap)
         self.thread.run() # Fix this one day
+
+    def openLocation(self, locData):
+
+        self.popup = locationReader.Window(locData)
+        self.popup.show()
 
     def drawMap(self, worldIm):
         """
@@ -168,8 +173,9 @@ class Window(QGraphicsScene):
         radiusScaled = float(radius) / 10
         halfRadius = radiusScaled / 2
 
-        location = locationCircle(data, color, QRectF(posX - halfRadius, posY - halfRadius, radiusScaled, radiusScaled))
-        self.addItem(location)
+        circle = LocationCircle(data, color, QRectF(posX - halfRadius, posY - halfRadius, radiusScaled, radiusScaled))
+        circle.clicked.connect(self.openLocation)
+        self.addItem(circle.graphicsItem)
 
     def mouseMoveEvent(self, event):
         """

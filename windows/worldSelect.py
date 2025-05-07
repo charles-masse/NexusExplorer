@@ -25,8 +25,8 @@ class Window(QWidget):
     """
     Display all available worlds and open the selected one in the map viewer.
     """
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self):
+        super().__init__()
         # Window settings
         self.setWindowTitle("World Select")
         screen = QScreen.availableGeometry(QApplication.primaryScreen())

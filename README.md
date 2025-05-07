@@ -13,10 +13,11 @@ Explore the worlds of the defunct MMORPG Wildstar
 ## How to use NexusExplorer
 - Run `main.py`
 - Use the World Select window to choose the world you want to load.
-- [x] [WORLD_ID] MAP_NAME (FEATURE_NUMBER)
+   - [x] [WORLD_ID] MAP_NAME (FEATURE_NUMBER)
+
 ![WorldSelect window](https://github.com/charlesmasse/NexusExplorer/blob/main/images/worldSelect.png "WorldSelect")
 
 - Explore the features on the map by clicking on the colored circles.
-- [x] Pro-tip : By clicking somewhere on the map, the teleport command for this area will be copied to your clipboard.
+   - [x] Pro-tip : By clicking somewhere on the map, the teleport command for this area will be copied to your clipboard.
 
 ![MapViewer window](https://github.com/charlesmasse/NexusExplorer/blob/main/images/mapViewer.png "MapViewer")

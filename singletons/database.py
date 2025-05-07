@@ -92,7 +92,7 @@ class LocalizedStrings:
             return self._data[key]['Text']
 
         else:
-            return None
+            return ''
 
 localizedStrings = LocalizedStrings()
 
@@ -117,6 +117,28 @@ class Creatures:
             return None
 
 creatures = Creatures()
+
+class Items:
+    _instance = None
+
+    def __new__(cls):
+
+        if cls._instance is None:
+            cls._instance = super(Items, cls).__new__(cls)
+
+            cls._instance._data = readCSV('VirtualItem')
+
+        return cls._instance
+
+    def __getitem__(self, key):
+
+        if key in self._data:
+            return self._data[key]
+
+        else:
+            return None
+
+items = Items()
 
 class Worlds:
     """
