@@ -2,13 +2,7 @@
 Explore the worlds of the defunct MMORPG Wildstar
 
 ## Requirements
-- `numpy`
-- `PyQt6`
-- `Pillow`
-- `trimesh`
-- `PyOpenGL`
-- `pyperclip`
-- `scikit-learn`
+`numpy`, `PyQt6`, `Pillow`, `trimesh`, `PyOpenGL`, `pyperclip`, `scikit-learn`
 
 You can install them with:
 ```bash

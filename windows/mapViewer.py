@@ -9,7 +9,7 @@ from PyQt6.QtWidgets import *
 
 from PIL.ImageQt import ImageQt
 
-from singletons import settings
+from singletons import settings, localizedStrings
 
 from actions.mapViewer import generateMapImage, clusterLocations, MAP_SIZE, MAP_CHUNK_RESOLUTION
 
@@ -65,6 +65,7 @@ class worldThread(QThread):
             self.setProgress.emit(progress)
 
         im = generateMapImage(self.world, maxCallback, progressCallback)
+
         self.worldGenerated.emit(im)
 
 class loadingBar(QWidget):
@@ -99,10 +100,21 @@ class LocationIcon(QObject):
 
         self.locData = locData
 
-        for type in CONTENT_TYPES.keys():
-            if type in self.locData.keys():
+        for type in CONTENT_TYPES:
+            if type in self.locData:
+                path = CONTENT_TYPES[type]
 
-                self.pixmap = QPixmap(f'{settings['gameFiles']}{CONTENT_TYPES[type]}')
+                if self.locData.get('Quest2'):
+
+                    questFactions = [quest['questPlayerFactionEnum'] for quest in self.locData['Quest2'].values()]
+            
+                    if questFactions.count('0') == len(questFactions):
+                        path = '/UI/Icon/Map/Node/Map_QuestHub_Exile/Map_QuestHub_Exile.png'
+                
+                    elif questFactions.count('1') == len(questFactions):
+                        path = '/UI/Icon/Map/Node/Map_QuestHub_Dominion/Map_QuestHub_Dominion.png'
+
+                self.pixmap = QPixmap(f'{settings['gameFiles']}{path}')
                 break
 
         self.icon = QGraphicsPixmapItem(self.pixmap)
@@ -171,7 +183,7 @@ class Window(QGraphicsScene):
         self.view.showMaximized()
         # Center view to world center
         QTimer.singleShot(0, lambda: self.view.centerOn(QPointF(scaledHalf, scaledHalf)))
-    # Location circles
+    # Locations
     def drawLocation(self, data, worldX, worldY):
         """
         Place a location on the map
