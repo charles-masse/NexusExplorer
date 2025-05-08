@@ -1,47 +1,22 @@
 
-import re
-
 from PyQt6.QtGui import QIcon, QFont, QScreen
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import *
 
 from ui import HtmlDelegate
 from windows import contentReader
-from singletons import settings, localizedStrings, creatures, items
+from singletons import settings, LocalizedStrings
 
-WINDOW_WIDTH = 600
+WINDOW_WIDTH = 400
 
 CONTENT_TYPES = {
-                 'Challenge' : {'name': 'Challenges', 'icon': 'Map/Node/UI_Map_Challenges/UI_Map_Challenges.png', 'text': 'localizedTextIdName'},
                  'Datacube' : {'name': 'Datacubes', 'icon': '/Map/Node/UI_Map_Scientist/UI_Map_Scientist.png', 'text': 'localizedTextIdTitle'},
-                 'PublicEvent' : {'name': 'Public Events', 'icon': 'Map/Node/UI_Map_Events/UI_Map_Events.png', 'text': 'localizedTextIdName'},
-                 # 'PublicEventObjective' : {'name': 'Public Event Objectives', 'icon': 'Map/Node/UI_Map_Events/UI_Map_Events.png', 'text': 'localizedTextIdShort'},
                  'Quest2' : {'name': 'Quests', 'icon': 'Map/Node/UI_Map_Quests/UI_Map_Quests.png', 'text': 'localizedTextIdTitle'},
+                 'PublicEvent' : {'name': 'Public Events', 'icon': 'Map/Node/UI_Map_Events/UI_Map_Events.png', 'text': 'localizedTextIdName'},
+                 'Challenge' : {'name': 'Challenges', 'icon': 'Map/Node/UI_Map_Challenges/UI_Map_Challenges.png', 'text': 'localizedTextIdName'},
+                 # 'PublicEventObjective' : {'name': 'Public Event Objectives', 'icon': 'Map/Node/UI_Map_Events/UI_Map_Events.png', 'text': 'localizedTextIdShort'},
                  # 'QuestObjective' : {'name': 'Quest Objectives', 'icon': 'Map/Node/UI_Map_Quests/UI_Map_Quests.png', 'text': 'localizedTextIdShort'}
                 }
-
-def paleFire(text):
-    """
-    Change me please
-    """
-    matches = re.finditer(r'(?:<text[^>]*?>)?\$(?:\w*\((\w+)=(\d+)\)|(\w+)=(\d+))(?:</text>)?', text)
-    
-    for match in matches:
-
-        fullMath = match.group(0)
-        key = match.group(1) or match.group(3)
-        idValue = match.group(2) or match.group(4)
-
-        if key.lower() == 'creature':
-            text = text.replace(fullMath, f'<b>[{localizedStrings[creatures[idValue].get('localizedTextIdName', "Can't find creature")]}]</b>')
-
-        elif key.lower() == 'vitem':
-            text = text.replace(fullMath, f'<b>[{localizedStrings[items[idValue].get('localizedTextIdName', "Can't find item")]}]</b>')
-
-        else:
-            text = text.replace(fullMath, f'<b>[{key}:{idValue}]</b>')
-
-    return text
 
 class ContentItem(QTreeWidgetItem):
     """
@@ -74,7 +49,7 @@ class Window(QWidget):
         tree.setHeaderHidden(True)
         tree.itemClicked.connect(self.popup)
 
-        for contentType in [c for c in locData if c in CONTENT_TYPES.keys()]:
+        for contentType in [ct for ct in CONTENT_TYPES if ct in locData]:
             # Add section header
             categoryName = CONTENT_TYPES[contentType]['name']
             category = QTreeWidgetItem([categoryName])
@@ -87,17 +62,17 @@ class Window(QWidget):
             tree.addTopLevelItem(category)
             category.setExpanded(True)
             # Add content
-            for location in locData[contentType].values():
+            for content in locData[contentType].values():
 
-                name = localizedStrings[location[CONTENT_TYPES[contentType]['text']]]
-
+                name = LocalizedStrings[content[CONTENT_TYPES[contentType]['text']]]
                 if not name:
-                    name = '<b>[Unnamed]</b>'
-                # Replace game object link
-                if '$' in name:
-                    name = paleFire(name)
+                    name = '[Unnamed]'
+                # Quest faction
+                faction = content.get('questPlayerFactionEnum')
+                if faction:
+                    name = ' '.join([f'<b>[{['Exile', 'Dominion', 'Neutral'][int(faction)]}]</b>', name])
 
-                category.addChild(ContentItem(location, [name]))
+                category.addChild(ContentItem(content, [name]))
 
         layout.addWidget(tree)
 

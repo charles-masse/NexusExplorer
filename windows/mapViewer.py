@@ -9,13 +9,11 @@ from PyQt6.QtWidgets import *
 
 from PIL.ImageQt import ImageQt
 
-from singletons import settings, localizedStrings
+from singletons import settings, LocalizedStrings
 
 from actions.mapViewer import generateMapImage, clusterLocations, MAP_SIZE, MAP_CHUNK_RESOLUTION
 
 from windows import locationReader
-
-HALF_MAP = int(((MAP_SIZE / 2) * MAP_CHUNK_RESOLUTION))
 
 CONTENT_TYPES = {
                  'QuestHub' : '/UI/Icon/Map/Node/Map_QuestHub/Map_QuestHub.png',
@@ -24,6 +22,8 @@ CONTENT_TYPES = {
                  'PublicEvent' : '/UI/Icon/Map/Node/UI_Map_Events/UI_Map_Events.png',
                  'Challenge' : '/UI/Icon/Map/Node/UI_Map_Challenges/UI_Map_Challenges.png'
                 }
+
+HALF_MAP = int(((MAP_SIZE / 2) * MAP_CHUNK_RESOLUTION))
 
 def calculateBounds(bounds0, bounds1, bounds2, bounds3):
     """

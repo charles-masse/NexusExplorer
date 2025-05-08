@@ -10,7 +10,7 @@ from sklearn.cluster import DBSCAN, AgglomerativeClustering
 
 from PIL import Image, ImageOps
 
-from singletons import settings, localizedStrings
+from singletons import settings, LocalizedStrings
 
 MAP_SIZE = 128
 MAP_CHUNK_RESOLUTION = 512
@@ -108,7 +108,7 @@ def clusterLocations(locations):
             for location in cluster:
 
                 for contentType in [ct for ct in ['QuestHub', 'WorldZone'] if ct in location]:
-                    names.extend([localizedStrings[hub['localizedTextIdName']] for hub in location[contentType].values()])
+                    names.extend([LocalizedStrings[hub['localizedTextIdName']] for hub in location[contentType].values()])
             
             if names:
                 clusterByNames.setdefault(names[0], []).extend(cluster)

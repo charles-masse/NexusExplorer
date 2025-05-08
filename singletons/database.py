@@ -5,26 +5,6 @@ import csv
 
 from singletons import settings
 
-def linkDb(linkDb, fieldName, sourceDbs):
-    """
-    Link referenced data ids to the actual data held by another database.
-
-    linkDb (Dict): The database that holds the reference ids and will be returned.
-    fieldName (String): Name of the field that contains the reference ids (in linkDb).
-    sourceDbs (List of Dict): A list of databases that contains the data referenced by the ids.
-    """
-    for db in sourceDbs:
-        for itemId, item in db.items():
-            for key in [k for k in item if fieldName.lower() in k.lower()]:
-
-                try:
-                    linkDb[item[key]].setdefault(db.name, {})[itemId] = item
-
-                except:
-                    continue
-
-    return linkDb
-
 class DBDict(dict):
 
     def __init__(self, name):
@@ -55,72 +35,51 @@ def readCSV(dbName, folder='DB'):
 
     return dbDict
 
-# Rework these guys
+class LoadManager:
+    _instance = None
+    _loaded = {settings['language'] : readCSV(settings['language'], '')}
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(LoadManager, cls).__new__(cls)
+        return cls._instance
+
+    def __getitem__(self, db):
+        if db not in self._loaded:
+            self._loaded[db] = readCSV(db)
+
+        return self._loaded[db]
+
+loadManager = LoadManager()
+
 class LocalizedStrings:
-    _instance = None
 
-    def __new__(cls):
+    @classmethod
+    def __class_getitem__(cls, key):
+        string = loadManager[settings['language']].get(key)
+        
+        if string:
+            return string['Text']
 
-        if cls._instance is None:
-            cls._instance = super(LocalizedStrings, cls).__new__(cls)
+def linkDb(linkDb, fieldName, sourceDbs):
+    """
+    Link referenced data ids to the actual data held by another database.
 
-            cls._instance._data = readCSV(settings['language'], '')
+    linkDb (Dict): The database that holds the reference ids and will be returned.
+    fieldName (String): Name of the field that contains the reference ids (in linkDb).
+    sourceDbs (List of Dict): A list of databases that contains the data referenced by the ids.
+    """
+    for db in sourceDbs:
+        for itemId, item in db.items():
+            for key in [k for k in item if fieldName.lower() in k.lower()]:
 
-        return cls._instance
+                try:
+                    linkDb[item[key]].setdefault(db.name, {})[itemId] = item
 
-    def __getitem__(self, key):
+                except:
+                    continue
 
-        if key in self._data:
-            return self._data[key]['Text']
-
-        else:
-            return ''
-
-localizedStrings = LocalizedStrings()
-
-class Creatures:
-    _instance = None
-
-    def __new__(cls):
-
-        if cls._instance is None:
-            cls._instance = super(Creatures, cls).__new__(cls)
-
-            cls._instance._data = readCSV('Creature2')
-
-        return cls._instance
-
-    def __getitem__(self, key):
-
-        if key in self._data:
-            return self._data[key]
-
-        else:
-            return None
-
-creatures = Creatures()
-
-class Items:
-    _instance = None
-
-    def __new__(cls):
-
-        if cls._instance is None:
-            cls._instance = super(Items, cls).__new__(cls)
-
-            cls._instance._data = readCSV('VirtualItem')
-
-        return cls._instance
-
-    def __getitem__(self, key):
-
-        if key in self._data:
-            return self._data[key]
-
-        else:
-            return None
-
-items = Items()
+    return linkDb
 
 class Worlds:
     """
@@ -131,19 +90,10 @@ class Worlds:
     """
     def __init__(self):
         # Episodes are linked with QuestHubs and worldZone
-        self.datacubes = readCSV('Datacube')
         self.zones = self._buildZones()
-
-        self.events, self.eventObjectives = self._buildEvents()
-
-        self.quests, self.questObjectives = self._buildQuests()
-
-        self.questHubs = readCSV('QuestHub')
-
-        self.challenges = readCSV('Challenge')
-
+        # self.events, self.eventObjectives = self._buildEvents()
+        # self.quests, self.questObjectives = self._buildQuests()
         self.locations = self._buildLocations()
-
         self.data = self._buildWorlds()
 
     def _buildZones(self):
@@ -152,7 +102,7 @@ class Worlds:
         """
         zones = readCSV('WorldZone')
 
-        for cube in self.datacubes.values():
+        for cube in loadManager['Datacube'].values():
 
             try:
                 zones[cube['worldZoneId']].setdefault('Datacube', {})[cube['itemId']] = cube
@@ -164,48 +114,48 @@ class Worlds:
 
         return zones
 
-    def _buildEvents(self):
-        """
-        Link objectives to their event.
-        """
-        events = readCSV('PublicEvent')
-        eventObjectives = readCSV('PublicEventObjective')
+    # def _buildEvents(self):
+    #     """
+    #     Link objectives to their event.
+    #     """
+    #     events = readCSV('PublicEvent')
+    #     eventObjectives = readCSV('PublicEventObjective')
 
-        # for objective in eventObjectives.values():
+    #     for objective in eventObjectives.values():
 
-        #     try:
-        #         events[objective['publicEventId']].setdefault('PublicEventObjective', {})[objective['itemId']] = objective
-        #         objective['publicEventId'] = events[objective['publicEventId']]
+    #         try:
+    #             events[objective['publicEventId']].setdefault('PublicEventObjective', {})[objective['itemId']] = objective
+    #             objective['publicEventId'] = events[objective['publicEventId']]
 
-        #     except:
-        #         pass
+    #         except:
+    #             pass
 
-        return events, eventObjectives
+    #     return events, eventObjectives
 
-    def _buildQuests(self):
-        """
-        Link quest to their objective.
-        """
-        quests = readCSV('Quest2')
-        questObjectives = readCSV('QuestObjective')
+    # def _buildQuests(self):
+    #     """
+    #     Link quest to their objective.
+    #     """
+    #     quests = readCSV('Quest2')
+    #     questObjectives = readCSV('QuestObjective')
 
-        # for quest in quests.values():
-        #     for key in [key for key in quest if 'objective' in key]:
+    #     for quest in quests.values():
+    #         for key in [key for key in quest if 'objective' in key]:
 
-        #         try:
-        #             quest[key] = questObjectives[quest[key]]
-        #             questObjectives[quest[key]['itemId']]['Quest2'] = quest
+    #             try:
+    #                 quest[key] = questObjectives[quest[key]]
+    #                 questObjectives[quest[key]['itemId']]['Quest2'] = quest
 
-        #         except:
-        #             pass
+    #             except:
+    #                 pass
 
-        return quests, questObjectives
+    #     return quests, questObjectives
 
     def _buildLocations(self):
         """
         Link all content to their location.
         """
-        locations = linkDb(readCSV('WorldLocation2'), 'worldlocation', [self.zones, self.challenges, self.datacubes, self.events, self.quests, self.questHubs]) # self.eventObjectives, self.questObjectives
+        locations = linkDb(readCSV('WorldLocation2'), 'worldlocation', [self.zones, loadManager['Challenge'], loadManager['Datacube'], loadManager['PublicEvent'], loadManager['Quest2'], loadManager['QuestHub']]) # self.eventObjectives, self.questObjectives
         locations = linkDb(locations, 'worldlocation2idexit', [self.zones])
         
         return {location['itemId']:location for location in locations.values() if len(location) > 13}

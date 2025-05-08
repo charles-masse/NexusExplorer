@@ -1,9 +1,12 @@
 
-from pprint import pprint
-
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
+
+from singletons import LocalizedStrings
+from actions.links import linkGameObject
+
+from pprint import pprint # DEBUG
 
 class Window(QWidget):
 
@@ -12,17 +15,35 @@ class Window(QWidget):
 
         pprint(data)
 
-        # self.setWindowTitle(data['localizedTextIdTitle'])
-
-        screen = QScreen.availableGeometry(QApplication.primaryScreen())
-        self.setFixedSize(400, screen.height())
-        self.move(screen.x(), screen.y())
+        self.setWindowTitle(LocalizedStrings[data.get('localizedTextIdTitle')])
 
         layout = QVBoxLayout()
         self.setLayout(layout)
         # Quest
+        text = LocalizedStrings[data.get('localizedTextIdText')]
 
-        # layout.addWidget(QPlainTextEdit(data['localizedTextIdText']))
+        if text and '$' in text:
+            text = linkGameObject(text)
+
+        label = QLabel(f'<div>{text}</div>')
+
+        label.setWordWrap(True)
+        # Click on link
+        label.setOpenExternalLinks(False)
+        label.setTextInteractionFlags(Qt.TextInteractionFlag.TextBrowserInteraction)
+
+        def handleLink(link):
+            test = eval(link)
+            pprint(test)
+
+        label.linkActivated.connect(handleLink)
+
+        layout.addWidget(label)
+
+        screen = QScreen.availableGeometry(QApplication.primaryScreen())
+        self.setFixedSize(400, label.height() + 25)
+        self.move(screen.x(), screen.y())
+
         # # In-character explanation
         # startText = data['localizedTextIdGiverTextUnknown']
 
@@ -37,6 +58,7 @@ class Window(QWidget):
         #     if moreInfoText:
         #         layout.addWidget(QLineEdit(moreInfoSay))
         #         layout.addWidget(QPlainTextEdit(moreInfoText))
+
         # # Objectives
         # for objective in range(6):
         #     try:

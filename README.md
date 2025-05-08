@@ -20,12 +20,12 @@ pip install -r requirements.txt
 
 ## How to use NexusExplorer
 - Run `main.py`
-- Use the World Select window to choose the world you want to load.
-  - [x] [WORLD_ID] MAP_NAME (FEATURE_NUMBER)
+- Use the WorldSelect window to choose the world you want to load.
+ - [x] [WORLD_ID] MAP_NAME (NUMBER_OF_FEATURES)
 
 ![WorldSelect window](https://github.com/charlesmasse/NexusExplorer/blob/main/images/worldSelect.png "WorldSelect")
 
-- Explore the features on the map by clicking on different icons.
-  - [x] Pro-tip : By clicking somewhere on the map, the teleport command for this area will be copied to your clipboard.
+- Explore the map features by clicking on the different icons.
+ - [x] Pro-tip : By clicking somewhere on the map, the teleport command for this area will be copied to your clipboard.
 
 ![MapViewer window](https://github.com/charlesmasse/NexusExplorer/blob/main/images/mapViewer.png "MapViewer")

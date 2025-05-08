@@ -11,7 +11,7 @@ QGraphicsView  {
     
 }
 
-QListWidget, QTreeWidget, QPlainTextEdit {
+QListWidget, QTreeWidget, QLabel {
 
     border: 2px solid rgb(41, 118, 112);
     outline: 0;
@@ -31,7 +31,7 @@ QTreeWidget::item:hover {
 
 }
 
-QListWidget, QListWidget QScrollBar, QTreeWidget,  QTreeWidget QScrollBar, QPlainTextEdit{
+QListWidget, QListWidget QScrollBar, QTreeWidget,  QTreeWidget QScrollBar, QLabel {
 
     background-color: qlineargradient(x1:0 y1:0, x2:0 y2:1, stop:0 rgb(36, 102, 98), stop:1 rgb(9, 21, 20));
 

@@ -5,9 +5,9 @@ from PyQt6.QtWidgets import *
 
 from ui import HtmlDelegate
 from windows import mapViewer
-from singletons import Worlds, localizedStrings
+from singletons import Worlds, LocalizedStrings
 
-WINDOW_WIDTH = 350
+WINDOW_WIDTH = 325
 
 class WorldListItem(QListWidgetItem):
     """
@@ -20,7 +20,7 @@ class WorldListItem(QListWidgetItem):
         self.worldData = worldData
         # Set text
         worldId = f"<b>[{worldData['itemId']}]</b>"
-        worldName = localizedStrings[worldData['localizedTextIdName']] or f"<u>{worldData['assetPath'].replace('\\', '/')}</u>"
+        worldName = LocalizedStrings[worldData['localizedTextIdName']] or f'<i>"{worldData['assetPath'].split('\\')[-1]}</i>"'
         worldLocations = f'<b>({len(worldData.get('WorldLocation2', []))})</b>'
 
         self.setText(' '.join([worldId, worldName, worldLocations]))
