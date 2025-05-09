@@ -1,10 +1,11 @@
 # NexusExplorer
 Explore the worlds of the defunct MMORPG **Wildstar**.
 
-NexusExplorer is a tool that allows you to browse extracted minimap, model and world data including dialog not present on [JabbitHole](https://www.jabbithole.com) and unfinished content.
+**NexusExplorer** is a tool that allows you to browse extracted minimap, model and world data including dialog not present on [JabbitHole](https://www.jabbithole.com) and unfinished content.
 
 ## Requirements
 `numpy`, `PyQt6`, `Pillow`, `trimesh`, `PyOpenGL`, `pyperclip`, `scikit-learn`
+
 You can install them with:
 ```bash
 pip install -r requirements.txt
@@ -13,9 +14,8 @@ pip install -r requirements.txt
 ## Installation
 - You will need the game assets extracted with a tool like [NexusVault](https://github.com/MarbleBag/NexusVault-CLI).
 > [!TIP]
-> To export everything with NexusVault, point to your game's `Patch/ClientData.archive` with the commands :
+> To export everything with NexusVault, point to your game's `Patch/ClientData.archive` with `archive-path PATH_TO_ARCHIVE` and :
 ```bash
->archive-path PATH_TO_ARCHIVE
 >search \\
 >export
 ```
@@ -31,13 +31,15 @@ pip install -r requirements.txt
 ## How to use NexusExplorer
 - Run `main.py`
 - Use the WorldSelect window to choose the world you want to load.
-> [!NOTE]
-> [WORLD_ID] MAP_NAME (NUMBER_OF_FEATURES)
 
 ![WorldSelect](https://github.com/charlesmasse/NexusExplorer/blob/main/images/worldSelect.png)
 
+> [!NOTE]
+> [WORLD_ID] MAP_NAME (NUMBER_OF_FEATURES)
+
 - Explore the map features by clicking on the different icons.
-> [!TIP]
-> By clicking somewhere on the map, the in-game teleport command for this location will be copied to your clipboard.
 
 ![MapViewer](https://github.com/charlesmasse/NexusExplorer/blob/main/images/mapViewer.png)
+
+> [!TIP]
+> By clicking on the minimap itself, the in-game teleport command for this location will be copied to your clipboard.
