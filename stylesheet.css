@@ -61,7 +61,7 @@ QListWidget QScrollBar::handle, QTreeWidget QScrollBar::handle {
 
 }
 
-QPushButton, QLineEdit {
+QPushButton, #localizedTextIdMoreInfoSay00, #localizedTextIdMoreInfoSay01, #localizedTextIdMoreInfoSay02, #localizedTextIdMoreInfoSay03, #localizedTextIdMoreInfoSay04 {
 
     background-color: qlineargradient(x1:0 y1:0, x2:0 y2:1, stop:0 rgb(36, 139, 39), stop:0.25 rgb(18, 75, 33), stop:1 rgb(16, 76, 45));
     color: rgb(79, 204, 60);

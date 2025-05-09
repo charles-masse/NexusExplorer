@@ -45,8 +45,10 @@ class LoadManager:
         return cls._instance
 
     def __getitem__(self, db):
+
         if db not in self._loaded:
             self._loaded[db] = readCSV(db)
+            print(f'Loaded {db}.')
 
         return self._loaded[db]
 
@@ -56,10 +58,14 @@ class LocalizedStrings:
 
     @classmethod
     def __class_getitem__(cls, key):
+
         string = loadManager[settings['language']].get(key)
-        
+
         if string:
-            return string['Text']
+            string = string.get('Text')
+        
+            if string != '':
+                return string
 
 def linkDb(linkDb, fieldName, sourceDbs):
     """

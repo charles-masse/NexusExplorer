@@ -15,7 +15,7 @@ from actions.mapViewer import generateMapImage, clusterLocations, MAP_SIZE, MAP_
 
 from windows import locationReader
 
-CONTENT_TYPES = {
+CONTENT_ICONS = {
                  'QuestHub' : '/UI/Icon/Map/Node/Map_QuestHub/Map_QuestHub.png',
                  'Datacube' : '/UI/Icon/Map/Node/UI_Map_Scientist/UI_Map_Scientist.png',
                  'Quest2' : '/UI/Icon/Map/Node/UI_Map_Quests/UI_Map_Quests.png',
@@ -100,9 +100,9 @@ class LocationIcon(QObject):
 
         self.locData = locData
 
-        for type in CONTENT_TYPES:
+        for type in CONTENT_ICONS:
             if type in self.locData:
-                path = CONTENT_TYPES[type]
+                path = CONTENT_ICONS[type]
 
                 if self.locData.get('Quest2'):
 

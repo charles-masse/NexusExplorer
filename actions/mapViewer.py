@@ -109,6 +109,9 @@ def clusterLocations(locations):
 
                 for contentType in [ct for ct in ['QuestHub', 'WorldZone'] if ct in location]:
                     names.extend([LocalizedStrings[hub['localizedTextIdName']] for hub in location[contentType].values()])
+                # Getting names from challenge locations
+                if 'Challenge' in location:
+                    names.extend([LocalizedStrings[challenge.get('localizedTextIdLocation')] for challenge in location['Challenge'].values()])
             
             if names:
                 clusterByNames.setdefault(names[0], []).extend(cluster)
