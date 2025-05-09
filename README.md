@@ -19,7 +19,7 @@ pip install -r requirements.txt
 >search \\
 >export
 ```
-- Make sure you export at least one language file (e.g.:`en-US.csv` from `Patch/ClientEn.archive`).
+- Export at least one language file (e.g.:`en-US.csv` from `Patch/ClientEn.archive`).
 - Edit the `settings.json` with the path to the exported assets and the name of the language file you want to use:
 ```JSON
 {

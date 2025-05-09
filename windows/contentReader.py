@@ -66,6 +66,7 @@ class Window(QWidget):
 
     def createStringList(self):
         # Datacube
+        # [data['localizedTextIdText0%i' % textId] for textId in range(6) if data['localizedTextIdText0' + str(textId)]]
 
         # Quests
         stringList = ['localizedTextIdText', 'localizedTextIdGiverTextUnknown']
@@ -75,39 +76,17 @@ class Window(QWidget):
             stringList.append(f'localizedTextIdMoreInfoText0{i}')
 
         stringList.append('localizedTextIdCompletedSummary')
+        # Add objectives
+        # for objective in range(6)
+        #     ['objective%i' % objective]['localizedTextIdFull']
+
         # Event
         stringList.append('localizedTextIdEnd')
+        # Add objectives
+        # 'PublicEventObjective', 'localizedTextId'
 
         # Challenge
         stringList.append('localizedTextIdAreaRestriction')
         stringList.append('localizedTextIdProgress')
 
         return stringList
-
-        # # Objectives
-        # for objective in range(6):
-        #     try:
-        #         objectiveText = data['objective%i' % objective]['localizedTextIdFull']
-        #         layout.addWidget(QPlainTextEdit(objectiveText))
-
-        #     except:
-        #         pass
-
-        # Get parent
-        # if contentType == 'QuestObjective':
-        #     content = location.get('Quest2', {})
-            
-        # elif contentType == 'PublicEventObjective':
-        #     content = location.get('publicEventId', {})
-
-        # else:
-        #     content = location
-
-        # Datacube
-        # text = ''.join([data['localizedTextIdText0%i' % textId] for textId in range(6) if data['localizedTextIdText0' + str(textId)]])
-        # layout.addWidget(QPlainTextEdit(text.replace(r'\n', '\n')))
-
-        # Event
-        # for objective in data['PublicEventObjective'].values():
-        #         objectiveText = objective['localizedTextId']
-        #         layout.addWidget(QPlainTextEdit(objectiveText))
