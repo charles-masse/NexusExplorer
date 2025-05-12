@@ -13,8 +13,8 @@ QGraphicsView  {
 
 QListWidget, QTreeWidget, QLabel {
 
-    border: 2px solid rgb(41, 118, 112);
     outline: 0;
+    border: 2px solid rgb(41, 118, 112);
     color: rgb(125, 251, 182);
 
 }
@@ -31,7 +31,7 @@ QTreeWidget::item:hover {
 
 }
 
-QListWidget, QListWidget QScrollBar, QTreeWidget,  QTreeWidget QScrollBar, QLabel {
+QListWidget, QListWidget QScrollBar, QTreeWidget,  QTreeWidget QScrollBar {
 
     background-color: qlineargradient(x1:0 y1:0, x2:0 y2:1, stop:0 rgb(36, 102, 98), stop:1 rgb(9, 21, 20));
 
@@ -61,7 +61,7 @@ QListWidget QScrollBar::handle, QTreeWidget QScrollBar::handle {
 
 }
 
-QPushButton, #localizedTextIdMoreInfoSay00, #localizedTextIdMoreInfoSay01, #localizedTextIdMoreInfoSay02, #localizedTextIdMoreInfoSay03, #localizedTextIdMoreInfoSay04 {
+QPushButton{
 
     background-color: qlineargradient(x1:0 y1:0, x2:0 y2:1, stop:0 rgb(36, 139, 39), stop:0.25 rgb(18, 75, 33), stop:1 rgb(16, 76, 45));
     color: rgb(79, 204, 60);
@@ -95,5 +95,27 @@ QProgressBar::chunk {
     background-color: rgb(63, 235, 55);
     border: 3px solid rgba(63, 235, 55, 150);
     border-radius: 0.5ex;
+
+}
+
+QLabel {
+
+    background-color: qlineargradient(x1:0 y1:0, x2:0 y2:1, stop:0 rgb(9, 21, 20), stop:1 rgb(36, 102, 98));
+    padding: 0 2.5ex 0 2.5ex;
+
+}
+
+#localizedTextIdMoreInfoSay00, #localizedTextIdMoreInfoSay01, #localizedTextIdMoreInfoSay02, #localizedTextIdMoreInfoSay03, #localizedTextIdMoreInfoSay04 {
+
+    background-color: qlineargradient(x1:0 y1:0, x2:0 y2:1, stop:0 rgb(16, 55, 78), stop:0.1 rgb(13, 43, 59), stop:0.9 rgb(20, 23, 34), stop:1 rgb(26, 27, 40));
+    border: 1px solid rgb(11, 24, 35);
+    border-radius: 0.5ex;
+    padding-left: 1ex;
+
+}
+
+#localizedTextIdMoreInfoText00, #localizedTextIdMoreInfoText01, #localizedTextIdMoreInfoText02, #localizedTextIdMoreInfoText03, #localizedTextIdMoreInfoText04 {
+
+    border-radius: 4ex;
 
 }

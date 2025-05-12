@@ -2,5 +2,5 @@
     "gameFiles" : "Nexusvault/output/export",
     "language" : "en-US",
     "mapScale" : 8.0,
-    "clusterDistance" : 256
+    "clusterDistance" : 200
 }

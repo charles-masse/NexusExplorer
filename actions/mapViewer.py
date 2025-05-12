@@ -137,4 +137,7 @@ def clusterLocations(locations):
         return mergedLocations
 
     else:
+
+        locationList[0]['clusterName'] = 'Unnamed Location'
+
         return locationList

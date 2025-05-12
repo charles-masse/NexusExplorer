@@ -65,7 +65,7 @@ class LocalizedStrings:
             string = string.get('Text')
         
             if string != '':
-                return string
+                return string.replace('\\n', '\n')
 
 def linkDb(linkDb, fieldName, sourceDbs):
     """
