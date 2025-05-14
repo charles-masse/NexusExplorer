@@ -105,7 +105,7 @@ QLabel {
 
 }
 
-#localizedTextIdMoreInfoSay00, #localizedTextIdMoreInfoSay01, #localizedTextIdMoreInfoSay02, #localizedTextIdMoreInfoSay03, #localizedTextIdMoreInfoSay04 {
+#localizedTextIdAcceptResponse, #localizedTextIdCompleteResponse, #localizedTextIdMoreInfoSay00, #localizedTextIdMoreInfoSay01, #localizedTextIdMoreInfoSay02, #localizedTextIdMoreInfoSay03, #localizedTextIdMoreInfoSay04 {
 
     background-color: qlineargradient(x1:0 y1:0, x2:0 y2:1, stop:0 rgb(16, 55, 78), stop:0.1 rgb(13, 43, 59), stop:0.9 rgb(20, 23, 34), stop:1 rgb(26, 27, 40));
     border: 1px solid rgb(11, 24, 35);
@@ -114,7 +114,7 @@ QLabel {
 
 }
 
-#localizedTextIdMoreInfoText00, #localizedTextIdMoreInfoText01, #localizedTextIdMoreInfoText02, #localizedTextIdMoreInfoText03, #localizedTextIdMoreInfoText04 {
+#localizedTextIdGiverTextUnknown, #localizedTextIdMoreInfoText00, #localizedTextIdMoreInfoText01, #localizedTextIdMoreInfoText02, #localizedTextIdMoreInfoText03, #localizedTextIdMoreInfoText04, #localizedTextIdGiverSayAccepted, #localizedTextIdReceiverTextAccepted, #localizedTextIdReceiverTextAchieved, #localizedTextIdCompleteResponse, #localizedTextIdReceiverSayCompleted {
 
     border-radius: 4ex;
 

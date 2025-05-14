@@ -12,6 +12,30 @@ import trimesh
 
 from pprint import pprint # DEBUG
 
+# class contentLabel(QLabel):
+
+#     def __init__(self, data):
+#         super().__init__()
+
+#         text = LocalizedStrings[data.get(stringData)]
+
+#         if text:
+#             # Create hyperlinks
+#             if text and '$' in text:
+#                 text = linkGameObject(text)
+
+#             if stringData.startswith('localizedTextIdMoreInfoSay0'):
+#                 text = f'> <b>{text}</b>'
+
+#             label = QLabel(f'<div>{text}</div>', objectName=stringData)
+#             label.setWordWrap(True)
+#             # Handle links
+#             label.setOpenExternalLinks(False)
+#             label.setTextInteractionFlags(Qt.TextInteractionFlag.TextBrowserInteraction)
+#             label.linkActivated.connect(self.popup)
+
+#             label.setFixedHeight(label.sizeHint().height())
+
 class Window(QWidget):
 
     def __init__(self, data):
@@ -32,10 +56,10 @@ class Window(QWidget):
 
             if text:
                 # Create hyperlinks
-                if text and '$' in text:
+                if '$' in text:
                     text = linkGameObject(text)
 
-                if stringData.startswith('localizedTextIdMoreInfoSay0'):
+                if stringData.startswith('localizedTextIdMoreInfoSay0') or stringData in ['localizedTextIdAcceptResponse', 'localizedTextIdCompleteResponse']:
                     text = f'> <b>{text}</b>'
 
                 label = QLabel(f'<div>{text}</div>', objectName=stringData)
@@ -59,19 +83,6 @@ class Window(QWidget):
 
         self.move(windowGeo.topLeft())
 
-    def popup(self, link):
-
-        try:
-            modelId = eval(link)['creature2ModelInfoId']
-            modelPath = loadManager['Creature2ModelInfo'][modelId]['assetPath'].replace('.m3', '')
-            modelName = modelPath.split('\\')[-1]
-
-            scene = trimesh.load(f'{os.path.abspath(os.curdir)}/{settings['gameFiles']}/{modelPath}/{modelName}.gltf'.replace('\\', '/'))
-            scene.show()
-
-        except:
-            pass
-
     def createStringList(self):
 
         stringList = []
@@ -87,12 +98,23 @@ class Window(QWidget):
             stringList.append(f'localizedTextIdMoreInfoSay0{i}')
             stringList.append(f'localizedTextIdMoreInfoText0{i}')
 
-        # for objective in range(6)
-        #     ['objective0']['localizedTextIdFull']
+        stringList.append('localizedTextIdAcceptResponse')
+        stringList.append('localizedTextIdGiverSayAccepted')
+        stringList.append('localizedTextIdReceiverTextAccepted')
 
+        # for i in range(6)
+        #     ['objective0{i}']['localizedTextIdFull']
+
+        # stringList.append('localizedTextIdCompletedObjectiveShort') # Objective summary
+
+        # stringList.append('localizedTextIdReceiverTextAchieved') # Calling questgiver when quest is not complete
+
+        stringList.append('localizedTextIdCompleteResponse')
+        stringList.append('localizedTextIdReceiverSayCompleted')
         stringList.append('localizedTextIdCompletedSummary')
 
         # Event
+
         # for objective in data['PublicEventObjective'].values()
         #     'PublicEventObjective', 'localizedTextId'
 
@@ -100,6 +122,20 @@ class Window(QWidget):
 
         # Challenge
         # stringList.append('localizedTextIdAreaRestriction') # Not super important
+
         stringList.append('localizedTextIdProgress')
 
         return stringList
+
+    def popup(self, link):
+
+        try:
+            modelId = eval(link)['creature2ModelInfoId']
+            modelPath = loadManager['Creature2ModelInfo'][modelId]['assetPath'].replace('.m3', '')
+            modelName = modelPath.split('\\')[-1]
+
+            scene = trimesh.load(f'{os.path.abspath(os.curdir)}/{settings['gameFiles']}/{modelPath}/{modelName}.gltf'.replace('\\', '/'))
+            scene.show()
+
+        except:
+            pass

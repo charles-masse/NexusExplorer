@@ -5,7 +5,7 @@ from PyQt6.QtGui import QCursor, QPixmap, QIcon
 from PyQt6.QtWidgets import QApplication
 
 from windows import worldSelect
-from singletons import settings, Worlds
+from singletons import settings
 
 def main():
 

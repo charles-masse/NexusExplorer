@@ -7,7 +7,7 @@ Explore the worlds of the defunct MMORPG **Wildstar**.
 - You will need the game assets extracted with a tool like [NexusVault](https://github.com/MarbleBag/NexusVault-CLI).
 > [!TIP]
 > To export everything with NexusVault, point to your game's `Patch/ClientData.archive` with `archive-path PATH_TO_ARCHIVE` and :
-```bash
+```
 > search \\
 > export
 ```
@@ -32,7 +32,7 @@ Explore the worlds of the defunct MMORPG **Wildstar**.
 
 ![MapViewer](https://github.com/charles-masse/NexusExplorer/blob/main/images/mapViewer.png)
 > [!TIP]
-> By clicking on the minimap itself, the in-game teleport command for this location will be copied to your clipboard.
+> By clicking on the minimap, the in-game teleport command for this location will be copied to your clipboard.
 
 ## Roadmap
 - [x] Display minimap
@@ -43,7 +43,9 @@ Explore the worlds of the defunct MMORPG **Wildstar**.
 - [X] Show Datacubes
 - [ ] Show Quest objectives
 - [ ] Show Event objectives
-- [ ] Show Episodes
+- [ ] Show Path missions
+- [ ] Show World Story (?)
+- [ ] Show Contracts (?)
 - [ ] Linked items
 - [ ] Linked creature models
 - [ ] Linked NPC models

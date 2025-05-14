@@ -5,17 +5,18 @@ from PyQt6.QtWidgets import *
 
 from ui import HtmlDelegate
 from windows import contentReader
-from singletons import settings, LocalizedStrings
+from singletons import settings, LocalizedStrings, loadManager
+from actions.links import linkGameObject
 
 WINDOW_WIDTH = 400
 
 CONTENT_TYPES = {
                  'Datacube' : {'name': 'Datacubes', 'icon': '/Map/Node/UI_Map_Scientist/UI_Map_Scientist.png', 'text': 'localizedTextIdTitle'},
                  'Quest2' : {'name': 'Quests', 'icon': 'Map/Node/UI_Map_Quests/UI_Map_Quests.png', 'text': 'localizedTextIdTitle'},
+                 'QuestObjective' : {'name': 'Quest Objectives', 'icon': 'Map/Node/UI_Map_Quests/UI_Map_Quests.png', 'text': 'localizedTextIdShort'},
                  'PublicEvent' : {'name': 'Public Events', 'icon': 'Map/Node/UI_Map_Events/UI_Map_Events.png', 'text': 'localizedTextIdName'},
+                 'PublicEventObjective' : {'name': 'Public Event Objectives', 'icon': 'Map/Node/UI_Map_Events/UI_Map_Events.png', 'text': 'localizedTextIdShort'},
                  'Challenge' : {'name': 'Challenges', 'icon': 'Map/Node/UI_Map_Challenges/UI_Map_Challenges.png', 'text': 'localizedTextIdName'},
-                 # 'PublicEventObjective' : {'name': 'Public Event Objectives', 'icon': 'Map/Node/UI_Map_Events/UI_Map_Events.png', 'text': 'localizedTextIdShort'},
-                 # 'QuestObjective' : {'name': 'Quest Objectives', 'icon': 'Map/Node/UI_Map_Quests/UI_Map_Quests.png', 'text': 'localizedTextIdShort'}
                 }
 
 class ContentItem(QTreeWidgetItem):
@@ -65,12 +66,23 @@ class Window(QWidget):
             for content in locData[contentType].values():
 
                 name = LocalizedStrings[content[CONTENT_TYPES[contentType]['text']]]
+
                 if not name:
                     name = '[Unnamed]'
+
+                if '$' in name:
+                    name = linkGameObject(name)
+
                 # Quest faction
                 faction = content.get('questPlayerFactionEnum')
                 if faction:
                     name = ' '.join([f'<b>[{['Exile', 'Dominion', 'Neutral'][int(faction)]}]</b>', name])
+
+                if contentType == 'QuestObjective':
+                    content = loadManager['Quest2'].get(content['Quest2'], {})
+
+                elif contentType == 'PublicEventObjective':
+                    content = loadManager['PublicEvent'].get(content['publicEventId'], {})
 
                 category.addChild(ContentItem(content, [name]))
 

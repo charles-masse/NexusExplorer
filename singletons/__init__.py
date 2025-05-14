@@ -1,5 +1,5 @@
 
 from .settings import settings
-from .database import Worlds, linkDb, readCSV, LocalizedStrings, loadManager
+from .database import readCSV, DBDict, loadManager, LocalizedStrings
 
-__all__ = ['settings', 'Worlds', 'linkDb', 'readCSV', 'LocalizedStrings', 'loadManager']
+__all__ = ['settings', 'readCSV', 'linkDb', 'DBDict', 'loadManager', 'LocalizedStrings']

@@ -1,35 +1,37 @@
 
-import random
-
 import pyperclip
 
-from PyQt6.QtGui import QColor, QFont, QIcon, QPixmap, QScreen
-from PyQt6.QtCore import QObject, QThread, QTimer, QPointF, pyqtSignal
+from PyQt6.QtGui import *
+from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
 
 from PIL.ImageQt import ImageQt
 
-from singletons import settings, LocalizedStrings
+from singletons import settings, loadManager
 
 from actions.mapViewer import generateMapImage, clusterLocations, MAP_SIZE, MAP_CHUNK_RESOLUTION
 
 from windows import locationReader
+
+from pprint import pprint
 
 CONTENT_ICONS = {
                  'QuestHub' : '/UI/Icon/Map/Node/Map_QuestHub/Map_QuestHub.png',
                  'Datacube' : '/UI/Icon/Map/Node/UI_Map_Scientist/UI_Map_Scientist.png',
                  'Quest2' : '/UI/Icon/Map/Node/UI_Map_Quests/UI_Map_Quests.png',
                  'PublicEvent' : '/UI/Icon/Map/Node/UI_Map_Events/UI_Map_Events.png',
-                 'Challenge' : '/UI/Icon/Map/Node/UI_Map_Challenges/UI_Map_Challenges.png'
+                 'Challenge' : '/UI/Icon/Map/Node/UI_Map_Challenges/UI_Map_Challenges.png',
+                 'QuestObjective' : '/UI/Icon/Map/Node/Map_NavPoint/Map_NavPoint.png',
+                 'PublicEventObjective' : '/UI/Icon/Map/Node/Map_NavPoint/Map_NavPoint.png'
                 }
 
 HALF_MAP = int(((MAP_SIZE / 2) * MAP_CHUNK_RESOLUTION))
 
-def calculateBounds(bounds0, bounds1, bounds2, bounds3):
-    """
-    Calculate the map bound (not used atm)
-    """
-    return int(bounds0) * (32 / settings['mapScale']), int(bounds1) * (32 / settings['mapScale']), int(bounds2) * (32 / settings['mapScale']), int(bounds3) * (32 / settings['mapScale'])
+# def calculateBounds(bounds0, bounds1, bounds2, bounds3):
+#     """
+#     Calculate the map bounding box
+#     """
+#     return int(bounds0) * (32 / settings['mapScale']), int(bounds1) * (32 / settings['mapScale']), int(bounds2) * (32 / settings['mapScale']), int(bounds3) * (32 / settings['mapScale'])
 
 def worldCoords(posX, posY):
     """
@@ -51,10 +53,10 @@ class worldThread(QThread):
     setProgress = pyqtSignal(int)
     worldGenerated = pyqtSignal(object)
 
-    def __init__(self, world):
+    def __init__(self, worldId):
         super().__init__()
 
-        self.world = world
+        self.worldId = worldId
 
     def run(self):
 
@@ -64,7 +66,10 @@ class worldThread(QThread):
         def progressCallback(progress):
             self.setProgress.emit(progress)
 
-        im = generateMapImage(self.world, maxCallback, progressCallback)
+        for database in ['Creature2', 'VirtualItem', 'Item2', 'TradeskillSchematic2']:
+            loadManager.load(database)
+
+        im = generateMapImage(self.worldId, maxCallback, progressCallback)
 
         self.worldGenerated.emit(im)
 
@@ -102,12 +107,12 @@ class LocationIcon(QObject):
 
         for type in CONTENT_ICONS:
             if type in self.locData:
+
                 path = CONTENT_ICONS[type]
 
-                if self.locData.get('Quest2'):
-
+                if type == 'QuestHub' and self.locData.get('Quest2'):
+                    # Faction hubs
                     questFactions = [quest['questPlayerFactionEnum'] for quest in self.locData['Quest2'].values()]
-            
                     if questFactions.count('0') == len(questFactions):
                         path = '/UI/Icon/Map/Node/Map_QuestHub_Exile/Map_QuestHub_Exile.png'
                 
@@ -115,12 +120,13 @@ class LocationIcon(QObject):
                         path = '/UI/Icon/Map/Node/Map_QuestHub_Dominion/Map_QuestHub_Dominion.png'
 
                 self.pixmap = QPixmap(f'{settings['gameFiles']}{path}')
-                break
+                
+                self.icon = QGraphicsPixmapItem(self.pixmap)
+                self.icon.setPos(posX, posY)
+                self.icon.setFlags(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
+                self.icon.mouseReleaseEvent = self._clickIcon
 
-        self.icon = QGraphicsPixmapItem(self.pixmap)
-        self.icon.setPos(posX, posY)
-        self.icon.setFlags(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
-        self.icon.mouseReleaseEvent = self._clickIcon
+                break
 
     def _clickIcon(self, event):
         self.clicked.emit(self.locData, self.pixmap)
@@ -129,10 +135,10 @@ class Window(QGraphicsScene):
     """
     The map viewer
     """
-    def __init__(self, world, parent=None):
+    def __init__(self, worldId, parent=None):
         super().__init__(parent)
 
-        self.world = world
+        self.worldId = worldId
 
         self.view = QGraphicsView(self)
         self.view.setMouseTracking(True)
@@ -149,7 +155,7 @@ class Window(QGraphicsScene):
 
         self.loadBar.move(x, y)
         # Generate world on thread
-        self.thread = worldThread(self.world)
+        self.thread = worldThread(self.worldId)
         self.thread.setMax.connect(self.loadBar.setMax)
         self.thread.setProgress.connect(self.loadBar.setProgress)
         self.thread.worldGenerated.connect(self.drawMap)
@@ -167,10 +173,13 @@ class Window(QGraphicsScene):
         self.mapQt = ImageQt(worldIm)
         pixMap = QPixmap.fromImage(self.mapQt)
         bgImg = self.addPixmap(pixMap)
-        # Add locations to map
-        locations = clusterLocations(self.world.get('WorldLocation2', {}).values())
+        # Cluster features and sort for icon layering
+        locations = clusterLocations(loadManager['World'][self.worldId].get('WorldLocation2', {}).values())
+        locations.sort(key=lambda index: float(index['position2']))
+        # Add locations with content to map
         for location in locations:
-            self.drawLocation(location, location['position0'], location['position2'])
+            if any(content in CONTENT_ICONS for content in location):
+                self.drawLocation(location, location['position0'], location['position2'])
         # Add coords on mouse pointer
         self.coordsText = QGraphicsTextItem()
         self.coordsText.setDefaultTextColor(QColor(79, 204, 60))
@@ -221,4 +230,4 @@ class Window(QGraphicsScene):
         """
         super().mousePressEvent(event)
 
-        pyperclip.copy(f"!tele {self.mouseX} 0 {self.mouseY} {self.world['itemId']}")
+        pyperclip.copy(f"!tele {self.mouseX} 0 {self.mouseY} {self.worldId}")

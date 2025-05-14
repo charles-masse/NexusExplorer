@@ -10,7 +10,7 @@ from sklearn.cluster import DBSCAN, AgglomerativeClustering
 
 from PIL import Image, ImageOps
 
-from singletons import settings, LocalizedStrings
+from singletons import settings, LocalizedStrings, loadManager
 
 MAP_SIZE = 128
 MAP_CHUNK_RESOLUTION = 512
@@ -25,9 +25,9 @@ def chunkCoords(chunkName):
 
     return [xChunk, yChunk]
 
-def generateMapImage(world, maxCallback, progressCallback):
+def generateMapImage(worldId, maxCallback, progressCallback):
 
-    mapPath = world['assetPath'].replace('\\', '/')
+    mapPath = loadManager['World'][worldId]['assetPath'].replace('\\', '/')
     cachePath = f'./cache/{mapPath}.png'
 
     if os.path.exists(cachePath):
@@ -73,13 +73,14 @@ def clusterLocations(locations):
     Use sklearn to cluster the different world locations
     """
     locationList = [loc for loc in locations]
-    # Finding lone locations
+    
     if len(locationList) > 1:
-
+        # Finding lone locations
         findLoners = DBSCAN(eps=settings['clusterDistance'], min_samples=1)
         findLoners.fit_predict(locsToPos(locationList), sample_weight=[int('QuestHub' in location or 'WorldZone' in location) for location in locationList])
 
         loners = [locationList[labelId] for labelId, label in enumerate(findLoners.labels_) if label == -1]
+        
         unnamedHubs = {}
         # Clustering them into unnamed hubs
         if len(loners) > 1:
@@ -106,10 +107,10 @@ def clusterLocations(locations):
             names = []
 
             for location in cluster:
-
+                # Named Quest Hubs and Zones
                 for contentType in [ct for ct in ['QuestHub', 'WorldZone'] if ct in location]:
                     names.extend([LocalizedStrings[hub['localizedTextIdName']] for hub in location[contentType].values()])
-                # Getting names from challenge locations
+                # Named challenge locations
                 if 'Challenge' in location:
                     names.extend([LocalizedStrings[challenge.get('localizedTextIdLocation')] for challenge in location['Challenge'].values()])
             
@@ -117,13 +118,13 @@ def clusterLocations(locations):
                 clusterByNames.setdefault(names[0], []).extend(cluster)
 
             else:
-                clusterByNames.setdefault(f'Unnamed Location {clusterId}', []).extend(cluster)
+                clusterByNames.setdefault(f'Unnamed Location #{clusterId}', []).extend(cluster)
         # Merge clusters
         mergedLocations = []
 
         for cluster in clusterByNames:
 
-            posX, posY = numpy.average(locsToPos(clusterByNames[cluster]), axis=0)
+            posX, posY = numpy.median(locsToPos(clusterByNames[cluster]), axis=0)
 
             clusterDict = {'position0':str(posX), 'position2':str(posY), 'clusterName':cluster}
 
@@ -137,7 +138,6 @@ def clusterLocations(locations):
         return mergedLocations
 
     else:
-
         locationList[0]['clusterName'] = 'Unnamed Location'
 
         return locationList
