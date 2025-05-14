@@ -64,4 +64,5 @@ class Window(QWidget):
         current_item = self.worldListWidget.currentItem()
         # If something is selected
         if current_item:
-            mapViewer.Window(current_item.worldId)
+            self.mapScreen = mapViewer.Window(current_item.worldId)
+            self.mapScreen.view.showMaximized()

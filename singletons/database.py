@@ -67,6 +67,6 @@ class LocalizedStrings:
             string = string.get('Text')
         
             if string != '':
-                return string.replace('\\n', '\n')
+                return string
 
 loadManager = LoadManager()

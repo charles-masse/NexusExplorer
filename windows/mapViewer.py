@@ -188,8 +188,6 @@ class Window(QGraphicsScene):
         font.setBold(True)
         self.coordsText.setFont(font)
         self.addItem(self.coordsText)
-
-        self.view.showMaximized()
         # Center view to world center
         QTimer.singleShot(0, lambda: self.view.centerOn(QPointF(scaledHalf, scaledHalf)))
     # Locations

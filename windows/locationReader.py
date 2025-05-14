@@ -73,16 +73,24 @@ class Window(QWidget):
                 if '$' in name:
                     name = linkGameObject(name)
 
+                level = content.get('preq_level')
+
+                if level:
+                    name += f' <b>[lvl {level}]</b>'
                 # Quest faction
                 faction = content.get('questPlayerFactionEnum')
                 if faction:
                     name = ' '.join([f'<b>[{['Exile', 'Dominion', 'Neutral'][int(faction)]}]</b>', name])
 
-                if contentType == 'QuestObjective':
-                    content = loadManager['Quest2'].get(content['Quest2'], {})
+                try:
+                    if contentType == 'QuestObjective':
+                        content = loadManager['Quest2'].get(content['Quest2'], {})
 
-                elif contentType == 'PublicEventObjective':
-                    content = loadManager['PublicEvent'].get(content['publicEventId'], {})
+                    elif contentType == 'PublicEventObjective':
+                        content = loadManager['PublicEvent'].get(content['publicEventId'], {})
+
+                except:
+                    pass
 
                 category.addChild(ContentItem(content, [name]))
 

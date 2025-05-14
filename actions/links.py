@@ -18,6 +18,17 @@ def linkGameObject(text):
         key = match.group(1) or match.group(3)
         idValue = match.group(2) or match.group(4)
 
-        text = text.replace(fullMath, f'<b><a style="color: rgb(125, 251, 182); text-decoration: none;" href="{loadManager[TEST[key.lower()]][idValue]}">[{LocalizedStrings[loadManager[TEST[key.lower()]][idValue].get('localizedTextIdName')]}]</a></b>')
+        linked = loadManager[TEST[key.lower()]].get(idValue)
+
+        if linked:
+            linkedText = LocalizedStrings[linked.get('localizedTextIdName')]
+            
+        else:
+            linkedText = None
+
+        if not linkedText:
+            linkedText = f"Can't find {key}:{idValue}"
+
+        text = text.replace(fullMath, f'<b><a style="color: rgb(125, 251, 182); text-decoration: none;" href="{linked}">[{linkedText}]</a></b>')
 
     return text
