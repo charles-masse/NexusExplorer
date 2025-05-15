@@ -34,6 +34,10 @@ Explore the worlds of the defunct MMORPG **Wildstar**.
 > [!TIP]
 > By clicking on the minimap, the in-game teleport command for this location will be copied to your clipboard.
 
+- You can click on names with square brackets to have more info on that game object.
+
+![linked game object](https://github.com/charles-masse/NexusExplorer/blob/main/images/linkedObject.png)
+
 ## Roadmap
 - [x] Display minimap
 - [x] Cluster map features

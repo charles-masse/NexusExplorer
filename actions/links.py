@@ -12,7 +12,7 @@ TEST = {
 
 def linkGameObject(text):
 
-    for match in re.finditer(r'(?:<text[^>]*?>)?\$(?:\w*\((\w+)=(\d+)\)|(\w+)=(\d+))(?:</text>)?', text):
+    for match in re.finditer(r'(?:<text[^>]*?>)?\$\S*?\((\w+)=(\d+)\)|\$(\w+)=(\d+)(?:</text>)?', text):
 
         fullMath = match.group(0)
         key = match.group(1) or match.group(3)

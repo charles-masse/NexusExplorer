@@ -12,19 +12,19 @@ import trimesh
 
 from pprint import pprint # DEBUG
 
-class contentLabel(QLabel):
+class ContentLabel(QLabel):
 
-    def __init__(self, text):
+    def __init__(self, text, name='ContentLabel'):
         super().__init__()
         # Create hyperlinks
         if '$' in text:
             text = linkGameObject(text)
 
-        # if stringData.startswith('localizedTextIdMoreInfoSay0'):
-        #     text = f'> <b>{text}</b>'
+        if name.startswith('localizedTextIdMoreInfoSay0'):
+            text = f'> <b>{text}</b>'
 
         self.setText(f'<div>{text.replace('\\n', '<br>')}</div>')
-        # self.setObjectName(stringData)
+        self.setObjectName(name)
         self.setWordWrap(True)
         # Handle links
         self.setOpenExternalLinks(False)
@@ -69,9 +69,9 @@ class Window(QWidget):
                 datacubeList.append(text)
 
         if datacubeList:
-            self.layout.addWidget(contentLabel('\n'.join(datacubeList)))
+            self.layout.addWidget(ContentLabel('\n'.join(datacubeList), 'localizedTextIdFull'))
         # Quests
-        for stringId in [
+        for string in [
                         'localizedTextIdText',
                         'localizedTextIdGiverTextUnknown',
                         *[s for i in range(5) for s in (f'localizedTextIdMoreInfoSay0{i}', f'localizedTextIdMoreInfoText0{i}')],
@@ -79,31 +79,30 @@ class Window(QWidget):
                         'localizedTextIdGiverSayAccepted',
                         'localizedTextIdReceiverTextAccepted'
                        ]:
-            self.createLabel(data.get(stringId))
+            self.createLabel(data.get(string), string)
 
         for i in [''] + list(range(1, 6)):
-
             objectiveId = data.get(f'objective0{i}')
 
             if objectiveId:
                 objective = loadManager['QuestObjective'].get(objectiveId)
 
                 if objective:
-                    self.createLabel(objective['localizedTextIdFull'])
+                    self.createLabel(objective['localizedTextIdFull'], 'localizedTextIdFull')
 
-        for stringId in [
-                         'localizedTextIdCompleteResponse',
-                         'localizedTextIdReceiverSayCompleted',
-                         'localizedTextIdCompletedSummary'
-                        ]:
-            self.createLabel(data.get(stringId))
+        for string in [
+                       'localizedTextIdCompleteResponse',
+                       'localizedTextIdReceiverSayCompleted',
+                       'localizedTextIdCompletedSummary'
+                      ]:
+            self.createLabel(data.get(string), string)
         # Event
         for objectiveId in data.get('PublicEventObjective', []):
-            self.createLabel(loadManager['PublicEventObjective'].get(objectiveId)['localizedTextId'])
+            self.createLabel(loadManager['PublicEventObjective'].get(objectiveId)['localizedTextId'], 'PublicEventObjective')
 
-        self.createLabel(data.get('localizedTextIdEnd'))
+        self.createLabel(data.get('localizedTextIdEnd'), 'localizedTextIdEnd')
         # Challenge
-        self.createLabel(data.get('localizedTextIdProgress'))
+        self.createLabel(data.get('localizedTextIdProgress'), 'localizedTextIdProgress')
 
         self.setFixedWidth(400)
 
@@ -115,9 +114,9 @@ class Window(QWidget):
 
         self.move(windowGeo.topLeft())
 
-    def createLabel(self, stringId):
+    def createLabel(self, stringId, name):
 
         localizedText = LocalizedStrings[stringId]
 
         if localizedText:
-            self.layout.addWidget(contentLabel(localizedText))
+            self.layout.addWidget(ContentLabel(localizedText, name))
