@@ -20,7 +20,7 @@ class ContentLabel(QLabel):
         if '$' in text:
             text = linkGameObject(text)
 
-        if name.startswith('localizedTextIdMoreInfoSay0'):
+        if name.startswith('localizedTextIdMoreInfoSay0') or name in ['localizedTextIdAcceptResponse', 'localizedTextIdCompleteResponse']:
             text = f'> <b>{text}</b>'
 
         self.setText(f'<div>{text.replace('\\n', '<br>')}</div>')
@@ -76,12 +76,12 @@ class Window(QWidget):
                         'localizedTextIdGiverTextUnknown',
                         *[s for i in range(5) for s in (f'localizedTextIdMoreInfoSay0{i}', f'localizedTextIdMoreInfoText0{i}')],
                         'localizedTextIdAcceptResponse',
-                        'localizedTextIdGiverSayAccepted',
-                        'localizedTextIdReceiverTextAccepted'
+                        'localizedTextIdGiverSayAccepted'
                        ]:
             self.createLabel(data.get(string), string)
 
         for i in [''] + list(range(1, 6)):
+
             objectiveId = data.get(f'objective0{i}')
 
             if objectiveId:
@@ -91,6 +91,7 @@ class Window(QWidget):
                     self.createLabel(objective['localizedTextIdFull'], 'localizedTextIdFull')
 
         for string in [
+                       'localizedTextIdReceiverTextAchieved',
                        'localizedTextIdCompleteResponse',
                        'localizedTextIdReceiverSayCompleted',
                        'localizedTextIdCompletedSummary'
@@ -103,16 +104,11 @@ class Window(QWidget):
         self.createLabel(data.get('localizedTextIdEnd'), 'localizedTextIdEnd')
         # Challenge
         self.createLabel(data.get('localizedTextIdProgress'), 'localizedTextIdProgress')
+        # Path
+        for string in ['localizedTextIdSoldierOrders', 'localizedTextIdUnlock', 'localizedTextIdCommunicator']:
+            self.createLabel(data.get(string), string)
 
         self.setFixedWidth(400)
-
-        screen = QGuiApplication.primaryScreen().availableGeometry()
-        screenCenter = screen.center()
-
-        windowGeo = self.frameGeometry()
-        windowGeo.moveCenter(screenCenter)
-
-        self.move(windowGeo.topLeft())
 
     def createLabel(self, stringId, name):
 

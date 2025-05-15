@@ -11,12 +11,32 @@ from actions.links import linkGameObject
 WINDOW_WIDTH = 400
 
 CONTENT_TYPES = {
-                 'Datacube' : {'name': 'Datacubes', 'icon': '/Map/Node/UI_Map_Scientist/UI_Map_Scientist.png', 'text': 'localizedTextIdTitle'},
+                 'QuestHub' : {'icon': [
+                                        'Map/Node/Map_QuestHub_Exile/Map_QuestHub_Exile.png',
+                                        'Map/Node/Map_QuestHub_Dominion/Map_QuestHub_Dominion.png',
+                                        'Map/Node/Map_QuestHub/Map_QuestHub.png'
+                                       ]
+                              },
+                 'Datacube' : {'name': 'Datacubes', 'icon': 'Missions/Scientist_DatacubeDiscovery/Scientist_DatacubeDiscovery.png', 'text': 'localizedTextIdTitle'},
                  'Quest2' : {'name': 'Quests', 'icon': 'Map/Node/UI_Map_Quests/UI_Map_Quests.png', 'text': 'localizedTextIdTitle'},
-                 'QuestObjective' : {'name': 'Quest Objectives', 'icon': 'Map/Node/UI_Map_Quests/UI_Map_Quests.png', 'text': 'localizedTextIdShort'},
+                 'PathMission' : {'name': [
+                                           'Solider Mission',
+                                           'Explorer Mission',
+                                           'Scientist Mission',
+                                           'Settler Mission'
+                                          ], 
+                                  'icon': [
+                                           'Map/Node/UI_Map_Soldier/UI_Map_Soldier.png',
+                                           'Map/Node/UI_Map_Explorer/UI_Map_Explorer.png',
+                                           'Map/Node/UI_Map_Scientist/UI_Map_Scientist.png',
+                                           'Map/Node/UI_Map_Settler/UI_Map_Settler.png'
+                                          ],
+                                  'text': 'localizedTextIdName'
+                                 },
                  'PublicEvent' : {'name': 'Public Events', 'icon': 'Map/Node/UI_Map_Events/UI_Map_Events.png', 'text': 'localizedTextIdName'},
-                 'PublicEventObjective' : {'name': 'Public Event Objectives', 'icon': 'Map/Node/UI_Map_Events/UI_Map_Events.png', 'text': 'localizedTextIdShort'},
-                 'Challenge' : {'name': 'Challenges', 'icon': 'Map/Node/UI_Map_Challenges/UI_Map_Challenges.png', 'text': 'localizedTextIdName'},
+                 'QuestObjective' : {'name': 'Quest Objectives', 'icon': 'Map/Node/Map_NavPoint/Map_NavPoint.png', 'text': 'localizedTextIdShort'},
+                 'PublicEventObjective' : {'name': 'Public Event Objectives', 'icon': 'Map/Node/Map_NavPoint/Map_NavPoint.png', 'text': 'localizedTextIdShort'},
+                 'Challenge' : {'name': 'Challenges', 'icon': 'Map/Node/UI_Map_Challenges/UI_Map_Challenges.png', 'text': 'localizedTextIdName'}
                 }
 
 class ContentItem(QTreeWidgetItem):
@@ -50,10 +70,16 @@ class Window(QWidget):
         tree.setHeaderHidden(True)
         tree.itemClicked.connect(self.popup)
 
-        for contentType in [ct for ct in CONTENT_TYPES if ct in locData]:
+        for contentType in [ct for ct in CONTENT_TYPES if ct in locData if ct != 'QuestHub']:
             # Add section header
             categoryName = CONTENT_TYPES[contentType]['name']
-            category = QTreeWidgetItem([categoryName])
+
+            if contentType == 'PathMission':
+                category = QTreeWidgetItem([categoryName][0])
+
+            else:
+                category = QTreeWidgetItem([categoryName])
+
             category.setIcon(0, QIcon(f"{settings['gameFiles']}/UI/Icon/{CONTENT_TYPES[contentType]['icon']}"))
 
             categoryFont = QFont()
@@ -78,7 +104,7 @@ class Window(QWidget):
                 if level:
                     name += f' <b>[lvl {level}]</b>'
                 # Quest faction
-                faction = content.get('questPlayerFactionEnum')
+                faction = content.get('questPlayerFactionEnum') or content.get('pathMissionFactionEnum')
                 if faction:
                     name = ' '.join([f'<b>[{['Exile', 'Dominion', 'Neutral'][int(faction)]}]</b>', name])
 

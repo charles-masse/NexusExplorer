@@ -1,5 +1,5 @@
 # NexusExplorer
-Explore the worlds of the defunct MMORPG **Wildstar**.
+Explore the worlds of the defunct MMORPG **WildStar**.
 
 **NexusExplorer** is a tool that allows you to browse extracted minimap, model and world data including dialog not present on [JabbitHole](https://www.jabbithole.com) and unfinished content.
 
@@ -46,9 +46,9 @@ Explore the worlds of the defunct MMORPG **Wildstar**.
 - [x] Show Events
 - [X] Show Datacubes
 - [X] Show Quest and Event objectives
-- [ ] Show Path missions
-- [ ] Show World Story (?)
-- [ ] Show Contracts (?)
+- [X] Show Path missions
+- [ ] Show Episodes (Path and World) (?)
+- [ ] Show Nemesis (?)
+- [ ] Show Map PoI (?)
 - [ ] Linked items
-- [ ] Linked creature models
-- [ ] Linked NPC models
+- [ ] Linked NPC/creature models

@@ -82,7 +82,8 @@ def _buildLocations():
                                                                         loadManager['PublicEventObjective'],
                                                                         loadManager['Quest2'],
                                                                         loadManager['QuestObjective'],
-                                                                        loadManager['QuestHub']
+                                                                        loadManager['QuestHub'],
+                                                                        loadManager['PathMission']
                                                                        ])
 
 def _buildWorlds():

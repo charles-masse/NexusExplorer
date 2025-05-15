@@ -13,18 +13,6 @@ from actions.mapViewer import generateMapImage, clusterLocations, MAP_SIZE, MAP_
 
 from windows import locationReader
 
-from pprint import pprint
-
-CONTENT_ICONS = {
-                 'QuestHub' : '/UI/Icon/Map/Node/Map_QuestHub/Map_QuestHub.png',
-                 'Datacube' : '/UI/Icon/Map/Node/UI_Map_Scientist/UI_Map_Scientist.png',
-                 'Quest2' : '/UI/Icon/Map/Node/UI_Map_Quests/UI_Map_Quests.png',
-                 'PublicEvent' : '/UI/Icon/Map/Node/UI_Map_Events/UI_Map_Events.png',
-                 'Challenge' : '/UI/Icon/Map/Node/UI_Map_Challenges/UI_Map_Challenges.png',
-                 'QuestObjective' : '/UI/Icon/Map/Node/Map_NavPoint/Map_NavPoint.png',
-                 'PublicEventObjective' : '/UI/Icon/Map/Node/Map_NavPoint/Map_NavPoint.png'
-                }
-
 HALF_MAP = int(((MAP_SIZE / 2) * MAP_CHUNK_RESOLUTION))
 
 # def calculateBounds(bounds0, bounds1, bounds2, bounds3):
@@ -105,21 +93,32 @@ class LocationIcon(QObject):
 
         self.locData = locData
 
-        for type in CONTENT_ICONS:
+        for type in locationReader.CONTENT_TYPES.keys():
             if type in self.locData:
-
-                path = CONTENT_ICONS[type]
 
                 if type == 'QuestHub' and self.locData.get('Quest2'):
                     # Faction hubs
                     questFactions = [quest['questPlayerFactionEnum'] for quest in self.locData['Quest2'].values()]
-                    if questFactions.count('0') == len(questFactions):
-                        path = '/UI/Icon/Map/Node/Map_QuestHub_Exile/Map_QuestHub_Exile.png'
-                
-                    elif questFactions.count('1') == len(questFactions):
-                        path = '/UI/Icon/Map/Node/Map_QuestHub_Dominion/Map_QuestHub_Dominion.png'
+                    
+                    if len(set(questFactions)) == 1:
+                        factionId = int(questFactions[0])
+                    else:
+                        factionId = 2
 
-                self.pixmap = QPixmap(f'{settings['gameFiles']}{path}')
+                    path = locationReader.CONTENT_TYPES[type]['icon'][factionId]
+
+                elif type == 'PathMission':
+                    # Path missions
+                    missionTypes = [mission['pathTypeEnum'] for mission in self.locData['PathMission'].values()]
+                    missionId = int(max(set(missionTypes), key=missionTypes.count))
+                    print(missionId)
+
+                    path = locationReader.CONTENT_TYPES[type]['icon'][missionId]
+
+                else:
+                    path = locationReader.CONTENT_TYPES[type]['icon']
+
+                self.pixmap = QPixmap(f'{settings['gameFiles']}/UI/Icon/{path}').scaled(32, 32)
                 
                 self.icon = QGraphicsPixmapItem(self.pixmap)
                 self.icon.setPos(posX, posY)
@@ -178,7 +177,7 @@ class Window(QGraphicsScene):
         locations.sort(key=lambda index: float(index['position2']))
         # Add locations with content to map
         for location in locations:
-            if any(content in CONTENT_ICONS for content in location):
+            if any(content in locationReader.CONTENT_TYPES.keys() for content in location):
                 self.drawLocation(location, location['position0'], location['position2'])
         # Add coords on mouse pointer
         self.coordsText = QGraphicsTextItem()
