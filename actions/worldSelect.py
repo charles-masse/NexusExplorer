@@ -20,28 +20,16 @@ def linkDb(linkDb, fieldName, sourceDbs):
 
     return linkDb
 
-# CREATE REVERSED LINK
+# CREATE REVERSED LINK FOR OBJECTIVES
 
 def prepWorlds():
-
-    _buildZones()
+    # Ojectives
     _buildQuestObjectives()
     _buildEventObjectives()
+    # Locations
     _buildLocations()
+    # Final list
     _buildWorlds()
-
-def _buildZones():
-    """
-    Link Datacubes to their zone.
-    """
-    datacubes = loadManager['Datacube']
-    zones = loadManager['WorldZone']
-
-    for cube in datacubes.values():
-        zone = zones.get(cube['worldZoneId'])
-
-        if zone:
-            zone.setdefault('Datacube', {})[cube['itemId']] = cube
 
 def _buildQuestObjectives():
     """
@@ -84,7 +72,7 @@ def _buildLocations():
                                                                         loadManager['QuestObjective'],
                                                                         loadManager['QuestHub'],
                                                                         loadManager['PathMission']
-                                                                       ])
+                                                                       ]) # 'QuestDirectionEntry' ???
 
 def _buildWorlds():
     """

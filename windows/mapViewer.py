@@ -111,7 +111,6 @@ class LocationIcon(QObject):
                     # Path missions
                     missionTypes = [mission['pathTypeEnum'] for mission in self.locData['PathMission'].values()]
                     missionId = int(max(set(missionTypes), key=missionTypes.count))
-                    print(missionId)
 
                     path = locationReader.CONTENT_TYPES[type]['icon'][missionId]
 

@@ -1,6 +1,6 @@
 
-from PyQt6.QtGui import QIcon, QFont, QScreen
-from PyQt6.QtCore import Qt
+from PyQt6.QtGui import *
+from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
 
 from ui import HtmlDelegate
@@ -21,15 +21,15 @@ CONTENT_TYPES = {
                  'Quest2' : {'name': 'Quests', 'icon': 'Map/Node/UI_Map_Quests/UI_Map_Quests.png', 'text': 'localizedTextIdTitle'},
                  'PathMission' : {'name': [
                                            'Solider Mission',
-                                           'Explorer Mission',
+                                           'Settler Mission',
                                            'Scientist Mission',
-                                           'Settler Mission'
+                                           'Explorer Mission'
                                           ], 
                                   'icon': [
                                            'Map/Node/UI_Map_Soldier/UI_Map_Soldier.png',
-                                           'Map/Node/UI_Map_Explorer/UI_Map_Explorer.png',
+                                           'Map/Node/UI_Map_Settler/UI_Map_Settler.png',
                                            'Map/Node/UI_Map_Scientist/UI_Map_Scientist.png',
-                                           'Map/Node/UI_Map_Settler/UI_Map_Settler.png'
+                                           'Map/Node/UI_Map_Explorer/UI_Map_Explorer.png'
                                           ],
                                   'text': 'localizedTextIdName'
                                  },
@@ -38,6 +38,54 @@ CONTENT_TYPES = {
                  'PublicEventObjective' : {'name': 'Public Event Objectives', 'icon': 'Map/Node/Map_NavPoint/Map_NavPoint.png', 'text': 'localizedTextIdShort'},
                  'Challenge' : {'name': 'Challenges', 'icon': 'Map/Node/UI_Map_Challenges/UI_Map_Challenges.png', 'text': 'localizedTextIdName'}
                 }
+
+class ContentCategory(QTreeWidgetItem):
+
+    def __init__(self, contents, contentType, typeId=None, *args, **kwargs): # dataType,
+        super(ContentCategory, self).__init__(*args, **kwargs)
+
+        if typeId == None:
+            name = CONTENT_TYPES[contentType]['name']
+            icon = f"{settings['gameFiles']}/UI/Icon/{CONTENT_TYPES[contentType]['icon']}"
+
+        else:   
+            name = CONTENT_TYPES[contentType]['name'][typeId]
+            icon = f"{settings['gameFiles']}/UI/Icon/{CONTENT_TYPES[contentType]['icon'][typeId]}"
+
+        self.setText(0, name)
+        self.setIcon(0, QIcon(icon))
+
+        categoryFont = QFont()
+        categoryFont.setBold(True)
+        self.setFont(0, categoryFont)
+        # Add content
+        for content in contents[contentType].values():
+            if typeId == None or typeId == int(content['pathTypeEnum']):
+
+                childName = LocalizedStrings[content[CONTENT_TYPES[contentType]['text']]]
+
+                if not childName:
+                    childName = '- Unnamed -'
+
+                if '$' in childName:
+                    childName = linkGameObject(childName)
+                # Level
+                level = content.get('preq_level')
+
+                if level:
+                    childName += f' <b>[lvl {level}]</b>'
+                # Faction
+                faction = content.get('questPlayerFactionEnum') or content.get('pathMissionFactionEnum')
+                if faction:
+                    childName = ' '.join([f'<b>[{['Exile', 'Dominion', 'Neutral'][int(faction)]}]</b>', childName])
+
+                if contentType == 'QuestObjective':
+                    content = loadManager['Quest2'].get(content['Quest2'], {})
+
+                elif contentType == 'PublicEventObjective':
+                    content = loadManager['PublicEvent'].get(content['publicEventId'], {})
+
+                self.addChild(ContentItem(content, [childName]))
 
 class ContentItem(QTreeWidgetItem):
     """
@@ -61,66 +109,29 @@ class Window(QWidget):
         self.setFixedSize(WINDOW_WIDTH, screen.height() - self.style().PixelMetric(QStyle.PixelMetric.PM_TitleBarHeight))
         self.move(screen.getRect()[0] + screen.getRect()[2] - WINDOW_WIDTH, screen.y())
 
-        layout = QVBoxLayout()
-        self.setLayout(layout)
+        self.layout = QVBoxLayout()
+        self.setLayout(self.layout)
         # Add Tree
-        tree = QTreeWidget()
-        self.delegate = HtmlDelegate(tree)
-        tree.setItemDelegate(self.delegate)
-        tree.setHeaderHidden(True)
-        tree.itemClicked.connect(self.popup)
+        self.tree = QTreeWidget()
+        self.delegate = HtmlDelegate(self.tree)
+        self.tree.setItemDelegate(self.delegate)
+        self.tree.setHeaderHidden(True)
+        self.tree.itemClicked.connect(self.popup)
 
         for contentType in [ct for ct in CONTENT_TYPES if ct in locData if ct != 'QuestHub']:
-            # Add section header
-            categoryName = CONTENT_TYPES[contentType]['name']
 
             if contentType == 'PathMission':
-                category = QTreeWidgetItem([categoryName][0])
+                for typeId in list(set(int(tid['pathTypeEnum']) for tid in locData['PathMission'].values())):
+                    test = ContentCategory(locData, contentType, typeId=typeId)
+                    self.tree.addTopLevelItem(test)
+                    test.setExpanded(True)
 
             else:
-                category = QTreeWidgetItem([categoryName])
+                test = ContentCategory(locData, contentType)
+                self.tree.addTopLevelItem(test)
+                test.setExpanded(True)
 
-            category.setIcon(0, QIcon(f"{settings['gameFiles']}/UI/Icon/{CONTENT_TYPES[contentType]['icon']}"))
-
-            categoryFont = QFont()
-            categoryFont.setBold(True)
-            category.setFont(0, categoryFont)
-
-            tree.addTopLevelItem(category)
-            category.setExpanded(True)
-            # Add content
-            for content in locData[contentType].values():
-
-                name = LocalizedStrings[content[CONTENT_TYPES[contentType]['text']]]
-
-                if not name:
-                    name = '[Unnamed]'
-
-                if '$' in name:
-                    name = linkGameObject(name)
-
-                level = content.get('preq_level')
-
-                if level:
-                    name += f' <b>[lvl {level}]</b>'
-                # Quest faction
-                faction = content.get('questPlayerFactionEnum') or content.get('pathMissionFactionEnum')
-                if faction:
-                    name = ' '.join([f'<b>[{['Exile', 'Dominion', 'Neutral'][int(faction)]}]</b>', name])
-
-                try:
-                    if contentType == 'QuestObjective':
-                        content = loadManager['Quest2'].get(content['Quest2'], {})
-
-                    elif contentType == 'PublicEventObjective':
-                        content = loadManager['PublicEvent'].get(content['publicEventId'], {})
-
-                except:
-                    pass
-
-                category.addChild(ContentItem(content, [name]))
-
-        layout.addWidget(tree)
+        self.layout.addWidget(self.tree)
 
     def popup(self, item):
 
