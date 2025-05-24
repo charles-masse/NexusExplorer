@@ -3,12 +3,13 @@ import re
 
 from singletons import LocalizedStrings, loadManager
 
-TEST = {
-        'creature' : 'Creature2',
-        'vitem' : 'VirtualItem',
-        'item' : 'Item2',
-        'schematic' : 'TradeskillSchematic2'
-       }
+DATABASES = {
+             'creature' : 'Creature2',
+             'vitem' : 'VirtualItem',
+             'item' : 'Item2',
+             'schematic' : 'TradeskillSchematic2',
+             'quest' : 'Quest2'
+            }
 
 def linkGameObject(text):
 
@@ -18,8 +19,8 @@ def linkGameObject(text):
         key = match.group(1) or match.group(3)
         idValue = match.group(2) or match.group(4)
 
-        linked = loadManager[TEST[key.lower()]].get(idValue)
-
+        linked = loadManager[DATABASES[key.lower()]].get(idValue)
+        
         if linked:
             linkedText = LocalizedStrings[linked.get('localizedTextIdName')]
             
@@ -27,8 +28,8 @@ def linkGameObject(text):
             linkedText = None
 
         if not linkedText:
-            linkedText = f"Can't find {key}:{idValue}"
+            linkedText = f"Can't find {key} id:{idValue}"
 
-        text = text.replace(fullMath, f'<b><a style="color: rgb(125, 251, 182); text-decoration: none;" href="{linked}">[{linkedText}]</a></b>')
+        text = text.replace(fullMath, f'<b><a style="color: rgb(125, 251, 182);" href="{linked}">{linkedText}</a></b>')
 
     return text

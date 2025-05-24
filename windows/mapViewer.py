@@ -96,12 +96,13 @@ class LocationIcon(QObject):
         for type in locationReader.CONTENT_TYPES.keys():
             if type in self.locData:
 
-                if type == 'QuestHub' and self.locData.get('Quest2'):
+                if type == 'QuestHub':
                     # Faction hubs
-                    questFactions = [quest['questPlayerFactionEnum'] for quest in self.locData['Quest2'].values()]
+                    questFactions = [quest['questPlayerFactionEnum'] for quest in self.locData.get('Quest2', {}).values()]
                     
                     if len(set(questFactions)) == 1:
                         factionId = int(questFactions[0])
+
                     else:
                         factionId = 2
 

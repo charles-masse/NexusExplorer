@@ -105,8 +105,100 @@ class Window(QWidget):
         # Challenge
         self.createLabel(data.get('localizedTextIdProgress'), 'localizedTextIdProgress')
         # Path
-        for string in ['localizedTextIdSoldierOrders', 'localizedTextIdUnlock', 'localizedTextIdCommunicator']:
+        for string in ['localizedTextIdUnlock', 'localizedTextIdSoldierOrders']:
             self.createLabel(data.get(string), string)
+
+        pathId = data.get('pathTypeEnum')
+
+        if pathId == '0': # Soldier
+
+            if data['pathMissionTypeEnum'] == '0': # Security
+                eventWave = loadManager['PathSoldierEventWave'][data['objectId']] # ??? Wave info probably server side
+
+            if data['pathMissionTypeEnum'] == '4': # Assassinate
+                assassination = loadManager['PathSoldierAssassinate'][data['objectId']]
+                self.layout.addWidget(ContentLabel(f"Assassinate {assassination['count']} $(creature={assassination['creature2Id']})", 'PathSoldierObjective'))
+
+            if data['pathMissionTypeEnum'] == '5': # Demolition
+                demolition = loadManager['PathSoldierActivate'][data['objectId']]
+                self.layout.addWidget(ContentLabel(f"Destroy {demolition['count']} $(creature={demolition['creature2Id']})", 'PathSoldierObjective'))
+
+            if data['pathMissionTypeEnum'] == '6': # Rescue Op
+                rescue = loadManager['PathSoldierActivate'][data['objectId']]
+                self.layout.addWidget(ContentLabel(f"Rescue {rescue['count']} $(creature={rescue['creature2Id']})", 'PathSoldierObjective'))
+
+            if data['pathMissionTypeEnum'] == '7': # SWAT
+                swat = loadManager['PathSoldierSWAT'][data['objectId']] # Where do I find group info?
+                self.layout.addWidget(ContentLabel(f"Kill {swat['count']} $(creature={swat['targetGroupId']}) with $(vitem={swat['virtualItemIdDisplay']})", 'PathSoldierObjective'))
+
+        if pathId == '1': # Settler
+
+            if data['pathMissionTypeEnum'] == '19': # Expansion
+                hub = loadManager['PathSettlerHub'][data['objectId']] # Link ressource items?
+
+            if data['pathMissionTypeEnum'] == '21': # Project
+                infrastructure =  loadManager['PathSettlerInfrastructure'][data['objectId']] # Link hubs?
+
+                self.createLabel(infrastructure.get('localizedTextIdObjective'), 'PathSettlerObjective')
+
+            if data['pathMissionTypeEnum'] == '25': # Civil service
+                mayor = loadManager['PathSettlerMayor'][data['objectId']] # Add locations of objectives to map
+
+                for i in range(8):
+                    self.createLabel(mayor.get(f'localizedTextId0{i}'), 'PathSettlerObjective')
+
+            if data['pathMissionTypeEnum'] == '26': # Public safety
+                sheriff = loadManager['PathSettlerSheriff'][data['objectId']]
+
+                for i in range(8):
+                    descriptionId = LocalizedStrings[sheriff.get(f'localizedTextIdDescription0{i}')]
+                    if descriptionId:
+                        self.layout.addWidget(ContentLabel(f"{descriptionId}\\n$(quest={sheriff.get(f'quest2IdSheriff0{i}', '0')})", 'PathSettlerObjective'))
+
+            if data['pathMissionTypeEnum'] == '27': # Cache
+                pass
+
+        if pathId == '2': # Scientist
+            
+            if data['pathMissionTypeEnum'] == '2': # Biology/Botany/Analysis/Diagnostic
+                pass
+
+            if data['pathMissionTypeEnum'] == '14': # Chemistry/Archeology
+                pass
+
+            if data['pathMissionTypeEnum'] == '20': # Field Study
+                pass
+
+            if data['pathMissionTypeEnum'] == '23': # Specimen
+                pass
+
+            if data['pathMissionTypeEnum'] == '24': # Datacube
+                pass
+
+        if pathId == '3': # Explorer
+            
+            if data['pathMissionTypeEnum'] == '3': # Claim
+                pass
+
+            if data['pathMissionTypeEnum'] == '12': # Exploration
+                pass
+
+            if data['pathMissionTypeEnum'] == '13': # Scavenger hunt
+                pass
+
+            if data['pathMissionTypeEnum'] == '15': # Surveillance
+                pass
+
+            if data['pathMissionTypeEnum'] == '16': # Cartography
+                pass
+
+            if data['pathMissionTypeEnum'] == '17': # Operation
+                pass
+
+            if data['pathMissionTypeEnum'] == '18': # Tracking
+                pass
+
+        self.createLabel(data.get('localizedTextIdCommunicator'), 'localizedTextIdCommunicator')
 
         self.setFixedWidth(400)
 
