@@ -76,7 +76,7 @@ class ContentCategory(QTreeWidgetItem):
                     childName += f' <b>[lvl {level}]</b>'
                 # Faction
                 faction = content.get('questPlayerFactionEnum') or content.get('pathMissionFactionEnum')
-                if faction:
+                if faction and contentType == 'Quest2':
                     childName = ' '.join([f'<b>[{['Exile', 'Dominion', 'Neutral'][int(faction)]}]</b>', childName])
 
                 if contentType == 'QuestObjective':

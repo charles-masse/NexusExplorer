@@ -105,98 +105,114 @@ class Window(QWidget):
         # Challenge
         self.createLabel(data.get('localizedTextIdProgress'), 'localizedTextIdProgress')
         # Path
-        for string in ['localizedTextIdUnlock', 'localizedTextIdSoldierOrders']:
-            self.createLabel(data.get(string), string)
-
         pathId = data.get('pathTypeEnum')
 
-        if pathId == '0': # Soldier
+        if pathId:
 
-            if data['pathMissionTypeEnum'] == '0': # Security
+            for string in ['localizedTextIdUnlock', 'localizedTextIdSoldierOrders']:
+                self.createLabel(data.get(string), string)
+
+            if data['pathMissionTypeEnum'] == '0': # Soldier-Security
                 eventWave = loadManager['PathSoldierEventWave'][data['objectId']] # ??? Wave info probably server side
 
-            if data['pathMissionTypeEnum'] == '4': # Assassinate
+            if data['pathMissionTypeEnum'] == '4': # Soldier-Assassinate
                 assassination = loadManager['PathSoldierAssassinate'][data['objectId']]
-                self.layout.addWidget(ContentLabel(f"Assassinate {assassination['count']} $(creature={assassination['creature2Id']})", 'PathSoldierObjective'))
+                self.layout.addWidget(ContentLabel(f"Assassinate {assassination['count']} $(creature={assassination['creature2Id']})", 'PathObjective'))
 
-            if data['pathMissionTypeEnum'] == '5': # Demolition
+            if data['pathMissionTypeEnum'] == '5': # Soldier-Demolition
                 demolition = loadManager['PathSoldierActivate'][data['objectId']]
-                self.layout.addWidget(ContentLabel(f"Destroy {demolition['count']} $(creature={demolition['creature2Id']})", 'PathSoldierObjective'))
+                self.layout.addWidget(ContentLabel(f"Destroy {demolition['count']} $(creature={demolition['creature2Id']})", 'PathObjective'))
 
-            if data['pathMissionTypeEnum'] == '6': # Rescue Op
+            if data['pathMissionTypeEnum'] == '6': # Soldier-Rescue Op
                 rescue = loadManager['PathSoldierActivate'][data['objectId']]
-                self.layout.addWidget(ContentLabel(f"Rescue {rescue['count']} $(creature={rescue['creature2Id']})", 'PathSoldierObjective'))
+                self.layout.addWidget(ContentLabel(f"Rescue {rescue['count']} $(creature={rescue['creature2Id']})", 'PathObjective'))
 
-            if data['pathMissionTypeEnum'] == '7': # SWAT
+            if data['pathMissionTypeEnum'] == '7': # Soldier-SWAT
                 swat = loadManager['PathSoldierSWAT'][data['objectId']] # Where do I find group info?
-                self.layout.addWidget(ContentLabel(f"Kill {swat['count']} $(creature={swat['targetGroupId']}) with $(vitem={swat['virtualItemIdDisplay']})", 'PathSoldierObjective'))
+                self.layout.addWidget(ContentLabel(f"Kill {swat['count']} $(creature={swat['targetGroupId']}) with $(vitem={swat['virtualItemIdDisplay']})", 'PathObjective'))
 
-        if pathId == '1': # Settler
-
-            if data['pathMissionTypeEnum'] == '19': # Expansion
+            if data['pathMissionTypeEnum'] == '19': # Settler-Expansion
                 hub = loadManager['PathSettlerHub'][data['objectId']] # Link ressource items?
 
-            if data['pathMissionTypeEnum'] == '21': # Project
+            if data['pathMissionTypeEnum'] == '21': # Settler-Project
                 infrastructure =  loadManager['PathSettlerInfrastructure'][data['objectId']] # Link hubs?
 
-                self.createLabel(infrastructure.get('localizedTextIdObjective'), 'PathSettlerObjective')
+                self.createLabel(infrastructure.get('localizedTextIdObjective'), 'PathObjective')
 
-            if data['pathMissionTypeEnum'] == '25': # Civil service
+            if data['pathMissionTypeEnum'] == '25': # Settler-Civil service
                 mayor = loadManager['PathSettlerMayor'][data['objectId']] # Add locations of objectives to map
 
-                for i in range(8):
-                    self.createLabel(mayor.get(f'localizedTextId0{i}'), 'PathSettlerObjective')
+                self.createLabel(hunt['localizedTextIdStart'], 'pathSay')
 
-            if data['pathMissionTypeEnum'] == '26': # Public safety
+                for i in range(8):
+                    self.createLabel(mayor.get(f'localizedTextId0{i}'), 'PathObjective')
+
+            if data['pathMissionTypeEnum'] == '26': # Settler-Public safety
                 sheriff = loadManager['PathSettlerSheriff'][data['objectId']]
 
                 for i in range(8):
                     descriptionId = LocalizedStrings[sheriff.get(f'localizedTextIdDescription0{i}')]
                     if descriptionId:
-                        self.layout.addWidget(ContentLabel(f"{descriptionId}\\n$(quest={sheriff.get(f'quest2IdSheriff0{i}', '0')})", 'PathSettlerObjective'))
+                        self.layout.addWidget(ContentLabel(f"{descriptionId}\\n$(quest={sheriff.get(f'quest2IdSheriff0{i}', '0')})", 'PathObjective'))
 
-            if data['pathMissionTypeEnum'] == '27': # Cache
+            if data['pathMissionTypeEnum'] == '27': # Settler-Cache
+                pass # QuestDirection
+
+            if data['pathMissionTypeEnum'] in ['2', '14']: # Scientist-Biology/Botany/Analysis/Diagnostic/Chemistry/Archeology
+                creature = loadManager['PathScientistCreatureInfo'][data['objectId']]
+
+                pprint(creature) # ???
+
+            if data['pathMissionTypeEnum'] == '20': # Scientist-Field Study
+                study = loadManager['PathScientistFieldStudy'][data['objectId']]
+
+                for i in range(8):
+                    self.createLabel(study[f'localizedTextIdChecklist0{i}'], 'PathObjective') # Add locations of objectives to map
+
+            if data['pathMissionTypeEnum'] == '23': # Scientist-Specimen
+                specimen = loadManager['PathScientistSpecimenSurvey'][data['objectId']]
+
+                for i in range(10):
+                    self.createLabel(specimen[f'localizedTextIdObjective0{i}'], 'PathObjective') # Add locations of objectives to map
+
+            if data['pathMissionTypeEnum'] == '24': # Scientist-Datacube
+                pass # It's just reading all the datacubes in a zone
+
+            if data['pathMissionTypeEnum'] == '3': # Explorer-Stalking--do all quests??? 'PathExplorerArea'
                 pass
 
-        if pathId == '2': # Scientist
+            if data['pathMissionTypeEnum'] == '12': # Explorer-Exploration
+                doorEntrance = loadManager['PathExplorerDoorEntrance'].get(data['objectId']) # locations
+                # There's also Door with group activare and kill
+                if doorEntrance:
+                    self.layout.addWidget(ContentLabel(f"<b>Entrance:</b> $(creature={doorEntrance['creature2IdSurface']})", 'PathObjective'))
+                    self.layout.addWidget(ContentLabel(f"<b>Inside:</b> $(creature={doorEntrance['creature2IdMicro']})", 'PathObjective'))
+
+            if data['pathMissionTypeEnum'] in ['13', '18']: # Explorer-Scavenger hunt, Tracking
+                hunt = loadManager['PathExplorerScavengerHunt'][data['objectId']]
+
+                for i in range(7):
+                    clue = loadManager['PathExplorerScavengerClue'].get(hunt[f'pathExplorerScavengerClueId0{i}'])
+
+                    if clue:
+                        clueString = LocalizedStrings[clue['localizedTextIdClue']]
+
+                        creature = loadManager['Creature2'].get(clue['creature2Id']) # Add creature group too
+                        if creature:
+                            clueString += f'\\n$(creature={clue['creature2Id']})'
+
+                        self.layout.addWidget(ContentLabel(clueString, 'PathObjective')) # location on minimap?
             
-            if data['pathMissionTypeEnum'] == '2': # Biology/Botany/Analysis/Diagnostic
-                pass
+            if data['pathMissionTypeEnum'] == '15': # Explorer-Surveillance 'PathExplorerArea'
+                pass           
 
-            if data['pathMissionTypeEnum'] == '14': # Chemistry/Archeology
+            if data['pathMissionTypeEnum'] == '16': # Explorer-Cartography--explore whole map? 'PathExplorerPowerMap'
                 pass
+                
+            if data['pathMissionTypeEnum'] == '17': # Explorer-Operation
+                operation = loadManager['PathExplorerActivate'][data['objectId']]
 
-            if data['pathMissionTypeEnum'] == '20': # Field Study
-                pass
-
-            if data['pathMissionTypeEnum'] == '23': # Specimen
-                pass
-
-            if data['pathMissionTypeEnum'] == '24': # Datacube
-                pass
-
-        if pathId == '3': # Explorer
-            
-            if data['pathMissionTypeEnum'] == '3': # Claim
-                pass
-
-            if data['pathMissionTypeEnum'] == '12': # Exploration
-                pass
-
-            if data['pathMissionTypeEnum'] == '13': # Scavenger hunt
-                pass
-
-            if data['pathMissionTypeEnum'] == '15': # Surveillance
-                pass
-
-            if data['pathMissionTypeEnum'] == '16': # Cartography
-                pass
-
-            if data['pathMissionTypeEnum'] == '17': # Operation
-                pass
-
-            if data['pathMissionTypeEnum'] == '18': # Tracking
-                pass
+                self.layout.addWidget(ContentLabel(f"Investigate {operation['count']} $(creature={operation['creature2Id']})", 'PathObjective'))
 
         self.createLabel(data.get('localizedTextIdCommunicator'), 'localizedTextIdCommunicator')
 
