@@ -23,12 +23,9 @@ def linkDb(linkDb, fieldName, sourceDbs):
 # CREATE REVERSED LINK FOR OBJECTIVES
 
 def prepWorlds():
-    # Ojectives
-    _buildQuestObjectives()
-    _buildEventObjectives()
-    # Locations
+    # _buildQuestObjectives()
+    # _buildEventObjectives()
     _buildLocations()
-    # Final list
     _buildWorlds()
 
 def _buildQuestObjectives():
@@ -67,9 +64,9 @@ def _buildLocations():
                                                                         loadManager['Challenge'],
                                                                         loadManager['Datacube'],
                                                                         loadManager['PublicEvent'],
-                                                                        loadManager['PublicEventObjective'],
+                                                                        # loadManager['PublicEventObjective'],
                                                                         loadManager['Quest2'],
-                                                                        loadManager['QuestObjective'],
+                                                                        # loadManager['QuestObjective'],
                                                                         loadManager['QuestHub'],
                                                                         loadManager['PathMission']
                                                                        ]) # 'QuestDirectionEntry' ???

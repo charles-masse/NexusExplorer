@@ -47,9 +47,8 @@ Explore the worlds of the defunct MMORPG **WildStar**.
 - [X] Show Datacubes
 - [X] Show Quest and Event objectives
 - [X] Show Path missions
-- [ ] Show Episodes (?)
-- [ ] Show Nemesis (?)
-- [ ] Show Map PoI (?)
-- [ ] Show quest/mission objectives on map
 - [ ] Linked items
+- [ ] Show Episodes/Quest chains
+- [ ] Show Nemesis (?)
+- [ ] Show quest/mission objectives on map
 - [ ] Linked NPC/creature models

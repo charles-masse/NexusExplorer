@@ -120,3 +120,10 @@ QLabel {
     border-radius: 4ex;
 
 }
+
+#QuestObjective, #PublicEventObjective, #PathObjective, #localizedTextIdProgress  {
+
+    background-color: rgb(5, 11, 12);
+    border: 3px solid qlineargradient(x1:0 y1:0, x2:1 y2:1, stop:0 rgb(43, 238, 242), stop:0.3 rgb(43, 238, 242), stop:0.5 rgb(89, 167, 200), stop:0.8 rgb(30, 136, 172), stop:1 rgb(30, 136, 172));
+    
+}

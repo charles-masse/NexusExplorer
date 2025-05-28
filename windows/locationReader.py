@@ -35,8 +35,8 @@ CONTENT_TYPES = {
                                  },
                  'PublicEvent' : {'name': 'Public Events', 'icon': 'Map/Node/UI_Map_Events/UI_Map_Events.png', 'text': 'localizedTextIdName'},
                  'Challenge' : {'name': 'Challenges', 'icon': 'Map/Node/UI_Map_Challenges/UI_Map_Challenges.png', 'text': 'localizedTextIdName'},
-                 'QuestObjective' : {'name': 'Quest Objectives', 'icon': 'Map/Node/Map_NavPoint/Map_NavPoint.png', 'text': 'localizedTextIdShort'},
-                 'PublicEventObjective' : {'name': 'Public Event Objectives', 'icon': 'Map/Node/Map_NavPoint/Map_NavPoint.png', 'text': 'localizedTextIdShort'}
+                 # 'QuestObjective' : {'name': 'Quest Objectives', 'icon': 'Map/Node/Map_NavPoint/Map_NavPoint.png', 'text': 'localizedTextIdShort'},
+                 # 'PublicEventObjective' : {'name': 'Public Event Objectives', 'icon': 'Map/Node/Map_NavPoint/Map_NavPoint.png', 'text': 'localizedTextIdShort'}
                 }
 
 class ContentCategory(QTreeWidgetItem):
@@ -79,17 +79,17 @@ class ContentCategory(QTreeWidgetItem):
                 if faction and contentType == 'Quest2':
                     childName = ' '.join([f'<b>[{['Exile', 'Dominion', 'Neutral'][int(faction)]}]</b>', childName])
 
-                if contentType == 'QuestObjective':
-                    parentQuest = content.get('Quest2')
+                # if contentType == 'QuestObjective':
+                #     parentQuest = content.get('Quest2')
 
-                    if parentQuest:
-                        content = loadManager['Quest2'].get(parentQuest)
+                #     if parentQuest:
+                #         content = loadManager['Quest2'].get(parentQuest)
 
-                elif contentType == 'PublicEventObjective':
-                    parentEvent = content.get('publicEventId')
+                # elif contentType == 'PublicEventObjective':
+                #     parentEvent = content.get('publicEventId')
 
-                    if parentEvent:
-                        content = loadManager['PublicEvent'].get(parentEvent)
+                #     if parentEvent:
+                #         content = loadManager['PublicEvent'].get(parentEvent)
 
                 self.addChild(ContentItem(content, [childName]))
 

@@ -88,7 +88,7 @@ class Window(QWidget):
                 objective = loadManager['QuestObjective'].get(objectiveId)
 
                 if objective:
-                    self.createLabel(objective['localizedTextIdFull'], 'localizedTextIdFull')
+                    self.createLabel(objective['localizedTextIdFull'], 'QuestObjective')
 
         for string in [
                        'localizedTextIdReceiverTextAchieved',
@@ -112,8 +112,8 @@ class Window(QWidget):
             for string in ['localizedTextIdUnlock', 'localizedTextIdSoldierOrders']:
                 self.createLabel(data.get(string), string)
 
-            if data['pathMissionTypeEnum'] == '0': # Soldier-Security
-                eventWave = loadManager['PathSoldierEventWave'][data['objectId']] # ??? Wave info probably server side
+            if data['pathMissionTypeEnum'] == '0': # Soldier-Security 'PathSoldierEventWave' ??? Wave info probably server side
+                pass
 
             if data['pathMissionTypeEnum'] == '4': # Soldier-Assassinate
                 assassination = loadManager['PathSoldierAssassinate'][data['objectId']]

@@ -6,7 +6,7 @@ import numpy
 from PyQt6.QtCore import QCoreApplication
 
 from sklearn.neighbors import KDTree
-from sklearn.cluster import DBSCAN, AgglomerativeClustering
+from sklearn.cluster import DBSCAN# , AgglomerativeClustering
 
 from PIL import Image, ImageOps
 
@@ -73,24 +73,41 @@ def clusterLocations(locations):
     Use sklearn to cluster the different world locations
     """
     locationList = [loc for loc in locations]
-    
+
     if len(locationList) > 1:
         # Finding lone locations
         findLoners = DBSCAN(eps=settings['clusterDistance'], min_samples=1)
-        findLoners.fit_predict(locsToPos(locationList), sample_weight=[int('QuestHub' in location or 'WorldZone' in location) for location in locationList])
+
+        weight = [
+                  1 if any(LocalizedStrings[d.get('localizedTextIdName')] for d in location.get('QuestHub', {}).values())
+                  or any(LocalizedStrings[d.get('localizedTextIdName')] for d in location.get('WorldZone', {}).values())
+                  else 0
+                  for location in locationList
+                 ]
+        findLoners.fit_predict(locsToPos(locationList), sample_weight=weight)
 
         loners = [locationList[labelId] for labelId, label in enumerate(findLoners.labels_) if label == -1]
-        
-        unnamedHubs = {}
         # Clustering them into unnamed hubs
+        unnamedHubs = {}
+        
         if len(loners) > 1:
-            clusterLoners = AgglomerativeClustering(n_clusters=None, distance_threshold=settings['clusterDistance'])
+            clusterLoners = DBSCAN(eps=settings['clusterDistance'], min_samples=1)
             clusterLoners.fit_predict(locsToPos(loners))
 
             for labelId, label in enumerate(clusterLoners.labels_):
                 unnamedHubs.setdefault(label, []).append(loners[labelId])
         # Clustering locations around hubs
-        centroids = locsToPos([location for location in locationList if 'QuestHub' in location or 'WorldZone' in location]) + [numpy.average(locsToPos(hub), axis=0) for hub in unnamedHubs.values()]
+        namedLocations = [
+                          loc for loc in locationList
+                          if any(
+                                 LocalizedStrings[locData.get('localizedTextIdName')]
+                                 for ct in ['QuestHub', 'WorldZone']
+                                 for locData in loc.get(ct, {}).values()
+                                 if LocalizedStrings[locData.get('localizedTextIdName')]
+                                )
+                         ]
+
+        centroids = locsToPos(namedLocations) + [numpy.average(locsToPos(hub), axis=0) for hub in unnamedHubs.values()]
 
         hubClustering = KDTree(centroids)
         labels = hubClustering.query(locsToPos(locationList), k=1)
@@ -114,23 +131,29 @@ def clusterLocations(locations):
                 if 'Challenge' in location:
                     names.extend([LocalizedStrings[challenge.get('localizedTextIdLocation')] for challenge in location['Challenge'].values()])
             
-            if names:
-                clusterByNames.setdefault(names[0], []).extend(cluster)
+            if names and any(name is not None for name in names):
+
+                selectedName = None
+
+                for name in [n for n in names if n and n != '']:
+                    if not selectedName or any(name == clusterName for clusterName in clusterByNames.keys()):
+                        selectedName = name
+
+                clusterByNames.setdefault(selectedName, []).extend(cluster)
 
             else:
                 clusterByNames.setdefault(f'Unnamed Location #{clusterId}', []).extend(cluster)
         # Merge clusters
         mergedLocations = []
 
-        for cluster in clusterByNames:
+        for clusterName, clusterData in clusterByNames.items():
 
-            posX, posY = numpy.median(locsToPos(clusterByNames[cluster]), axis=0)
+            posX, posY = numpy.median(locsToPos(clusterData), axis=0)
 
-            clusterDict = {'position0':str(posX), 'position2':str(posY), 'clusterName':cluster}
+            clusterDict = {'clusterName':clusterName, 'position0':str(posX), 'position2':str(posY)}
 
-            for location in clusterByNames[cluster]:
+            for location in clusterData:
                 for key in [key for key in location if type(location[key]) is dict]:
-
                     clusterDict.setdefault(key, {}).update(location[key])
 
             mergedLocations.append(clusterDict)
