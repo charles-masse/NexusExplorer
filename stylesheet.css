@@ -71,9 +71,9 @@ QPushButton{
 
 QPushButton {
 
-    border-radius: 1.5ex;
     padding: 3px;
     font-weight: bold;
+    border-radius: 1.5ex;
 
 }
 
@@ -86,7 +86,7 @@ QPushButton:pressed {
 QProgressBar {
 
     background-color: qlineargradient(x1:0 y1:0, x2:1 y2:0, stop:0 rgb(0, 0, 0), stop:0.5 rgb(20, 19, 15),  stop:1 rgb(0, 0, 0));
-    border-radius: 0.5ex;
+    border-radius: 6px;
 
 }
 
@@ -94,7 +94,7 @@ QProgressBar::chunk {
 
     background-color: rgb(63, 235, 55);
     border: 3px solid rgba(63, 235, 55, 150);
-    border-radius: 0.5ex;
+    border-radius: 6px;
 
 }
 
@@ -102,28 +102,27 @@ QLabel {
 
     background-color: qlineargradient(x1:0 y1:0, x2:0 y2:1, stop:0 rgb(9, 21, 20), stop:1 rgb(36, 102, 98));
     margin: 0;
-    padding: 0 3ex 0 3ex;
+    padding: 0 20px 0 20px;
 
 }
 
 #localizedTextIdAcceptResponse, #localizedTextIdCompleteResponse, #localizedTextIdMoreInfoSay00, #localizedTextIdMoreInfoSay01, #localizedTextIdMoreInfoSay02, #localizedTextIdMoreInfoSay03, #localizedTextIdMoreInfoSay04 {
 
     background-color: qlineargradient(x1:0 y1:0, x2:0 y2:1, stop:0 rgb(16, 55, 78), stop:0.1 rgb(13, 43, 59), stop:0.9 rgb(20, 23, 34), stop:1 rgb(26, 27, 40));
-    border-radius: 0.5ex;
-    padding-left: 1.5ex;
+    padding-left: 20px;
 
 }
 
-#localizedTextIdGiverTextUnknown, #localizedTextIdMoreInfoText00, #localizedTextIdMoreInfoText01, #localizedTextIdMoreInfoText02, #localizedTextIdMoreInfoText03, #localizedTextIdMoreInfoText04, #localizedTextIdGiverSayAccepted, #localizedTextIdReceiverTextAccepted, #localizedTextIdReceiverTextAchieved, #localizedTextIdCompleteResponse, #localizedTextIdReceiverSayCompleted, #localizedTextIdSoldierOrders, #localizedTextIdCommunicator, #pathSay {
+#localizedTextIdGiverTextUnknown, #localizedTextIdMoreInfoText00, #localizedTextIdMoreInfoText01, #localizedTextIdMoreInfoText02, #localizedTextIdMoreInfoText03, #localizedTextIdMoreInfoText04, #localizedTextIdGiverSayAccepted, #localizedTextIdReceiverTextAccepted, #localizedTextIdReceiverTextAchieved, #localizedTextIdReceiverSayCompleted, #localizedTextIdSoldierOrders, #localizedTextIdCommunicator, #pathSay {
 
     background-color: qlineargradient(x1:0 y1:0, x2:0 y2:1, stop:0 rgb(16, 55, 78), stop:0.1 rgb(13, 43, 59), stop:0.9 rgb(20, 23, 34), stop:1 rgb(26, 27, 40));
-    border-radius: 4ex;
+    border-radius: 25%;
 
 }
 
 #QuestObjective, #PublicEventObjective, #PathObjective, #localizedTextIdProgress  {
 
     background-color: rgb(5, 11, 12);
-    border: 3px solid qlineargradient(x1:0 y1:0, x2:1 y2:1, stop:0 rgb(43, 238, 242), stop:0.3 rgb(43, 238, 242), stop:0.5 rgb(89, 167, 200), stop:0.8 rgb(30, 136, 172), stop:1 rgb(30, 136, 172));
+    border: 3px solid rgb(89, 167, 200);
     
 }

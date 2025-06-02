@@ -35,13 +35,13 @@ CONTENT_TYPES = {
                                  },
                  'PublicEvent' : {'name': 'Public Events', 'icon': 'Map/Node/UI_Map_Events/UI_Map_Events.png', 'text': 'localizedTextIdName'},
                  'Challenge' : {'name': 'Challenges', 'icon': 'Map/Node/UI_Map_Challenges/UI_Map_Challenges.png', 'text': 'localizedTextIdName'},
-                 # 'QuestObjective' : {'name': 'Quest Objectives', 'icon': 'Map/Node/Map_NavPoint/Map_NavPoint.png', 'text': 'localizedTextIdShort'},
-                 # 'PublicEventObjective' : {'name': 'Public Event Objectives', 'icon': 'Map/Node/Map_NavPoint/Map_NavPoint.png', 'text': 'localizedTextIdShort'}
+                 'QuestObjective' : {'name': 'Quest Objectives', 'icon': 'Map/Node/Map_NavPoint/Map_NavPoint.png', 'text': 'localizedTextIdShort'},
+                 'PublicEventObjective' : {'name': 'Public Event Objectives', 'icon': 'Map/Node/Map_NavPoint/Map_NavPoint.png', 'text': 'localizedTextIdShort'}
                 }
 
 class ContentCategory(QTreeWidgetItem):
 
-    def __init__(self, contents, contentType, typeId=None, *args, **kwargs): # dataType,
+    def __init__(self, contents, contentType, typeId=None, *args, **kwargs):
         super(ContentCategory, self).__init__(*args, **kwargs)
 
         if typeId == None:
@@ -65,7 +65,7 @@ class ContentCategory(QTreeWidgetItem):
                 childName = LocalizedStrings[content[CONTENT_TYPES[contentType]['text']]]
 
                 if not childName:
-                    childName = '- Unnamed -'
+                    childName = '-Unnamed-'
 
                 if '$' in childName:
                     childName = linkGameObject(childName)
@@ -78,18 +78,6 @@ class ContentCategory(QTreeWidgetItem):
                 faction = content.get('questPlayerFactionEnum') or content.get('pathMissionFactionEnum')
                 if faction and contentType == 'Quest2':
                     childName = ' '.join([f'<b>[{['Exile', 'Dominion', 'Neutral'][int(faction)]}]</b>', childName])
-
-                # if contentType == 'QuestObjective':
-                #     parentQuest = content.get('Quest2')
-
-                #     if parentQuest:
-                #         content = loadManager['Quest2'].get(parentQuest)
-
-                # elif contentType == 'PublicEventObjective':
-                #     parentEvent = content.get('publicEventId')
-
-                #     if parentEvent:
-                #         content = loadManager['PublicEvent'].get(parentEvent)
 
                 self.addChild(ContentItem(content, [childName]))
 
@@ -106,10 +94,14 @@ class Window(QWidget):
     """
     Categorize the content into their different types
     """
-    def __init__(self, locData):
+    def __init__(self, mapView, locIcon):
         super().__init__()
 
-        self.setWindowTitle(locData['clusterName'])
+        self.mapView = mapView
+        self.locIcon = locIcon
+
+        self.setWindowTitle(locIcon.parent.content['clusterName'])
+        self.setWindowIcon(QIcon(locIcon.pixmap()))
 
         screen = QScreen.availableGeometry(QApplication.primaryScreen())
         self.setFixedSize(WINDOW_WIDTH, screen.height() - self.style().PixelMetric(QStyle.PixelMetric.PM_TitleBarHeight))
@@ -124,23 +116,39 @@ class Window(QWidget):
         self.tree.setHeaderHidden(True)
         self.tree.itemClicked.connect(self.popup)
 
-        for contentType in [ct for ct in CONTENT_TYPES if ct in locData if ct != 'QuestHub']:
+        for contentType in [ct for ct in CONTENT_TYPES if ct in locIcon.parent.content if ct != 'QuestHub']:
 
             if contentType == 'PathMission':
-                for typeId in set(tid['pathTypeEnum'] for tid in locData['PathMission'].values()):
-                    category = ContentCategory(locData, contentType, typeId=int(typeId))
+
+                for typeId in set(tid['pathTypeEnum'] for tid in locIcon.parent.content['PathMission'].values()):
+                    category = ContentCategory(locIcon.parent.content, contentType, typeId=int(typeId))
                     self.tree.addTopLevelItem(category)
                     category.setExpanded(True)
 
             else:
-                category = ContentCategory(locData, contentType)
+                category = ContentCategory(locIcon.parent.content, contentType)
                 self.tree.addTopLevelItem(category)
                 category.setExpanded(True)
 
         self.layout.addWidget(self.tree)
 
-    def popup(self, item):
+        self.mapView.focusOn()
 
+    def popup(self, item):
+        # If it's not a category header
         if item.childCount() == 0:
-            self.popup = contentReader.Window(item.data)
+
+            self.mapView.focusOn(self.locIcon)
+
+            self.popup = contentReader.Window(item.data, self.mapView)
+            self.popup.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, True)
             self.popup.show()
+
+    def closeEvent(self, event):
+
+        self.locIcon.setSelected(False)
+        try:
+            self.popup.close()
+
+        except:
+            pass

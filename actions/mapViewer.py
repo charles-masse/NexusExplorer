@@ -29,13 +29,16 @@ def generateMapImage(worldId, maxCallback, progressCallback):
 
     mapPath = loadManager['World'][worldId]['assetPath'].replace('\\', '/')
     cachePath = f'./cache/{mapPath}.png'
+    chunkPath = f'{settings['gameFiles']}/{mapPath}'
 
     if os.path.exists(cachePath):
         im = Image.open(cachePath)
 
+    elif not os.path.exists(chunkPath):
+        return
+
     else:
         # Get chunk images
-        chunkPath = f'{settings['gameFiles']}/{mapPath}'
         chunks = [[chunkName] + chunkCoords(chunkName) for chunkName in os.listdir(chunkPath)]
         # Set the maximum value for the loading bar
         maxCallback(len(chunks))

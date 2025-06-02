@@ -15,6 +15,9 @@ from windows import locationReader
 
 HALF_MAP = int(((MAP_SIZE / 2) * MAP_CHUNK_RESOLUTION))
 
+ICON_SIZE = 32
+HALF_SIZE = ICON_SIZE / 2
+
 # def calculateBounds(bounds0, bounds1, bounds2, bounds3):
 #     """
 #     Calculate the map bounding box
@@ -41,8 +44,8 @@ class worldThread(QThread):
     setProgress = pyqtSignal(int)
     worldGenerated = pyqtSignal(object)
 
-    def __init__(self, worldId):
-        super().__init__()
+    def __init__(self, worldId, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
         self.worldId = worldId
 
@@ -68,8 +71,6 @@ class loadingBar(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle('Generating...')
-
         layout = QVBoxLayout(self)
 
         self.progressBar = QProgressBar()
@@ -82,23 +83,23 @@ class loadingBar(QWidget):
     def setMax(self, value):
         self.progressBar.setMaximum(value)
 
-class LocationIcon(QObject):
+class LocationObject(QObject):
     """
-    A clickable icon on the map that retains map features
+    A map object that retains feature informations
     """
-    clicked = pyqtSignal(dict, QPixmap)
+    clicked = pyqtSignal(QGraphicsPixmapItem)
 
-    def __init__(self, locData, posX, posY, parent=None):
-        super().__init__(parent)
+    def __init__(self, content, posX, posY):
+        super().__init__()
 
-        self.locData = locData
+        self.content = content
 
         for type in locationReader.CONTENT_TYPES.keys():
-            if type in self.locData:
+            if type in self.content:
 
                 if type == 'QuestHub':
                     # Faction hubs
-                    questFactions = [quest['questPlayerFactionEnum'] for quest in self.locData.get('Quest2', {}).values()]
+                    questFactions = [quest['questPlayerFactionEnum'] for quest in self.content.get('Quest2', {}).values()]
                     
                     if len(set(questFactions)) == 1:
                         factionId = int(questFactions[0])
@@ -110,7 +111,7 @@ class LocationIcon(QObject):
 
                 elif type == 'PathMission':
                     # Path missions
-                    missionTypes = [mission['pathTypeEnum'] for mission in self.locData['PathMission'].values()]
+                    missionTypes = [mission['pathTypeEnum'] for mission in self.content['PathMission'].values()]
                     missionId = int(max(set(missionTypes), key=missionTypes.count))
 
                     path = locationReader.CONTENT_TYPES[type]['icon'][missionId]
@@ -118,24 +119,62 @@ class LocationIcon(QObject):
                 else:
                     path = locationReader.CONTENT_TYPES[type]['icon']
 
-                self.pixmap = QPixmap(f'{settings['gameFiles']}/UI/Icon/{path}').scaled(32, 32)
-                
-                self.icon = QGraphicsPixmapItem(self.pixmap)
-                self.icon.setPos(posX, posY)
+                pixmap = QPixmap(f'{settings['gameFiles']}/UI/Icon/{path}').scaled(ICON_SIZE, ICON_SIZE)
+
+                self.icon = LocationIcon(self)
+                self.icon.setPixmap(pixmap)
+                self.icon.setPos(posX - HALF_SIZE, posY - HALF_SIZE)
                 self.icon.setFlags(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
                 self.icon.mouseReleaseEvent = self._clickIcon
 
                 break
 
     def _clickIcon(self, event):
-        self.clicked.emit(self.locData, self.pixmap)
+        self.clicked.emit(self.icon)
+
+class LocationIcon(QGraphicsPixmapItem):
+    """
+    A clickable icon on the map that retains parent and has a glow
+    """
+    def __init__(self, parent=None, *args, **kwargs):
+        super(LocationIcon, self).__init__(*args, **kwargs)
+
+        self.parent = parent
+
+    def paint(self, painter: QPainter, option, widget=None):
+
+        if self.isSelected():
+            pen = QPen(QColor(255, 255, 0, 180), 6)
+            painter.setPen(pen)
+            painter.drawEllipse(self.boundingRect().adjusted(3, 3, -3, -3))
+        # Remove selection box
+        option.state &= ~QStyle.StateFlag.State_Selected
+        super().paint(painter, option, widget)
+
+class ObjectiveIcon(QGraphicsPixmapItem):
+
+    def __init__(self, worldX, worldY, objectiveId):
+        super().__init__()
+
+        pixmap = QPixmap(f'{settings['gameFiles']}/UI/Assets/TexPieces/UI_CRB_HUD_Tracker_349_73/UI_CRB_HUD_Tracker_349_73.png')
+        self.setPixmap(pixmap)
+
+        self.text = QGraphicsTextItem(str(objectiveId), self)
+        self.text.setDefaultTextColor(QColor('white'))
+        self.text.setFont(QFont(f'{settings['gameFiles']}/UI/Fonts/segoeuib.ttf', 10))
+
+        textRect = self.text.boundingRect()
+        self.text.setPos((pixmap.width() / 2) - (textRect.width() / 2), 0)
+
+        position = screenPos(worldX, worldY)
+        self.setPos(position[0] - (pixmap.width() / 2), position[1] - (pixmap.height() / 2))
 
 class Window(QGraphicsScene):
     """
     The map viewer
     """
-    def __init__(self, worldId, parent=None):
-        super().__init__(parent)
+    def __init__(self, worldId, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
         self.worldId = worldId
 
@@ -168,17 +207,18 @@ class Window(QGraphicsScene):
 
         scaledHalf = int(HALF_MAP / settings['mapScale'])
         self.setSceneRect(0, 0, scaledHalf * 2, scaledHalf * 2)
-        # Add map to scene
-        self.mapQt = ImageQt(worldIm)
-        pixMap = QPixmap.fromImage(self.mapQt)
-        bgImg = self.addPixmap(pixMap)
+        # Add map to scene (if there's a map)
+        if worldIm:
+            self.mapQt = ImageQt(worldIm)
+            pixMap = QPixmap.fromImage(self.mapQt)
+            bgImg = self.addPixmap(pixMap)
         # Cluster features and sort for icon layering
         locations = clusterLocations(loadManager['World'][self.worldId].get('WorldLocation2', {}).values())
         locations.sort(key=lambda index: float(index['position2']))
         # Add locations with content to map
         for location in locations:
             if any(content in locationReader.CONTENT_TYPES.keys() for content in location):
-                self.drawLocation(location, location['position0'], location['position2'])
+                self.drawLocation(location['position0'], location['position2'], location)
         # Add coords on mouse pointer
         self.coordsText = QGraphicsTextItem()
         self.coordsText.setDefaultTextColor(QColor(79, 204, 60))
@@ -190,23 +230,37 @@ class Window(QGraphicsScene):
         # Center view to world center
         QTimer.singleShot(0, lambda: self.view.centerOn(QPointF(scaledHalf, scaledHalf)))
     # Locations
-    def drawLocation(self, data, worldX, worldY):
+    def drawLocation(self, worldX, worldY, data):
         """
         Place a location on the map
         """
-        posX, posY = screenPos(worldX, worldY)
+        location = LocationObject(data, *screenPos(worldX, worldY))
+        location.clicked.connect(self.popup)
+        self.addItem(location.icon)
 
-        circle = LocationIcon(data, posX, posY)
-        self.addItem(circle.icon)
-        circle.clicked.connect(self.openLocation)
+    def drawObjective(self, worldX, worldY, objectiveId):
+        """
+        Place an Objective on the map
+        """
+        self.addItem(ObjectiveIcon(worldX, worldY, objectiveId))
 
-    def openLocation(self, locData, locIcon):
+    def focusOn(self, focus=None):
         """
-        Open the window with current location's content
+        Focus on a specific icon on the map and clear objectives
         """
-        self.popup = locationReader.Window(locData)
-        self.popup.setWindowIcon(QIcon(locIcon))
-        self.popup.show()
+        for item in self.items():
+
+            if isinstance(item, LocationIcon):
+
+                if (not focus or item == focus):
+                    item.setOpacity(1.0)
+                    
+                else:
+                    item.setOpacity(0.4)
+
+            elif isinstance(item, ObjectiveIcon):
+                self.removeItem(item)
+          
     # Mouse coords
     def mouseMoveEvent(self, event):
         """
@@ -217,7 +271,6 @@ class Window(QGraphicsScene):
         coords = event.scenePos()
         
         self.mouseX, self.mouseY = worldCoords(coords.x(), coords.y())
-
         self.coordsText.setPos(coords.x() + 18, coords.y())
         self.coordsText.setHtml(f"<div style='background-color:rgba(24, 25, 23, 100);'>&nbsp;&nbsp;({self.mouseX}, {self.mouseY})&nbsp;</div>")
 
@@ -228,3 +281,11 @@ class Window(QGraphicsScene):
         super().mousePressEvent(event)
 
         pyperclip.copy(f"!tele {self.mouseX} 0 {self.mouseY} {self.worldId}")
+
+    def popup(self, locIcon):
+        """
+        Open the window with current location's content
+        """
+        self.popup = locationReader.Window(self, locIcon)
+        self.popup.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, True)
+        self.popup.show()

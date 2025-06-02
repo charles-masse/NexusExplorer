@@ -7,7 +7,7 @@ from PyQt6.QtWidgets import *
 
 from ui import HtmlDelegate
 from windows import mapViewer
-from actions.worldSelect import prepWorlds 
+from actions.worldSelect import prepWorlds
 from singletons import LocalizedStrings, settings, loadManager
 
 WINDOW_WIDTH = 325
@@ -17,19 +17,10 @@ class WorldListItem(QListWidgetItem):
     Custom list item that retains world id.
 
     """
-    def __init__(self, worldData, *args, **kwargs):
+    def __init__(self, worldId, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Keep world id
-        self.worldId = worldData['itemId']
-        # Set text
-        idString = f"<b>[{worldData['itemId']}]</b>"
-
-        nameString = LocalizedStrings[worldData['localizedTextIdName']] or f'<i>"{worldData['assetPath'].split('\\')[-1]}</i>"'
-        
-        locations = [loc for loc in worldData.get('WorldLocation2', {}).values() if len(loc) > 13]
-        locationsString = f'<b>({len(locations)})</b>'
-
-        self.setText(' '.join([idString, nameString, locationsString]))
+        self.worldId = worldId
 
 class Window(QWidget):
     """
@@ -46,10 +37,26 @@ class Window(QWidget):
         layout = QVBoxLayout(self)
         # Add World list
         self.worldListWidget = QListWidget()
-        # Load all Worlds that have a map
-        worldList = [world for world in loadManager['World'].values() if world['assetPath'].split('\\')[-1] in os.listdir(f"{settings['gameFiles']}/map/")]
-        for world in worldList:
-            self.worldListWidget.addItem(WorldListItem(world))
+        # Load all Worlds that have a map or features
+        for world in loadManager['World'].values():
+
+            worldString = []
+            # World Id
+            worldId = world['itemId']
+            worldString.append(f"<b>[{worldId}]</b>")
+            # World Name
+            nameString = LocalizedStrings[world['localizedTextIdName']] or f'<i>"{world['assetPath'].split('\\')[-1]}</i>"'
+            worldString.append(nameString)
+            # Is there a map
+            isMap = world['assetPath'].split('\\')[-1] in os.listdir(f"{settings['gameFiles']}/map/")
+            if not isMap:
+                worldString.append('<b>[No Map]</b>')
+            # Map features
+            locations = [loc for loc in world.get('WorldLocation2', {}).values() if len(loc) > 13]
+            worldString.append(f'<b>({len(locations)})</b>')
+            # Add world to list
+            if locations or isMap:
+                self.worldListWidget.addItem(WorldListItem(worldId, ' '.join(worldString)))
         # Add HTML formating to the list
         self.delegate = HtmlDelegate(self.worldListWidget)
         self.worldListWidget.setItemDelegate(self.delegate)
@@ -60,9 +67,8 @@ class Window(QWidget):
         layout.addWidget(loadWorld)
 
     def _loadMap(self):
-
-        current_item = self.worldListWidget.currentItem()
         # If something is selected
+        current_item = self.worldListWidget.currentItem()
         if current_item:
             self.mapScreen = mapViewer.Window(current_item.worldId)
             self.mapScreen.view.showMaximized()

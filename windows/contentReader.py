@@ -48,14 +48,18 @@ class ContentLabel(QLabel):
 
 class Window(QWidget):
 
-    def __init__(self, data):
+    def __init__(self, data, mapView):
         super().__init__()
+
+        self.mapView = mapView
 
         pprint(data) # DEBUG
         # general title vs challenge title
         title = LocalizedStrings[data.get('localizedTextIdTitle')] or LocalizedStrings[data.get('localizedTextIdName')]
 
         self.setWindowTitle(title)
+        screen = QScreen.availableGeometry(QApplication.primaryScreen())
+        self.move(screen.x(), screen.y())
 
         self.layout = QVBoxLayout(self)
         self.layout.setSpacing(3)
@@ -80,15 +84,24 @@ class Window(QWidget):
                        ]:
             self.createLabel(data.get(string), string)
 
-        for i in [''] + list(range(1, 6)):
+        for i in reversed(range(6)):
 
-            objectiveId = data.get(f'objective0{i}')
+            objectiveString = '' if i == 0 else i
+            objective = data.get(f'objective0{objectiveString}')
 
-            if objectiveId:
-                objective = loadManager['QuestObjective'].get(objectiveId)
+            if objective:
+                objectiveData = loadManager['QuestObjective'].get(objective)
 
-                if objective:
-                    self.createLabel(objective['localizedTextIdFull'], 'QuestObjective')
+                if objectiveData:
+                    pprint(objectiveData)
+                    self.createLabel(objectiveData['localizedTextIdFull'], 'QuestObjective')
+
+                    for locId in range(4):
+
+                        pos = loadManager['WorldLocation2'].get(objectiveData[f'worldLocationsIdIndicator0{locId}'])
+
+                        if pos:
+                            self.mapView.drawObjective(pos['position0'], pos['position2'], i + 1)
 
         for string in [
                        'localizedTextIdReceiverTextAchieved',
@@ -99,6 +112,7 @@ class Window(QWidget):
             self.createLabel(data.get(string), string)
         # Event
         for objectiveId in data.get('PublicEventObjective', []):
+            pprint(loadManager['PublicEventObjective'].get(objectiveId))
             self.createLabel(loadManager['PublicEventObjective'].get(objectiveId)['localizedTextId'], 'PublicEventObjective')
 
         self.createLabel(data.get('localizedTextIdEnd'), 'localizedTextIdEnd')
@@ -106,7 +120,6 @@ class Window(QWidget):
         self.createLabel(data.get('localizedTextIdProgress'), 'localizedTextIdProgress')
         # Path
         pathId = data.get('pathTypeEnum')
-
         if pathId:
 
             for string in ['localizedTextIdUnlock', 'localizedTextIdSoldierOrders']:
@@ -128,8 +141,28 @@ class Window(QWidget):
                 self.layout.addWidget(ContentLabel(f"Rescue {rescue['count']} $(creature={rescue['creature2Id']})", 'PathObjective'))
 
             if data['pathMissionTypeEnum'] == '7': # Soldier-SWAT
-                swat = loadManager['PathSoldierSWAT'][data['objectId']] # Where do I find group info?
-                self.layout.addWidget(ContentLabel(f"Kill {swat['count']} $(creature={swat['targetGroupId']}) with $(vitem={swat['virtualItemIdDisplay']})", 'PathObjective'))
+                swat = loadManager['PathSoldierSWAT'][data['objectId']]
+                
+                group = loadManager['TargetGroup'][swat['targetGroupId']]
+                groupName = LocalizedStrings[group['localizedTextIdDisplayString']]
+                
+                if not groupName:
+
+                    creatures = []
+
+                    for i in range(7):
+                        creatureId = group[f'data{i}']
+
+                        if creatureId != '0':
+                            creatures.append(f"$(creature={creatureId})")
+
+                    groupName = ', '.join(list(set(creatures)))
+
+                else:
+
+                    groupName = f'<i>{groupName}</i>'
+                    
+                self.layout.addWidget(ContentLabel(f"Kill {swat['count']} {groupName} with $(vitem={swat['virtualItemIdDisplay']})", 'PathObjective'))
 
             if data['pathMissionTypeEnum'] == '19': # Settler-Expansion
                 hub = loadManager['PathSettlerHub'][data['objectId']] # Link ressource items?
@@ -159,9 +192,9 @@ class Window(QWidget):
                 pass # QuestDirection
 
             if data['pathMissionTypeEnum'] in ['2', '14']: # Scientist-Biology/Botany/Analysis/Diagnostic/Chemistry/Archeology
-                creature = loadManager['PathScientistCreatureInfo'][data['objectId']]
-
-                pprint(creature) # ???
+                pass
+                # creature = loadManager['PathScientistCreatureInfo'][data['objectId']]
+                # pprint(creature) # ???
 
             if data['pathMissionTypeEnum'] == '20': # Scientist-Field Study
                 study = loadManager['PathScientistFieldStudy'][data['objectId']]
@@ -189,20 +222,27 @@ class Window(QWidget):
                     self.layout.addWidget(ContentLabel(f"<b>Inside:</b> $(creature={doorEntrance['creature2IdMicro']})", 'PathObjective'))
 
             if data['pathMissionTypeEnum'] in ['13', '18']: # Explorer-Scavenger hunt, Tracking
-                hunt = loadManager['PathExplorerScavengerHunt'][data['objectId']]
+                hunt = loadManager['PathExplorerScavengerHunt'].get(data['objectId'])
 
-                for i in range(7):
-                    clue = loadManager['PathExplorerScavengerClue'].get(hunt[f'pathExplorerScavengerClueId0{i}'])
+                if hunt:
+                    for i in range(7):
+                        clue = loadManager['PathExplorerScavengerClue'].get(hunt[f'pathExplorerScavengerClueId0{i}'])
 
-                    if clue:
-                        clueString = LocalizedStrings[clue['localizedTextIdClue']]
+                        if clue:
+                            clueString = LocalizedStrings[clue['localizedTextIdClue']]
 
-                        creature = loadManager['Creature2'].get(clue['creature2Id']) # Add creature group too
-                        if creature:
-                            clueString += f'\\n$(creature={clue['creature2Id']})'
+                            creature = loadManager['Creature2'].get(clue['creature2Id'])
+                            if creature:
+                                clueString += f'\\n$(creature={clue['creature2Id']})'
 
-                        self.layout.addWidget(ContentLabel(clueString, 'PathObjective')) # location on minimap?
-            
+                            else:
+                                test = loadManager['TargetGroup'].get(clue['targetGroupId']) # REWORK ME
+
+                                if test:
+                                    clueString += f'\\n{LocalizedStrings[test['localizedTextIdDisplayString']]}'
+
+                            self.layout.addWidget(ContentLabel(clueString, 'PathObjective')) # location on minimap?
+                
             if data['pathMissionTypeEnum'] == '15': # Explorer-Surveillance 'PathExplorerArea'
                 pass           
 
@@ -224,3 +264,10 @@ class Window(QWidget):
 
         if localizedText:
             self.layout.addWidget(ContentLabel(localizedText, name))
+
+
+    def closeEvent(self, event):
+
+        self.mapView.focusOn()
+
+        event.accept()

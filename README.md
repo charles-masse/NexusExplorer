@@ -34,9 +34,9 @@ Explore the worlds of the defunct MMORPG **WildStar**.
 > [!TIP]
 > By clicking on the minimap, the in-game teleport command for this location will be copied to your clipboard.
 
-- You can click on underlined names to have more info on that game object.
-
 ![linked game object](https://github.com/charles-masse/NexusExplorer/blob/main/images/linkedObject.png)
+> [!TIP]
+> You can click on underlined names to have more info on that game object.
 
 ## Roadmap
 - [x] Display minimap
@@ -47,8 +47,9 @@ Explore the worlds of the defunct MMORPG **WildStar**.
 - [X] Show Datacubes
 - [X] Show Quest and Event objectives
 - [X] Show Path missions
+- [X] Show quest/mission objectives on map
 - [ ] Linked items
 - [ ] Show Episodes/Quest chains
 - [ ] Show Nemesis (?)
-- [ ] Show quest/mission objectives on map
+- [ ] Communicator messages (?)
 - [ ] Linked NPC/creature models
