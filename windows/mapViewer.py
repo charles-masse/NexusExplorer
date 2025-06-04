@@ -141,7 +141,7 @@ class LocationIcon(QGraphicsPixmapItem):
 
         self.parent = parent
 
-    def paint(self, painter: QPainter, option, widget=None):
+    def paint(self, painter, option, widget=None):
 
         if self.isSelected():
             pen = QPen(QColor(255, 255, 0, 180), 6)
@@ -153,21 +153,18 @@ class LocationIcon(QGraphicsPixmapItem):
 
 class ObjectiveIcon(QGraphicsPixmapItem):
 
-    def __init__(self, worldX, worldY, objectiveId):
+    def __init__(self, objectiveId):
         super().__init__()
 
-        pixmap = QPixmap(f'{settings['gameFiles']}/UI/Assets/TexPieces/UI_CRB_HUD_Tracker_349_73/UI_CRB_HUD_Tracker_349_73.png')
-        self.setPixmap(pixmap)
+        self.pixmap = QPixmap(f'{settings['gameFiles']}/UI/Assets/TexPieces/UI_CRB_HUD_Tracker_349_73/UI_CRB_HUD_Tracker_349_73.png')
+        self.setPixmap(self.pixmap)
 
         self.text = QGraphicsTextItem(str(objectiveId), self)
         self.text.setDefaultTextColor(QColor('white'))
         self.text.setFont(QFont(f'{settings['gameFiles']}/UI/Fonts/segoeuib.ttf', 10))
 
         textRect = self.text.boundingRect()
-        self.text.setPos((pixmap.width() / 2) - (textRect.width() / 2), 0)
-
-        position = screenPos(worldX, worldY)
-        self.setPos(position[0] - (pixmap.width() / 2), position[1] - (pixmap.height() / 2))
+        self.text.setPos((self.pixmap.width() / 2) - (textRect.width() / 2), 0)
 
 class Window(QGraphicsScene):
     """
@@ -242,7 +239,10 @@ class Window(QGraphicsScene):
         """
         Place an Objective on the map
         """
-        self.addItem(ObjectiveIcon(worldX, worldY, objectiveId))
+        obj = ObjectiveIcon(objectiveId)
+        self.addItem(obj)
+        position = screenPos(worldX, worldY)
+        obj.setPos(position[0] - (obj.pixmap.width() / 2), position[1] - (obj.pixmap.height() / 2))
 
     def focusOn(self, focus=None):
         """

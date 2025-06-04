@@ -50,6 +50,6 @@ Explore the worlds of the defunct MMORPG **WildStar**.
 - [X] Show quest/mission objectives on map
 - [ ] Linked items
 - [ ] Show Episodes/Quest chains
+- [ ] Linked NPC/creature models
 - [ ] Show Nemesis (?)
 - [ ] Communicator messages (?)
-- [ ] Linked NPC/creature models

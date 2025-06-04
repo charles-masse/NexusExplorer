@@ -22,7 +22,7 @@ def linkDb(linkDb, fieldName, sourceDbs):
 
 def prepWorlds():
     # _buildQuestObjectives()
-    # _buildEventObjectives()
+    _buildEventObjectives()
     _buildLocations()
     _buildWorlds()
 
@@ -40,18 +40,18 @@ def prepWorlds():
 #             if objective:
 #                 objective['Quest2'] = quest['itemId']
 
-# def _buildEventObjectives():
-#     """
-#     Link objectives to their event.
-#     """
-#     events = loadManager['PublicEvent']
-#     eventObjectives = loadManager['PublicEventObjective']
+def _buildEventObjectives():
+    """
+    Link objectives to their event.
+    """
+    events = loadManager['PublicEvent']
+    eventObjectives = loadManager['PublicEventObjective']
 
-#     for objective in eventObjectives.values():
-#         event = events.get(objective['publicEventId'])
+    for objective in eventObjectives.values():
+        event = events.get(objective['publicEventId'])
 
-#         if event:
-#             event.setdefault('PublicEventObjective', []).append(objective['itemId'])
+        if event:
+            event.setdefault('PublicEventObjective', []).append(objective['itemId'])
 
 def _buildLocations():
     """
