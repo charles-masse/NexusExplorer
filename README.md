@@ -1,4 +1,6 @@
 # NexusExplorer
+![Demo](images/demo.gif)
+
 Explore the worlds of the defunct MMORPG **WildStar**.
 
 **NexusExplorer** is a tool that allows you to browse extracted minimap, model and world data including dialog not present on [JabbitHole](https://www.jabbithole.com).
@@ -24,17 +26,17 @@ Explore the worlds of the defunct MMORPG **WildStar**.
 - Run `main.py`.
 - Use the WorldSelect window to choose the world you want to load.
 
-![WorldSelect](https://github.com/charles-masse/NexusExplorer/blob/main/images/worldSelect.png)
+![WorldSelect](images/worldSelect.png)
 > [!NOTE]
 > **[WORLD_ID]** MAP_NAME **(NUMBER_OF_FEATURES)**
 
 - Explore the map features by clicking on the different icons.
 
-![MapViewer](https://github.com/charles-masse/NexusExplorer/blob/main/images/mapViewer.png)
+![MapViewer](images/mapViewer.png)
 > [!TIP]
 > By clicking on the minimap, the in-game teleport command for this location will be copied to your clipboard.
 
-![linked game object](https://github.com/charles-masse/NexusExplorer/blob/main/images/linkedObject.png)
+![linked game object](images/linkedObject.png)
 > [!TIP]
 > You can click on underlined names to have more info on that game object.
 

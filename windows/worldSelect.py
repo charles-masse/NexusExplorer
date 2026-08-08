@@ -30,6 +30,7 @@ class Window(QWidget):
         super().__init__()
         # Window settings
         self.setWindowTitle("World Select")
+        self.setWindowFlags(self.windowFlags() | Qt.WindowType.WindowStaysOnTopHint)
         screen = QScreen.availableGeometry(QApplication.primaryScreen())
         self.setFixedSize(WINDOW_WIDTH, screen.height() - self.style().PixelMetric(QStyle.PixelMetric.PM_TitleBarHeight))
         self.move(screen.x(), screen.y())
