@@ -1,4 +1,7 @@
 <h1 align="center">Nexus Explorer [WIP]</h1>
+
+[![Run Tests](https://github.com/charles-masse/NexusExplorer/actions/workflows/test.yml/badge.svg)](https://github.com/charles-masse/NexusExplorer/actions/workflows/test.yml)
+
 ![Demo](images/demo.gif)
 
 Explore the worlds of the defunct MMORPG **WildStar**.
