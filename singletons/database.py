@@ -1,9 +1,9 @@
 
+import csv
 import os
 
-import csv
+from .settings import settings
 
-from singletons import settings
 
 def readCSV(dbName, folder='DB'):
     """
@@ -41,7 +41,7 @@ class LoadManager:
 
     def __new__(cls):
         if cls._instance is None:
-            cls._instance = super(LoadManager, cls).__new__(cls)
+            cls._instance = super().__new__(cls)
         return cls._instance
 
     def __getitem__(self, db):

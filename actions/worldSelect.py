@@ -1,6 +1,7 @@
 
 from singletons import loadManager
 
+
 def linkDb(linkDb, fieldName, sourceDbs):
     """
     Link referenced data ids to the actual data held by another database.

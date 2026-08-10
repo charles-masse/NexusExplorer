@@ -1,18 +1,15 @@
 
 import os
-
-from PyQt6.QtGui import *
-from PyQt6.QtCore import *
-from PyQt6.QtWidgets import *
-
-from singletons import settings, LocalizedStrings, loadManager
-from actions.links import linkGameObject
-
-from windows import mapViewer
+from pprint import pprint  # DEBUG
 
 import trimesh
+from PyQt6.QtCore import *
+from PyQt6.QtGui import *
+from PyQt6.QtWidgets import *
 
-from pprint import pprint # DEBUG
+from actions.links import linkGameObject
+from singletons import LocalizedStrings, loadManager, settings
+from windows import mapViewer
 
 WINDOW_WIDTH = 400
 

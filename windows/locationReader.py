@@ -1,12 +1,12 @@
 
-from PyQt6.QtGui import *
 from PyQt6.QtCore import *
+from PyQt6.QtGui import *
 from PyQt6.QtWidgets import *
 
+from actions.links import linkGameObject
+from singletons import LocalizedStrings, settings
 from ui import HtmlDelegate
 from windows import contentReader
-from singletons import settings, LocalizedStrings, loadManager
-from actions.links import linkGameObject
 
 WINDOW_WIDTH = 400
 
@@ -42,7 +42,7 @@ CONTENT_TYPES = {
 class ContentCategory(QTreeWidgetItem):
 
     def __init__(self, contents, contentType, typeId=None, *args, **kwargs):
-        super(ContentCategory, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         if typeId == None:
             name = CONTENT_TYPES[contentType]['name']
@@ -86,7 +86,7 @@ class ContentItem(QTreeWidgetItem):
     Tree item that retains data
     """
     def __init__(self, data, *args, **kwargs): # dataType,
-        super(ContentItem, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.data = data
 

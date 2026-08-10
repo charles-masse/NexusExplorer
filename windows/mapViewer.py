@@ -1,19 +1,20 @@
 
 import pyperclip
-
-from PyQt6.QtGui import *
+from PIL.ImageQt import ImageQt
 from PyQt6.QtCore import *
+from PyQt6.QtGui import *
 from PyQt6.QtWidgets import *
 
-from PIL.ImageQt import ImageQt
-
-from singletons import settings, loadManager
-
-from actions.mapViewer import generateMapImage, clusterLocations, MAP_SIZE, MAP_CHUNK_RESOLUTION
-
+from actions.mapViewer import (
+    MAP_CHUNK_RESOLUTION,
+    MAP_SIZE,
+    clusterLocations,
+    generateMapImage,
+)
+from singletons import loadManager, settings
 from windows import locationReader
 
-HALF_MAP = int(((MAP_SIZE / 2) * MAP_CHUNK_RESOLUTION))
+HALF_MAP = int((MAP_SIZE / 2) * MAP_CHUNK_RESOLUTION)
 
 ICON_SIZE = 32
 HALF_SIZE = ICON_SIZE / 2
@@ -94,7 +95,7 @@ class LocationObject(QObject):
 
         self.content = content
 
-        for type in locationReader.CONTENT_TYPES.keys():
+        for type in locationReader.CONTENT_TYPES:
             if type in self.content:
 
                 if type == 'QuestHub':
@@ -137,7 +138,7 @@ class LocationIcon(QGraphicsPixmapItem):
     A clickable icon on the map that retains parent and has a glow
     """
     def __init__(self, parent=None, *args, **kwargs):
-        super(LocationIcon, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.parent = parent
 
@@ -214,7 +215,7 @@ class Window(QGraphicsScene):
         locations.sort(key=lambda index: float(index['position2']))
         # Add locations with content to map
         for location in locations:
-            if any(content in locationReader.CONTENT_TYPES.keys() for content in location):
+            if any(content in locationReader.CONTENT_TYPES for content in location):
                 self.drawLocation(location['position0'], location['position2'], location)
         # Add coords on mouse pointer
         self.coordsText = QGraphicsTextItem()

@@ -1,14 +1,14 @@
 
 import os
 
-from PyQt6.QtGui import *
 from PyQt6.QtCore import *
+from PyQt6.QtGui import *
 from PyQt6.QtWidgets import *
 
+from actions.worldSelect import prepWorlds  #TODO
+from singletons import LocalizedStrings, loadManager, settings
 from ui import HtmlDelegate
 from windows import mapViewer
-from actions.worldSelect import prepWorlds
-from singletons import LocalizedStrings, settings, loadManager
 
 WINDOW_WIDTH = 325
 

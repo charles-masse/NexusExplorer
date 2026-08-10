@@ -2,15 +2,12 @@
 import os
 
 import numpy
-
-from PyQt6.QtCore import QCoreApplication
-
-from sklearn.neighbors import KDTree
-from sklearn.cluster import DBSCAN# , AgglomerativeClustering
-
 from PIL import Image, ImageOps
+from PyQt6.QtCore import QCoreApplication
+from sklearn.cluster import DBSCAN  # , AgglomerativeClustering
+from sklearn.neighbors import KDTree
 
-from singletons import settings, LocalizedStrings, loadManager
+from singletons import LocalizedStrings, loadManager, settings
 
 MAP_SIZE = 128
 MAP_CHUNK_RESOLUTION = 512
@@ -139,7 +136,7 @@ def clusterLocations(locations):
                 selectedName = None
 
                 for name in [n for n in names if n and n != '']:
-                    if not selectedName or any(name == clusterName for clusterName in clusterByNames.keys()):
+                    if not selectedName or any(name == clusterName for clusterName in clusterByNames):
                         selectedName = name
 
                 clusterByNames.setdefault(selectedName, []).extend(cluster)

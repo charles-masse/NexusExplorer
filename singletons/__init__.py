@@ -1,5 +1,5 @@
 
+from .database import DBDict, LocalizedStrings, loadManager, readCSV
 from .settings import settings
-from .database import readCSV, DBDict, loadManager, LocalizedStrings
 
-__all__ = ['settings', 'readCSV', 'linkDb', 'DBDict', 'loadManager', 'LocalizedStrings']
+__all__ = ['DBDict', 'LocalizedStrings', 'linkDb', 'loadManager', 'readCSV', 'settings']

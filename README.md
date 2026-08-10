@@ -1,4 +1,4 @@
-# NexusExplorer
+<h1 align="center">Nexus Explorer [WIP]</h1>
 ![Demo](images/demo.gif)
 
 Explore the worlds of the defunct MMORPG **WildStar**.

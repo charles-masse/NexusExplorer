@@ -1,20 +1,16 @@
 
 import sys
 
-import trimesh
-
 import numpy as np
-
-from PIL import Image
-
+import trimesh
 from OpenGL import GL
 from OpenGL.GL import *
 from OpenGL.GLU import *
-
-from PyQt6.QtGui import *
+from PIL import Image
 from PyQt6.QtCore import *
-from PyQt6.QtWidgets import *
+from PyQt6.QtGui import *
 from PyQt6.QtOpenGLWidgets import QOpenGLWidget
+from PyQt6.QtWidgets import *
 
 # from singletons import settings
 
