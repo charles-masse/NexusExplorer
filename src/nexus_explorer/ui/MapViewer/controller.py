@@ -7,7 +7,7 @@ from PyQt6.QtCore import QCoreApplication
 from sklearn.cluster import DBSCAN  # , AgglomerativeClustering
 from sklearn.neighbors import KDTree
 
-from singletons import LocalizedStrings, loadManager, settings
+from src.singletons import LocalizedStrings, loadManager, settings
 
 MAP_SIZE = 128
 MAP_CHUNK_RESOLUTION = 512

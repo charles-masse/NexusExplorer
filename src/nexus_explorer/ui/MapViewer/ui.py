@@ -5,14 +5,14 @@ from PyQt6.QtCore import *
 from PyQt6.QtGui import *
 from PyQt6.QtWidgets import *
 
-from actions.mapViewer import (
+from src.actions.mapViewer import (
     MAP_CHUNK_RESOLUTION,
     MAP_SIZE,
     clusterLocations,
     generateMapImage,
 )
-from singletons import loadManager, settings
-from windows import locationReader
+from src.singletons import loadManager, settings
+from src.windows import locationReader
 
 HALF_MAP = int((MAP_SIZE / 2) * MAP_CHUNK_RESOLUTION)
 

@@ -1,7 +1,7 @@
 
 import re
 
-from singletons import LocalizedStrings, loadManager
+from src.singletons import LocalizedStrings, loadManager
 
 DATABASES = {
              'creature' : 'Creature2',

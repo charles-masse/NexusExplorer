@@ -1,5 +1,5 @@
 
-from singletons import loadManager
+from src.singletons import loadManager
 
 
 def linkDb(linkDb, fieldName, sourceDbs):

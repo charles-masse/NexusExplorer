@@ -3,10 +3,10 @@ from PyQt6.QtCore import *
 from PyQt6.QtGui import *
 from PyQt6.QtWidgets import *
 
-from actions.links import linkGameObject
-from singletons import LocalizedStrings, settings
-from ui import HtmlDelegate
-from windows import contentReader
+from src.actions.links import linkGameObject
+from src.singletons import LocalizedStrings, settings
+from src.ui import HtmlDelegate
+from src.windows import contentReader
 
 WINDOW_WIDTH = 400
 
