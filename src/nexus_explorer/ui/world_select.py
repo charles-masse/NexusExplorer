@@ -1,82 +1,90 @@
 
-import os
+from model import loadManager
+from model.data_types import WorldData
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QScreen
+from PyQt6.QtWidgets import (
+    QApplication,
+    QListWidget,
+    QListWidgetItem,
+    QPushButton,
+    QStyle,
+    QVBoxLayout,
+    QWidget,
+)
+from ui.widgets import HtmlDelegate
 
-from PyQt6.QtCore import *
-from PyQt6.QtGui import *
-from PyQt6.QtWidgets import *
-from ui.widget.html_delegate import HtmlDelegate
-
-# from src.actions.worldSelect import prepWorlds
-# from src.singletons import LocalizedStrings, loadManager, settings
 # from src.windows import mapViewer
 
 WINDOW_WIDTH = 325
 
 class WorldListItem(QListWidgetItem):
+    """Custom list item that contains a world.
     """
-    Custom list item that retains world id.
-
-    """
-    def __init__(self, worldId, *args, **kwargs):
+    def __init__(self, world, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Keep world id
-        self.worldId = worldId
+
+        self.world = world
+
+        self.set_world_name()
+
+    def set_world_name(self):
+
+        world_string = []
+        #World Id
+        world_string.append(f"<b>[{self.world.id}]</b>")
+        #World Name or Map Name
+        world_string.append(self.world.name or f'<i>"{self.world.map_name}</i>"')
+        #Is there a map
+        if not self.world.map:
+            world_string.append('<b>[No Map]</b>')
+        #Map features
+        world_string.append(f'<b>({len(self.world.locations)})</b>')
+        
+        self.setText(' '.join(world_string))
 
 class WorldSelectWindow(QWidget):
-    """
-    Display all available worlds and open the selected one in the map viewer.
+    """Display all available worlds and open the selected one in the map viewer.
     """
     def __init__(self):
         super().__init__()
-        # Window settings
+        #Window settings
         self.setWindowTitle("World Select")
         self.setWindowFlags(self.windowFlags() | Qt.WindowType.WindowStaysOnTopHint)
-        # Size/Pos
+        #Size/Pos
         screen = QScreen.availableGeometry(QApplication.primaryScreen())
         self.setFixedSize(WINDOW_WIDTH, screen.height() - self.style().PixelMetric(QStyle.PixelMetric.PM_TitleBarHeight))
         self.move(screen.x(), screen.y())
 
         layout = QVBoxLayout(self)
-        # Add World list
-        self.worldListWidget = QListWidget()
-        self.delegate = HtmlDelegate(self.worldListWidget)
-        self.worldListWidget.setItemDelegate(self.delegate)
-        layout.addWidget(self.worldListWidget)
-        # Add Load Buttom
-        loadWorld = QPushButton('Load World')
-        loadWorld.released.connect(self._loadMap)
-        layout.addWidget(loadWorld)
+        #Add World list
+        self.world_list = QListWidget()
+        self.delegate = HtmlDelegate(self.world_list)
+        self.world_list.setItemDelegate(self.delegate)
+        layout.addWidget(self.world_list)
+        #Add Load Buttom
+        load_world_button = QPushButton('Load World')
+        load_world_button.released.connect(self._select_map)
+        layout.addWidget(load_world_button)
 
-    """
-    Load all Worlds that have a map or features
-    """
-    def _populateWorldList(self):
-        pass
-        # for world in loadManager['World'].values():
+        self._populate_world_list()
 
-        #     worldString = []
-        #     # World Id
-        #     worldId = world['itemId']
-        #     worldString.append(f"<b>[{worldId}]</b>")
-        #     # World Name
-        #     nameString = LocalizedStrings[world['localizedTextIdName']] or f'<i>"{world['assetPath'].split('\\')[-1]}</i>"'
-        #     worldString.append(nameString)
-        #     # Is there a map
-        #     isMap = world['assetPath'].split('\\')[-1] in os.listdir(f"{settings['gameFiles']}/map/")
-        #     if not isMap:
-        #         worldString.append('<b>[No Map]</b>')
-        #     # Map features
-        #     locations = [loc for loc in world.get('WorldLocation2', {}).values() if len(loc) > 13]
-        #     worldString.append(f'<b>({len(locations)})</b>')
-        #     # Add world to list
-        #     if locations or isMap:
-        #         self.worldListWidget.addItem(WorldListItem(worldId, ' '.join(worldString)))
+    def _populate_world_list(self):
+        """Populate the world list with worlds with map or features
+        """
+        for world in loadManager['World'].values(): #CBB
+            world_data = WorldData(**world)
+            #Add world to list if world has a map and/or locations
+            if world_data.map or len(world_data.locations):
+                self.world_list.addItem(WorldListItem(world_data))
 
-    def _loadMap(self):
 
-        current_item = self.worldListWidget.currentItem()
-        # If something is selected
+    def _select_map(self):
+        """Load the selected map inside the map viewer
+        """
+        current_item = self.world_list.currentItem()
+        #If something is selected
         if current_item:
-            pass
-            # self.mapScreen = mapViewer.Window(current_item.worldId)
+            pass #DELETE
+            # self.mapScreen = mapViewer.Window(current_item.world.id)
             # self.mapScreen.view.showMaximized()

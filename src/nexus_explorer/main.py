@@ -1,7 +1,8 @@
 
 import sys
 from pathlib import Path
-from PyQt6.QtGui import QCursor, QIcon, QPixmap
+
+# from PyQt6.QtGui import QCursor, QIcon, QPixmap
 from PyQt6.QtWidgets import QApplication
 from ui.world_select import WorldSelectWindow
 
