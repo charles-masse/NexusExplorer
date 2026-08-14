@@ -3,9 +3,8 @@ import os
 
 from PIL import Image, ImageOps
 
-#TODO
-MAP_CHUNK_RESOLUTION = 512
-MAP_SCALE = 0.125
+from ..constants import MAP_CHUNK_RESOLUTION, MAP_SCALE
+
 
 def chunk_coords(chunk_name):
     """Parse the minimap chunk name into map coords

@@ -6,7 +6,6 @@ import trimesh
 from PyQt6.QtCore import *
 from PyQt6.QtGui import *
 from PyQt6.QtWidgets import *
-
 from src.actions.links import linkGameObject
 from src.singletons import LocalizedStrings, loadManager, settings
 from src.windows import mapViewer

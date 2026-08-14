@@ -1,6 +1,6 @@
 import pytest
 
-from src.nexus_explorer.model import LoadingManager
+from src.nexus_explorer.data import LoadingManager
 
 
 def test_sum():

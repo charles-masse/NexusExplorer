@@ -1,18 +1,11 @@
 
 class WorldData:
 
-    def __init__(self, itemId, assetPath, chunkBounds00, chunkBounds01, chunkBounds02, chunkBounds03, name, WorldLocation2=None, **kargs):
+    def __init__(self, itemId, assetPath, name, WorldLocation2=None, **kargs): #chunkBounds00, chunkBounds01, chunkBounds02, chunkBounds03,
 
         self.id = itemId
         self.name = name
-        #TODO Bounds not really needed
-        self.chunkBounds = [
-                            chunkBounds00,
-                            chunkBounds01,
-                            chunkBounds02,
-                            chunkBounds03,
-                           ]
-        
+
         self.isMap = False
         self.map_path = assetPath
         self.map_name = assetPath.split('\\')[-1]

@@ -8,6 +8,7 @@ from ..data import LocationData
 CLUSTER_DISTANCE = 128
 
 def merge_locations(locations):
+    #TODO separate each operation in its own function
     #Grab the biggest radius and the median position
     radius = max([loc.radius for loc in locations])
     x, y = numpy.median([loc.position for loc in locations], axis=0)

@@ -11,7 +11,7 @@ from PyQt6.QtWidgets import (
     QWidget,
 )
 
-from . import map_viewer
+from .map_viewer import MapViewerWindow
 from .widgets import HtmlDelegate
 
 WINDOW_WIDTH = 325
@@ -80,5 +80,5 @@ class WorldSelectWindow(QWidget):
         """
         current_item = self.world_list.currentItem()
         if current_item:
-            self.mapScreen = map_viewer.Window(self.loading_manager, current_item.world)
+            self.mapScreen = MapViewerWindow(self.loading_manager, current_item.world)
             self.mapScreen.view.showMaximized()
