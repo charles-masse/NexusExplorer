@@ -5,14 +5,13 @@ from PyQt6.QtCore import *
 from PyQt6.QtGui import *
 from PyQt6.QtWidgets import *
 
-from src.actions.mapViewer import (
-    MAP_CHUNK_RESOLUTION,
-    MAP_SIZE,
-    clusterLocations,
-    generateMapImage,
-)
-from src.singletons import loadManager, settings
-from src.windows import locationReader
+from ..map import cluster_locations, generate_map
+
+# from . import locationReader
+
+MAP_SIZE = 128
+MAP_CHUNK_RESOLUTION = 512
+MAP_SCALE = 0.125
 
 HALF_MAP = int((MAP_SIZE / 2) * MAP_CHUNK_RESOLUTION)
 
@@ -20,125 +19,78 @@ ICON_SIZE = 32
 HALF_SIZE = ICON_SIZE / 2
 
 # def calculateBounds(bounds0, bounds1, bounds2, bounds3):
-#     """
-#     Calculate the map bounding box
+#     """Calculate the map bounding box
 #     """
 #     return int(bounds0) * (32 / settings['mapScale']), int(bounds1) * (32 / settings['mapScale']), int(bounds2) * (32 / settings['mapScale']), int(bounds3) * (32 / settings['mapScale'])
 
-def worldCoords(posX, posY):
+def world_to_screen_pos(world_x, world_y):
+    """World coords to map coords
     """
-    Map coords to world coords
+    return (HALF_MAP + float(world_x)) * MAP_SCALE, (HALF_MAP + float(world_y)) * MAP_SCALE
+
+def screen_to_world_pos(pos_x, pos_y):
+    """Map coords to world coords
     """
-    return -int(HALF_MAP - (posX * settings['mapScale'])), -int(HALF_MAP - (posY * settings['mapScale']))
-
-def screenPos(worldX, worldY):
-    """
-    World coords to map coords
-    """
-    return (HALF_MAP + float(worldX)) / settings['mapScale'], (HALF_MAP + float(worldY)) / settings['mapScale']
-
-class worldThread(QThread):
-    """
-    Thread for the loading bar
-    """
-    setMax = pyqtSignal(int)
-    setProgress = pyqtSignal(int)
-    worldGenerated = pyqtSignal(object)
-
-    def __init__(self, worldId, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.worldId = worldId
-
-    def run(self):
-
-        def maxCallback(maxValue):
-            self.setMax.emit(maxValue)
-
-        def progressCallback(progress):
-            self.setProgress.emit(progress)
-
-        for database in ['Creature2', 'VirtualItem', 'Item2', 'TradeskillSchematic2']:
-            loadManager.load(database)
-
-        im = generateMapImage(self.worldId, maxCallback, progressCallback)
-
-        self.worldGenerated.emit(im)
-
-class loadingBar(QWidget):
-    """
-    Simple loading bar
-    """
-    def __init__(self):
-        super().__init__()
-
-        layout = QVBoxLayout(self)
-
-        self.progressBar = QProgressBar()
-        self.progressBar.setTextVisible(False)
-        layout.addWidget(self.progressBar)
-
-    def setProgress(self, value):
-        self.progressBar.setValue(value)
-
-    def setMax(self, value):
-        self.progressBar.setMaximum(value)
+    return -int(HALF_MAP - (pos_x / MAP_SCALE)), -int(HALF_MAP - (pos_y / MAP_SCALE))
 
 class LocationObject(QObject):
-    """
-    A map object that retains feature informations
+    """A map object that retains feature informations
     """
     clicked = pyqtSignal(QGraphicsPixmapItem)
 
-    def __init__(self, content, posX, posY):
+    def __init__(self, game_files, location_data):
         super().__init__()
 
-        self.content = content
+        self.icon = LocationIcon(self)
 
-        for type in locationReader.CONTENT_TYPES:
-            if type in self.content:
+        if len(location_data.hubs):
+            path = 'Map/Node/Map_QuestHub/Map_QuestHub.png'
+             # Faction hubs
+            # questFactions = [quest['questPlayerFactionEnum'] for quest in self.content.get('Quest2', {}).values()]
+            
+            # if len(set(questFactions)) == 1:
+            #     factionId = int(questFactions[0])
+            # else:
+            #     factionId = 2
 
-                if type == 'QuestHub':
-                    # Faction hubs
-                    questFactions = [quest['questPlayerFactionEnum'] for quest in self.content.get('Quest2', {}).values()]
-                    
-                    if len(set(questFactions)) == 1:
-                        factionId = int(questFactions[0])
+            # path = locationReader.CONTENT_TYPES[type]['icon'][factionId]
 
-                    else:
-                        factionId = 2
+        elif len(location_data.missions):
+            path = 'Map/Node/UI_Map_Soldier/UI_Map_Soldier.png'
+            # missionTypes = [mission['pathTypeEnum'] for mission in self.content['PathMission'].values()]
+            # missionId = int(max(set(missionTypes), key=missionTypes.count))
 
-                    path = locationReader.CONTENT_TYPES[type]['icon'][factionId]
+            # path = locationReader.CONTENT_TYPES[type]['icon'][missionId]
 
-                elif type == 'PathMission':
-                    # Path missions
-                    missionTypes = [mission['pathTypeEnum'] for mission in self.content['PathMission'].values()]
-                    missionId = int(max(set(missionTypes), key=missionTypes.count))
+        elif len(location_data.datacubes):
+            path = 'Missions/Scientist_DatacubeDiscovery/Scientist_DatacubeDiscovery.png'
 
-                    path = locationReader.CONTENT_TYPES[type]['icon'][missionId]
+        elif len(location_data.events):
+            path = 'Map/Node/UI_Map_Events/UI_Map_Events.png'
 
-                else:
-                    path = locationReader.CONTENT_TYPES[type]['icon']
+        elif len(location_data.challenges):
+            path = 'Map/Node/UI_Map_Challenges/UI_Map_Challenges.png'
 
-                pixmap = QPixmap(f'{settings['gameFiles']}/UI/Icon/{path}').scaled(ICON_SIZE, ICON_SIZE)
+        else:
+            path = 'Map/Node/UI_Map_Quests/UI_Map_Quests.png'
 
-                self.icon = LocationIcon(self)
-                self.icon.setPixmap(pixmap)
-                self.icon.setPos(posX - HALF_SIZE, posY - HALF_SIZE)
-                self.icon.setFlags(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
-                self.icon.mouseReleaseEvent = self._clickIcon
+        pixmap = QPixmap(f'{game_files}/UI/Icon/{path}').scaled(ICON_SIZE, ICON_SIZE)
+        self.icon.setPixmap(pixmap)
 
-                break
+        screen_x, screen_y = world_to_screen_pos(*location_data.position)
+        self.icon.setPos(screen_x - HALF_SIZE, screen_y - HALF_SIZE)
+        
+        self.icon.setFlags(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
+        self.icon.mouseReleaseEvent = self.select_location
 
-    def _clickIcon(self, event):
+    def select_location(self, event):
         self.clicked.emit(self.icon)
 
 class LocationIcon(QGraphicsPixmapItem):
+    """A clickable icon on the map that retains parent and has a glow effect
     """
-    A clickable icon on the map that retains parent and has a glow
-    """
-    def __init__(self, parent=None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, parent=None):
+        super().__init__()
 
         self.parent = parent
 
@@ -150,143 +102,116 @@ class LocationIcon(QGraphicsPixmapItem):
             painter.drawEllipse(self.boundingRect().adjusted(3, 3, -3, -3))
         # Remove selection box
         option.state &= ~QStyle.StateFlag.State_Selected
+
         super().paint(painter, option, widget)
 
-class ObjectiveIcon(QGraphicsPixmapItem):
+# class ObjectiveIcon(QGraphicsPixmapItem):
 
-    def __init__(self, objectiveId):
-        super().__init__()
+#     def __init__(self, objectiveId):
+#         super().__init__()
 
-        self.pixmap = QPixmap(f'{settings['gameFiles']}/UI/Assets/TexPieces/UI_CRB_HUD_Tracker_349_73/UI_CRB_HUD_Tracker_349_73.png')
-        self.setPixmap(self.pixmap)
+#         self.pixmap = QPixmap(f'{settings['gameFiles']}/UI/Assets/TexPieces/UI_CRB_HUD_Tracker_349_73/UI_CRB_HUD_Tracker_349_73.png')
+#         self.setPixmap(self.pixmap)
 
-        self.text = QGraphicsTextItem(str(objectiveId), self)
-        self.text.setDefaultTextColor(QColor('white'))
-        self.text.setFont(QFont(f'{settings['gameFiles']}/UI/Fonts/segoeuib.ttf', 10))
+#         self.text = QGraphicsTextItem(str(objectiveId), self)
+#         self.text.setDefaultTextColor(QColor('white'))
+#         self.text.setFont(QFont(f'{settings['gameFiles']}/UI/Fonts/segoeuib.ttf', 10))
 
-        textRect = self.text.boundingRect()
-        self.text.setPos((self.pixmap.width() / 2) - (textRect.width() / 2), 0)
+#         textRect = self.text.boundingRect()
+#         self.text.setPos((self.pixmap.width() / 2) - (textRect.width() / 2), 0)
 
 class Window(QGraphicsScene):
+    """The map viewer
     """
-    The map viewer
-    """
-    def __init__(self, worldId, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, loading_manager, world,):
+        super().__init__()
 
-        self.worldId = worldId
+        self.loading_manager = loading_manager
+        self.world = world
 
         self.view = QGraphicsView(self)
         self.view.setMouseTracking(True)
         self.view.setWindowTitle("Map Viewer")
 
-        self.loadBar = loadingBar()
-        self.loadBar.show()
-        # Center loading bar
-        screenGeometry = QApplication.primaryScreen().availableGeometry()
-        loadBarSize = self.loadBar.size()
-
-        x = int((screenGeometry.width() / 2) - (loadBarSize.width() / 2))
-        y = int((screenGeometry.height() / 2) - (loadBarSize.height() / 2))
-
-        self.loadBar.move(x, y)
-        # Generate world on thread
-        self.thread = worldThread(self.worldId)
-        self.thread.setMax.connect(self.loadBar.setMax)
-        self.thread.setProgress.connect(self.loadBar.setProgress)
-        self.thread.worldGenerated.connect(self.drawMap)
-        self.thread.run() # Fix this one day
-
-    def drawMap(self, worldIm):
-        """
-        Display the map when it's done generating/opening
-        """
-        self.loadBar.close()
-
-        scaledHalf = int(HALF_MAP / settings['mapScale'])
-        self.setSceneRect(0, 0, scaledHalf * 2, scaledHalf * 2)
-        # Add map to scene (if there's a map)
-        if worldIm:
-            self.mapQt = ImageQt(worldIm)
-            pixMap = QPixmap.fromImage(self.mapQt)
-            bgImg = self.addPixmap(pixMap)
-        # Cluster features and sort for icon layering
-        locations = clusterLocations(loadManager['World'][self.worldId].get('WorldLocation2', {}).values())
-        locations.sort(key=lambda index: float(index['position2']))
-        # Add locations with content to map
-        for location in locations:
-            if any(content in locationReader.CONTENT_TYPES for content in location):
-                self.drawLocation(location['position0'], location['position2'], location)
-        # Add coords on mouse pointer
-        self.coordsText = QGraphicsTextItem()
-        self.coordsText.setDefaultTextColor(QColor(79, 204, 60))
-
+        self.display_map()
+        #Add coords on mouse pointer
+        self.coords_text = QGraphicsTextItem()
+        self.coords_text.setDefaultTextColor(QColor(79, 204, 60))
         font = QFont()
         font.setBold(True)
-        self.coordsText.setFont(font)
-        self.addItem(self.coordsText)
-        # Center view to world center
-        QTimer.singleShot(0, lambda: self.view.centerOn(QPointF(scaledHalf, scaledHalf)))
-    # Locations
-    def drawLocation(self, worldX, worldY, data):
+        self.coords_text.setFont(font)
+        self.addItem(self.coords_text)
+
+    def display_map(self):
+        """Display the map when it's done generating/opening
         """
-        Place a location on the map
+        scaled_half = int(HALF_MAP * MAP_SCALE)
+        self.setSceneRect(0, 0, scaled_half * 2, scaled_half * 2)
+        #Add map image to scene (if there's a map)
+        if self.world.isMap:
+            world_image = generate_map(self.loading_manager.game_files, self.world)
+            image_qt = ImageQt(world_image).copy()
+            pixMap = QPixmap.fromImage(image_qt)
+            self.addPixmap(pixMap)
+        #Cluster locations and add them to the map
+        locations = cluster_locations(self.world.locations)
+        for location in locations:
+            self.drawLocation(location)
+        #Center view to world center
+        self.view.centerOn(QPointF(scaled_half, scaled_half))
+
+    def drawLocation(self, location):
+        """Place a location on the map
         """
-        location = LocationObject(data, *screenPos(worldX, worldY))
-        location.clicked.connect(self.popup)
+        location = LocationObject(self.loading_manager.game_files, location)
+        # location.clicked.connect(self.popup) #TODO
         self.addItem(location.icon)
 
-    def drawObjective(self, worldX, worldY, objectiveId):
-        """
-        Place an Objective on the map
-        """
-        obj = ObjectiveIcon(objectiveId)
-        self.addItem(obj)
-        position = screenPos(worldX, worldY)
-        obj.setPos(position[0] - (obj.pixmap.width() / 2), position[1] - (obj.pixmap.height() / 2))
+    # def drawObjective(self, worldX, worldY, objectiveId):
+    #     """Place an Objective on the map
+    #     """
+    #     obj = ObjectiveIcon(objectiveId)
+    #     self.addItem(obj)
+    #     position = world_to_screen_pos(worldX, worldY)
+    #     obj.setPos(position[0] - (obj.pixmap.width() / 2), position[1] - (obj.pixmap.height() / 2))
 
-    def focusOn(self, focus=None):
-        """
-        Focus on a specific icon on the map and clear objectives
-        """
-        for item in self.items():
+    # def focusOn(self, focus=None):
+    #     """Focus on a specific icon on the map and clear objectives
+    #     """
+    #     for item in self.items():
 
-            if isinstance(item, LocationIcon):
+    #         if isinstance(item, LocationIcon):
 
-                if (not focus or item == focus):
-                    item.setOpacity(1.0)
+    #             if (not focus or item == focus):
+    #                 item.setOpacity(1.0)
                     
-                else:
-                    item.setOpacity(0.4)
+    #             else:
+    #                 item.setOpacity(0.4)
 
-            elif isinstance(item, ObjectiveIcon):
-                self.removeItem(item)
-          
-    # Mouse coords
+    #         elif isinstance(item, ObjectiveIcon):
+    #             self.removeItem(item)
+
+    #Mouse coords
     def mouseMoveEvent(self, event):
-        """
-        Display the map coords on the mouse
+        """Display the map coords on the mouse
         """
         super().mouseMoveEvent(event)
 
         coords = event.scenePos()
-        
-        self.mouseX, self.mouseY = worldCoords(coords.x(), coords.y())
-        self.coordsText.setPos(coords.x() + 18, coords.y())
-        self.coordsText.setHtml(f"<div style='background-color:rgba(24, 25, 23, 100);'>&nbsp;&nbsp;({self.mouseX}, {self.mouseY})&nbsp;</div>")
+        self.mouse_x, self.mouse_y = screen_to_world_pos(coords.x(), coords.y())
+        self.coords_text.setPos(coords.x() + 18, coords.y())
+        self.coords_text.setHtml(f"<div style='background-color:rgba(24, 25, 23, 100);'>&nbsp;&nbsp;({self.mouse_x}, {self.mouse_y})&nbsp;</div>")
 
     def mousePressEvent(self, event):
-        """
-        Copy the teleport command for the current coords on click to teleport in-game
+        """Copy the teleport command for the current coords on click to teleport in-game
         """
         super().mousePressEvent(event)
 
-        pyperclip.copy(f"!tele {self.mouseX} 0 {self.mouseY} {self.worldId}")
+        pyperclip.copy(f"!tele {self.mouse_x} 0 {self.mouse_y} {self.world.id}")
 
-    def popup(self, locIcon):
-        """
-        Open the window with current location's content
-        """
-        self.popup = locationReader.Window(self, locIcon)
-        self.popup.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, True)
-        self.popup.show()
+    # def popup(self, locIcon):
+    #     """Open the window with current location's content
+    #     """
+    #     self.popup = locationReader.Window(self, locIcon)
+    #     self.popup.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, True)
+    #     self.popup.show()

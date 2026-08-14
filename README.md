@@ -7,27 +7,35 @@
 
 Explore the worlds of the defunct MMORPG **WildStar**.
 
-**NexusExplorer** is a tool that allows you to browse extracted minimap, model and world data including dialog not present on [JabbitHole](https://www.jabbithole.com).
+**NexusExplorer** is a tool that allows you to browse extracted minimap, model and world data including dialog not present on [JabbitHole](https://www.jabbithole.com/).
 
 ## Installation
+- [Install uv](https://docs.astral.sh/uv/getting-started/installation/).
+
+- Clone the repo and install dependencies :
+```
+git clone https://github.com/charles-masse/NexusExplorer.git
+cd NexusExplorer
+uv sync
+```
+
 - You will need the game assets extracted with a tool like [NexusVault](https://github.com/MarbleBag/NexusVault-CLI).
 > [!TIP]
 > To export everything with NexusVault, point to your game's `Patch/ClientData.archive` with `archive-path PATH_TO_ARCHIVE` and :
-```
-> search \\
-> export
-```
-- Export at least one language file (e.g.:`en-US.csv` from `Patch/ClientEn.archive`).
-- Edit the `settings.json` with the path to the exported assets and the name of the language file you want to use:
-```JSON
-{
-    "gameFiles" : "Nexusvault/output/export",
-    "language" : "en-US"
-}
-```
+> ```
+> > search \\
+> > export
+> ```
+
+- Extract also one language file (e.g.:`en-US.csv` from `Patch/ClientEn.archive`).
 
 ## How to use NexusExplorer
-- Run `nexus_explorer`.
+
+- Go to the cloned repo and :
+```
+uv run nexus_explorer "PATH_TO_EXTRACTED_GAME_DATA"
+```
+
 - Use the WorldSelect window to choose the world you want to load.
 
 ![WorldSelect](images/worldSelect.png)

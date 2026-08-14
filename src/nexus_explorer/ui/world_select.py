@@ -1,6 +1,4 @@
 
-from model import loadManager
-from model.data_types import WorldData
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QScreen
 from PyQt6.QtWidgets import (
@@ -12,9 +10,9 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
-from ui.widgets import HtmlDelegate
 
-# from src.windows import mapViewer
+from . import map_viewer
+from .widgets import HtmlDelegate
 
 WINDOW_WIDTH = 325
 
@@ -36,7 +34,7 @@ class WorldListItem(QListWidgetItem):
         #World Name or Map Name
         world_string.append(self.world.name or f'<i>"{self.world.map_name}</i>"')
         #Is there a map
-        if not self.world.map:
+        if not self.world.isMap:
             world_string.append('<b>[No Map]</b>')
         #Map features
         world_string.append(f'<b>({len(self.world.locations)})</b>')
@@ -46,8 +44,10 @@ class WorldListItem(QListWidgetItem):
 class WorldSelectWindow(QWidget):
     """Display all available worlds and open the selected one in the map viewer.
     """
-    def __init__(self):
+    def __init__(self, loading_manager):
         super().__init__()
+
+        self.loading_manager = loading_manager
         #Window settings
         self.setWindowTitle("World Select")
         self.setWindowFlags(self.windowFlags() | Qt.WindowType.WindowStaysOnTopHint)
@@ -72,19 +72,13 @@ class WorldSelectWindow(QWidget):
     def _populate_world_list(self):
         """Populate the world list with worlds with map or features
         """
-        for world in loadManager['World'].values(): #CBB
-            world_data = WorldData(**world)
-            #Add world to list if world has a map and/or locations
-            if world_data.map or len(world_data.locations):
-                self.world_list.addItem(WorldListItem(world_data))
-
+        for world in self.loading_manager.worlds:
+            self.world_list.addItem(WorldListItem(world))
 
     def _select_map(self):
         """Load the selected map inside the map viewer
         """
         current_item = self.world_list.currentItem()
-        #If something is selected
         if current_item:
-            pass #DELETE
-            # self.mapScreen = mapViewer.Window(current_item.world.id)
-            # self.mapScreen.view.showMaximized()
+            self.mapScreen = map_viewer.Window(self.loading_manager, current_item.world)
+            self.mapScreen.view.showMaximized()
