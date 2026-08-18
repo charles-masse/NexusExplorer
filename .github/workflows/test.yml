@@ -41,7 +41,6 @@ jobs:
               pytest-coverage-path: ./pytest-coverage.txt
               junitxml-path: ./pytest.xml
               hide-comment: true
-              hide-report: true
 
           - name: Update README
             run: |
