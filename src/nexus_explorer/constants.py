@@ -1,0 +1,5 @@
+map_size = 128
+MAP_CHUNK_RESOLUTION = 512
+HALF_MAP = int((map_size / 2) * MAP_CHUNK_RESOLUTION)
+
+MAP_SCALE = 0.125

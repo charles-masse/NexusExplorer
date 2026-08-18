@@ -6,6 +6,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write
+
     strategy:
       matrix:
         python-version: ["3.12"]
@@ -18,11 +21,34 @@ jobs:
             with:
               python-version: ${{ matrix.python-version }}
 
+          - name: Set up uv
+            uses: astral-sh/setup-uv@v5
+            with:
+              python-version: ${{ matrix.python-version }}
+              enable-cache: true 
+
           - name: Install dependencies
-            run: |
-              python -m pip install --upgrade pip
-              pip install -r requirements.txt
+            run: uv sync --frozen
 
           - name: Test with pytest
             run: |
-              pytest  -v -s
+              pytest --junitxml=pytest.xml --cov-report=term-missing --cov=src tests/ | tee pytest-coverage.txt
+
+          - name: Coverage comment
+            id: coverage
+            uses: MishaKav/pytest-coverage-comment@v1
+            with:
+              pytest-coverage-path: ./pytest-coverage.txt
+              junitxml-path: ./pytest.xml
+              hide-comment: true
+              hide-report: true
+
+          - name: Update README
+            run: |
+              sed -i '/<!-- Pytest Coverage Comment:Begin --><!-- Pytest Coverage Comment:End -->/c\<!-- Pytest Coverage Comment:Begin -->${{ steps.coverage.outputs.coverageHtml }}<!-- Pytest Coverage Comment:End -->' ./README.md
+
+          - name: Commit changes
+            uses: stefanzweifel/git-auto-commit-action@v7
+            with:
+              commit_message: 'docs: update coverage badge'
+              file_pattern: README.md
