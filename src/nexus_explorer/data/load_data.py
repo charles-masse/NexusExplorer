@@ -17,10 +17,11 @@ class DBDict(dict):
 class LoadingManager:
     _instance = None
 
-    def __init__(self, game_files):
+    def __init__(self, game_files, language="en-US"):
         self.game_files = game_files
+        self.language = language
         #Load language file right away
-        self._loaded = {"en-US" : self.read_csv("en-US", '')} #TODO
+        self._loaded = {language : self.read_csv(language, '')}
         # Parsed data
         self.worlds = []
 
@@ -31,13 +32,11 @@ class LoadingManager:
         return cls._instance
 
     def __getitem__(self, db):
-
         self.load(db)
             
         return self._loaded[db]
 
     def load(self, db):
-
         if db not in self._loaded:
             self._loaded[db] = self.read_csv(db)
 
@@ -68,7 +67,7 @@ class LoadingManager:
                         field_name = field_name.replace('localizedTextId', '')
                         field_name = field_name[0].lower() + field_name[1:]
 
-                        localized_string = self["en-US"].get(row[field]) #TODO
+                        localized_string = self[self.language].get(row[field])
 
                         if localized_string and localized_string.get('Text') != '':
                             data = localized_string.get('Text')

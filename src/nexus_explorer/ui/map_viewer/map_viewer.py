@@ -48,7 +48,7 @@ class MapViewerWindow(QGraphicsScene):
     def display_map(self):
         """Display the map when it's done generating/opening
         """
-        world_image = generate_map(self.loading_manager.game_files, self.world)
+        world_image = generate_map('/'.join([self.loading_manager.game_files, self.world.map_path.replace('\\', '/')]))
         image_qt = ImageQt(world_image).copy()
         pixmap = QPixmap.fromImage(image_qt)
 

@@ -1,0 +1,3 @@
+World;;;;;;;;;;;;;;;;;;
+ID [INT32 24];assetPath [STRING 104];flags [INT32 24];type [INT32 24];screenPath [STRING 104];screenModelPath [STRING 104];chunkBounds00 [INT32 24];chunkBounds01 [INT32 24];chunkBounds02 [INT32 24];chunkBounds03 [INT32 24];plugAverageHeight [INT32 24];localizedTextIdName [INT32 24];minItemLevel [INT32 24];maxItemLevel [INT32 24];primeLevelOffset [INT32 24];primeLevelMax [INT32 24];veteranTierScalingType [INT32 24];heroismMenaceLevel [INT32 24];rewardRotationContentId [INT32 24]
+1;SampleWorld;0;0;;;0;0;2048;2048;0;0;0;0;0;0;0;0;0

@@ -26,6 +26,7 @@ dev = [
     "ruff>=0.16.2",
     "pytest>=9.1.1",
     "pytest-cov>=7.1.0",
+    "pytest-qt>=4.5.0",
 ]
 
 [project.scripts]

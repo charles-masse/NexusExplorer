@@ -15,22 +15,20 @@ def chunk_coords(chunk_name):
 
     return [x, y]
 
-def generate_map(game_files, world):
+def generate_map(chunk_path, cache=True):
 
-    map_path = world.map_path.replace('\\', '/')
-    
-    cache_path = f'./.cache/{map_path}.png'
-    chunk_path = f'{game_files}/{map_path}'
+    map_name = chunk_path.split('/')[-1]
+    cache_path = f'.cache/{map_name}.png'
     #If the map was already processed in the past
-    if os.path.exists(cache_path):
+    if cache and os.path.exists(cache_path):
         im = Image.open(cache_path)
     else:
+        scaled_resolution = int(MAP_CHUNK_RESOLUTION * MAP_SCALE)
         #Get chunk images
         chunks = [[chunk_name] + chunk_coords(chunk_name) for chunk_name in os.listdir(chunk_path)]
 
-        scaled_resolution = int(MAP_CHUNK_RESOLUTION * MAP_SCALE)
-        max_x = max(chunks, key=lambda x: x[1])[1] * scaled_resolution
-        max_y = max(chunks, key=lambda x: x[2])[2] * scaled_resolution
+        max_x = (max(chunks, key=lambda x: x[1])[1] + 1) * scaled_resolution
+        max_y = (max(chunks, key=lambda x: x[2])[2] + 1) * scaled_resolution
         #Create Image
         im = Image.new('RGB', (max_x, max_y))
 
@@ -41,7 +39,8 @@ def generate_map(game_files, world):
                 chunk_image = ImageOps.scale(chunk_image, MAP_SCALE)
                 im.paste(chunk_image, (chunk_x * scaled_resolution, chunk_y * scaled_resolution))
         #Save map for faster loading
-        os.makedirs(os.path.dirname(cache_path), exist_ok=True)
-        im.save(cache_path)
+        if cache:
+            os.makedirs(os.path.dirname(cache_path), exist_ok=True)
+            im.save(cache_path)
 
     return im

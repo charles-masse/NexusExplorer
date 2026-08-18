@@ -141,8 +141,6 @@ def display_event(loading_manager, content):
 
 #     self.createLabel(data.get('localizedTextIdEnd'), 'localizedTextIdEnd')
 
-    loading_manager['en-US'].get(content.get(''))
-
     end_text = content.get('End')
     if end_text:
         widgets.append(ContentLabel(end_text))
