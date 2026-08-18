@@ -58,7 +58,7 @@ class MapViewerWindow(QGraphicsScene):
         """Place a location on the map
         """
         location_obj = LocationObject(location, self)
-        location_obj.clicked.connect(self.popup)
+        location_obj.clicked.connect(self.select_location)
         self.addItem(location_obj)
 
     # def drawObjective(self, worldX, worldY, objectiveId):
@@ -69,21 +69,20 @@ class MapViewerWindow(QGraphicsScene):
     #     position = world_to_screen_pos(worldX, worldY)
     #     obj.setPos(position[0] - (obj.pixmap.width() / 2), position[1] - (obj.pixmap.height() / 2))
 
-    # def focusOn(self, focus=None):
-    #     """Focus on a specific icon on the map and clear objectives
-    #     """
-    #     for item in self.items():
+    def focus(self, focus=None):
+        """Focus on a specific icon on the map and clear objectives
+        """
+        for item in self.items():
 
-    #         if isinstance(item, LocationIcon):
+            if isinstance(item, LocationObject):
 
-    #             if (not focus or item == focus):
-    #                 item.setOpacity(1.0)
-                    
-    #             else:
-    #                 item.setOpacity(0.4)
+                if (not focus or item == focus):
+                    item.setOpacity(1.0)
+                else:
+                    item.setOpacity(0.4)
 
-    #         elif isinstance(item, ObjectiveIcon):
-    #             self.removeItem(item)
+            # elif isinstance(item, ObjectiveIcon):
+            #     self.removeItem(item)
 
     def mouseMoveEvent(self, event):
         """Display the map coords on the mouse
@@ -101,9 +100,9 @@ class MapViewerWindow(QGraphicsScene):
         pyperclip.copy(f"!tele {self.mouse_x} 0 {self.mouse_y} {self.world.id}")
         super().mousePressEvent(event)
 
-    def popup(self, icon):
+    def select_location(self, icon):
         """Open the window with current location's content
         """
-        self.popup = ContentSelectWindow(self.loading_manager, icon)
-        self.popup.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, True)
-        self.popup.show()
+        self.content_select = ContentSelectWindow(self.loading_manager, icon)
+        self.content_select.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, True)
+        self.content_select.show()

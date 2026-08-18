@@ -1,7 +1,7 @@
 
 import os
 
-from . import WorldData
+from . import DBDict, WorldData
 
 
 def linkDb(targetDb, fieldName, sourceDbs):
@@ -17,7 +17,7 @@ def linkDb(targetDb, fieldName, sourceDbs):
                 #Add item that referenced this data
                 linkedItem = targetDb.get(item[key])
                 if linkedItem:
-                    linkedItem.setdefault(db.name, []).append(item)
+                    linkedItem.setdefault(db.name, []).append(DBDict(db.name, item))
 
     return targetDb
 
@@ -48,7 +48,15 @@ def linkDb(targetDb, fieldName, sourceDbs):
 
 def prep_worlds(loading_manager):
     #Link content to their location
-    linkDb(loading_manager['WorldLocation2'], 'worldlocation', [loading_manager['WorldZone'], loading_manager['Challenge'], loading_manager['Datacube'], loading_manager['PublicEvent'], loading_manager['Quest2'], loading_manager['QuestHub'], loading_manager['PathMission']]) # 'QuestDirectionEntry' #???
+    linkDb(loading_manager['WorldLocation2'], 'worldlocation', [
+        loading_manager['WorldZone'],
+        loading_manager['Challenge'], #Link in world zone instead?
+        loading_manager['Datacube'],
+        loading_manager['PublicEvent'], #Link in world zone instead?
+        loading_manager['Quest2'],
+        loading_manager['QuestHub'],
+        loading_manager['PathMission']
+    ]) # 'QuestDirectionEntry' #???
     #Link locations to their world
     linkDb(loading_manager['World'], 'worldId', [loading_manager['WorldLocation2']])
 

@@ -4,9 +4,8 @@ from PyQt6.QtGui import *
 from PyQt6.QtWidgets import *
 
 from .content_types import CONTENT_TYPES
+from .content_viewer import ContentViewerWindow
 from .widgets import HtmlDelegate
-
-# from src.windows import contentReader
 
 WINDOW_WIDTH = 400
 
@@ -41,14 +40,16 @@ class ContentItem(QTreeWidgetItem):
         #Name
         #TODO linked objects with $
         name_list.append(content.get('name') or content.get('title') or content.get('short') or '- Unnamed -')
-        #Level
-        level = content.get('preq_level')
-        if level != None:
-            name_list.append(f'<b>[lvl {level}]</b>')
+        #Level range
+        min_level = content.get('preq_level') or content.get('minPlayerLevel')
+        max_level = content.get('conLevel') or ''
+        if min_level and int(min_level) > 0:
+            name_list.append(f'<b>[lvl {min_level}-{max_level}]</b>')
         # Faction
-        faction_id = content.get('questPlayerFactionEnum') or content.get('pathMissionFactionEnum')
-        if faction_id != None:
-            name_list.insert(0, f'<b>[{['Exile', 'Dominion', 'Neutral'][int(faction_id)]}]</b>')
+        for key in content:
+            if key.endswith('FactionEnum'):
+                name_list.insert(0, f'<b>[{['Exile', 'Dominion', 'Neutral'][int(content[key])]}]</b>')
+                break
 
         return ' '.join(name_list)
 
@@ -74,13 +75,11 @@ class ContentSelectWindow(QWidget):
         self.tree = QTreeWidget(self)
         self.tree.setItemDelegate(HtmlDelegate(self.tree))
         self.tree.setHeaderHidden(True)
-        # self.tree.itemClicked.connect(self.popup) #TODO
+        self.tree.itemClicked.connect(self.select_content)
 
         self.populate_list()
 
         self.layout.addWidget(self.tree)
-
-        # self.mapView.focusOn()
 
     def add_category(self, content, content_dict):
         category = ContentCategory(content, content_dict, self.tree)
@@ -111,16 +110,19 @@ class ContentSelectWindow(QWidget):
                 else:
                     self.add_category(content, CONTENT_TYPES[content_id])
 
-    # def popup(self, item):
-    #     # If it's not a category header
-    #     if item.childCount() == 0:
+    def select_content(self, item):
+        # If it's not a category header
+        if item.childCount() == 0:
+            #Focus on icon
+            self.icon.parent.focus(self.icon)
 
-    #         self.mapView.focusOn(self.locIcon)
+            self.content_viewer = ContentViewerWindow(self.loading_manager, item.content, self.icon)
+            self.content_viewer.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, True)
+            self.content_viewer.show()
 
-    #         self.popup = contentReader.Window(item.data, self.mapView)
-    #         self.popup.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, True)
-    #         self.popup.show()
-
-    # def closeEvent(self, event):
-    #     self.locIcon.setSelected(False)
-    #     self.popup.close()
+    def closeEvent(self, event):
+        #Remove focus from icon
+        self.icon.setSelected(False)
+        self.icon.parent.focus()
+        
+        super().closeEvent(event)

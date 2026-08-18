@@ -176,4 +176,4 @@ cython_debug/
 # My stuff
 Nexusvault/
 wssf2p/
-misc/
+tests/local/

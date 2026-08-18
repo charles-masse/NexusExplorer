@@ -5,8 +5,12 @@ import re
 
 class DBDict(dict):
 
-    def __init__(self, name):
-        super().__init__()
+    def __init__(self, name, data=None):
+        
+        if data:
+            super().__init__(data)
+        else:
+            super().__init__()
 
         self.name = name
 
@@ -59,9 +63,11 @@ class LoadingManager:
 
                     field_name = field.split(' [')[0]
                     #Localize strings #TODO is this smart?
-                    if field_name.startswith('localized'):
+                    if field_name.startswith('localizedTextId'):
+                        #Remove 'localizedStringId' from name and lowercase the first letter
+                        field_name = field_name.replace('localizedTextId', '')
+                        field_name = field_name[0].lower() + field_name[1:]
 
-                        field_name = field_name.split('Id')[-1].lower()
                         localized_string = self["en-US"].get(row[field]) #TODO
 
                         if localized_string and localized_string.get('Text') != '':
@@ -83,7 +89,6 @@ DATABASES = {
              'schematic' : 'TradeskillSchematic2',
              'quest' : 'Quest2'
             }
-
 
 # def link_game_object(text):
 

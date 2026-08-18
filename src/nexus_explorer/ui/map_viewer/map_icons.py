@@ -16,6 +16,8 @@ class LocationObject(QGraphicsObject):
     def __init__(self, location, parent=None):
         super().__init__()
 
+        self.parent = parent
+
         self.location = location
 
         self.pixmap = QPixmap(f'{parent.loading_manager.game_files}/UI/Icon/{self.get_icon()}').scaled(ICON_SIZE, ICON_SIZE)
@@ -60,8 +62,8 @@ class LocationObject(QGraphicsObject):
 
                     if len(quest_factions):
 
-                        test = max(quest_factions, key=quest_factions.count)
-                        icon = faction_icons[test]
+                        faction_id = max(quest_factions, key=quest_factions.count)
+                        icon = faction_icons[faction_id]
 
                     else:
                         icon = faction_icons[2]

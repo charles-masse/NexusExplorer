@@ -8,7 +8,6 @@ from ..data import LocationData
 CLUSTER_DISTANCE = 128
 
 def merge_locations(locations):
-    #TODO separate each operation in its own function
     #Grab the biggest radius and the median position
     radius = max([loc.radius for loc in locations])
     x, y = numpy.median([loc.position for loc in locations], axis=0)
@@ -30,8 +29,9 @@ def cluster_locations(locations):
     """
     Use sklearn to cluster the different world locations
     """
+    #TODO separate each operation in its own function
     if len(locations) == 0:
-        return []
+        return locations
     
     #Merge locations with the same name together
     duplicate_names = {}
