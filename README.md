@@ -3,7 +3,7 @@
 ![Static Badge](https://img.shields.io/badge/Status-Work_in_Progress-orange)
 [![Run Tests](https://github.com/charles-masse/NexusExplorer/actions/workflows/test.yml/badge.svg)](https://github.com/charles-masse/NexusExplorer/actions/workflows/test.yml)
 
-![Demo](images/demo.gif)
+![Demo](/../gh-images/images//demo.gif)
 
 Explore the worlds of the defunct MMORPG **WildStar**.
 
@@ -38,17 +38,17 @@ uv run nexus_explorer "PATH_TO_EXTRACTED_GAME_DATA"
 
 - Use the WorldSelect window to choose the world you want to load.
 
-![WorldSelect](images/worldSelect.png)
+![WorldSelect](/../gh-images/images//worldSelect.png)
 > [!NOTE]
 > **[WORLD_ID]** MAP_NAME **(NUMBER_OF_FEATURES)**
 
 - Explore the map features by clicking on the different icons.
 
-![MapViewer](images/mapViewer.png)
+![MapViewer](/../gh-images/images//mapViewer.png)
 > [!TIP]
 > By clicking on the minimap, the in-game teleport command for this location will be copied to your clipboard.
 
-![linked game object](images/linkedObject.png)
+![linked game object](/../gh-images/images//linkedObject.png)
 > [!TIP]
 > You can click on underlined names to have more info on that game object.
 
