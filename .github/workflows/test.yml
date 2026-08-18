@@ -30,9 +30,10 @@ jobs:
           - name: Install dependencies
             run: uv sync --frozen
 
-          - name: Test with pytest
+          - name: Run tests with virtual display
             run: |
-              pytest --junitxml=pytest.xml --cov-report=term-missing --cov=src tests/ | tee pytest-coverage.txt
+              source .venv/bin/activate
+              xvfb-run --auto-servernum pytest --junitxml=pytest.xml --cov-report=term-missing --cov=src tests/ | tee pytest-coverage.txt
 
           - name: Coverage comment
             id: coverage
@@ -41,11 +42,12 @@ jobs:
               pytest-coverage-path: ./pytest-coverage.txt
               junitxml-path: ./pytest.xml
               hide-comment: true
+              hide-report: true
 
           - name: Update README
             run: |
-              sed -i '/<!-- Pytest Coverage Comment:Begin -->/,/<!-- Pytest Coverage Comment:End -->/c\<!-- Pytest Coverage Comment:Begin -->\n${{ steps.coverage.outputs.coverageHtml }}\n<!-- Pytest Coverage Comment:End -->' ./README.md
-          
+              sed -i '/<!-- Pytest Coverage Comment:Begin --><!-- Pytest Coverage Comment:End -->/c\<!-- Pytest Coverage Comment:Begin -->${{ steps.coverage.outputs.coverageHtml }}<!-- Pytest Coverage Comment:End -->' ./README.md
+
           - name: Commit changes
             uses: stefanzweifel/git-auto-commit-action@v7
             with:
