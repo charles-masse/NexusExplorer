@@ -30,9 +30,14 @@ jobs:
           - name: Install dependencies
             run: uv sync --frozen
 
-          - name: Test with pytest
+          - name: Install Linux GUI dependencies
             run: |
-              pytest --junitxml=pytest.xml --cov-report=term-missing --cov=src tests/ | tee pytest-coverage.txt
+              sudo apt-get update
+              sudo apt-get install -y libegl1 libgl1 libglx-mesa0 xvfb libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xinput0 libxcb-shape0
+
+          - name: Run tests with virtual display
+            run: |
+              xvfb-run --auto-servernum pytest --junitxml=pytest.xml --cov-report=term-missing --cov=src tests/ | tee pytest-coverage.txt
 
           - name: Coverage comment
             id: coverage
@@ -46,7 +51,7 @@ jobs:
           - name: Update README
             run: |
               sed -i 's|<!-- Pytest Coverage Comment:Begin -->.*<!-- Pytest Coverage Comment:End -->|<!-- Pytest Coverage Comment:Begin -->${{ steps.coverage.outputs.coverageHtml }}<!-- Pytest Coverage Comment:End -->|' README.md
-
+          
           - name: Commit changes
             uses: stefanzweifel/git-auto-commit-action@v7
             with:
