@@ -44,8 +44,10 @@ jobs:
               hide-report: true
 
           - name: Update README
+            env:
+              BADGE: ${{ steps.coverage.outputs.coverage }}
             run: |
-              sed -i 's|<!-- Pytest Coverage Comment:Begin -->.*<!-- Pytest Coverage Comment:End -->|<!-- Pytest Coverage Comment:Begin -->${{ steps.coverage.outputs.coverageHtml }}<!-- Pytest Coverage Comment:End -->|' README.md
+              sed -i "s|<!-- Pytest Coverage Comment:Begin -->.*<!-- Pytest Coverage Comment:End -->|<!-- Pytest Coverage Comment:Begin -->${BADGE}<!-- Pytest Coverage Comment:End -->|g" README.md
 
           - name: Commit changes
             uses: stefanzweifel/git-auto-commit-action@v7
