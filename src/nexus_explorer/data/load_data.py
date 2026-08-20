@@ -1,11 +1,14 @@
 
 import csv
-import re
+from typing import Self
+
+from . import WorldData
 
 
 class DBDict(dict):
-
-    def __init__(self, name, data=None):
+    """A dictionary that keeps the name of the database
+    """
+    def __init__(self, name: str, data: dict[str, str] | None = None):
         
         if data:
             super().__init__(data)
@@ -17,40 +20,42 @@ class DBDict(dict):
 class LoadingManager:
     _instance = None
 
-    def __init__(self, game_files, language="en-US"):
+    def __init__(self, game_files: str, language: str="en-US"):
         self.game_files = game_files
         self.language = language
         #Load language file right away
         self._loaded = {language : self.read_csv(language, '')}
         # Parsed data
-        self.worlds = []
+        self.worlds: list[WorldData] = []
 
-    def __new__(cls, game_files):
+    def __new__(cls, game_files: str) -> Self:
+
         if cls._instance is None:
             cls._instance = super().__new__(cls)
 
         return cls._instance
 
-    def __getitem__(self, db):
-        self.load(db)
+    def __getitem__(self, db_name: str) -> DBDict:
+
+        self.load(db_name)
             
-        return self._loaded[db]
+        return self._loaded[db_name]
 
-    def load(self, db):
-        if db not in self._loaded:
-            self._loaded[db] = self.read_csv(db)
+    def load(self, db_name: str):
 
-    def read_csv(self, dbName, folder='DB'):
+        if db_name not in self._loaded:
+            self._loaded[db_name] = self.read_csv(db_name)
+
+    def read_csv(self, db_name:str, folder:str='DB') -> DBDict:
         """Read a .csv file
-
-        db (String): Name of the requested .csv
-        folder (String): Nexusvault folder where the .csv is stored
+        - db_name: Name of the requested .csv
+        - folder: Nexusvault folder where the .csv is stored
         """
-        dbDict = DBDict(dbName)
+        dbDict = DBDict(db_name)
 
-        with open('/'.join([self.game_files, folder, dbName, dbName + '.csv']), encoding='utf') as f:
+        with open('/'.join([self.game_files, folder, db_name, db_name + '.csv']), encoding='utf') as f:
             #Skip first line
-            next(f) 
+            next(f)
 
             reader = csv.DictReader(f, delimiter=';')
 
@@ -80,34 +85,3 @@ class LoadingManager:
                     dbDict.setdefault(row[keyField], {'itemId':row[keyField]}).setdefault(field_name, data)
 
         return dbDict
-
-DATABASES = {
-             'creature' : 'Creature2',
-             'vitem' : 'VirtualItem',
-             'item' : 'Item2',
-             'schematic' : 'TradeskillSchematic2',
-             'quest' : 'Quest2'
-            }
-
-# def link_game_object(text):
-
-#     for match in re.finditer(r'(?:<text[^>]*?>)?\$\S*?\((\w+)=(\d+)\)|\$(\w+)=(\d+)(?:</text>)?', text):
-
-#         fullMath = match.group(0)
-#         key = match.group(1) or match.group(3)
-#         idValue = match.group(2) or match.group(4)
-
-#         linked = loadManager[DATABASES[key.lower()]].get(idValue)
-        
-#         if linked:
-#             linkedText = LocalizedStrings[linked.get('localizedTextIdName')]
-            
-#         else:
-#             linkedText = None
-
-#         if not linkedText:
-#             linkedText = f"Can't find {key} id:{idValue}"
-
-#         text = text.replace(fullMath, f'<b><a style="color: rgb(125, 251, 182);" href="{linked}">{linkedText}</a></b>')
-
-#     return text

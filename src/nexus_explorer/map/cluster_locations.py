@@ -5,7 +5,7 @@ from sklearn.neighbors import KDTree
 
 from ..data import LocationData
 
-CLUSTER_DISTANCE = 128
+CLUSTER_DISTANCE = 256
 
 def merge_locations(locations):
     #Grab the biggest radius and the median position
@@ -13,9 +13,9 @@ def merge_locations(locations):
     x, y = numpy.median([loc.position for loc in locations], axis=0)
 
     return LocationData(
-        radius,
         x,
         y,
+        radius,
         [zone for loc in locations for zone in loc.zones],
         [challenge for loc in locations for challenge in loc.challenges],
         [datacube for loc in locations for datacube in loc.datacubes],

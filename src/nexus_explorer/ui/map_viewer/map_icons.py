@@ -1,33 +1,38 @@
 
+from typing import TYPE_CHECKING
+
 from PyQt6.QtCore import *
 from PyQt6.QtGui import *
 from PyQt6.QtWidgets import *
 
+from ...data import LocationData
 from ..content_types import CONTENT_TYPES
 from .utilities import world_to_screen_pos
 
+if TYPE_CHECKING:
+    from .map_viewer import MapScene
+
 ICON_SIZE = 32
 
-class LocationObject(QGraphicsObject):
+class LocationIcon(QGraphicsObject):
     """An icon on the map that retains data, sends signals and has a glow effect
     """
     clicked = pyqtSignal(QGraphicsObject)
 
-    def __init__(self, location, parent=None):
+    def __init__(self, location: LocationData, map_scene: "MapScene"):
         super().__init__()
 
-        self.parent = parent
-
         self.location = location
-
-        self.pixmap = QPixmap(f'{parent.loading_manager.game_files}/UI/Icon/{self.get_icon()}').scaled(ICON_SIZE, ICON_SIZE)
+        self.map_scene = map_scene
+        
+        self.pixmap = QPixmap(f'{self.map_scene.loading_manager.game_files}/UI/Icon/{self.get_icon()}').scaled(ICON_SIZE, ICON_SIZE)
 
         screen_x, screen_y = world_to_screen_pos(*self.location.position)
         self.setPos(screen_x - (ICON_SIZE / 2), screen_y - (ICON_SIZE / 2))
 
         self.setFlags(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
 
-    def boundingRect(self):
+    def boundingRect(self) -> QRectF:
         return QRectF(
             0,
             0,
@@ -35,7 +40,7 @@ class LocationObject(QGraphicsObject):
             self.pixmap.height()
         )
 
-    def get_icon(self):
+    def get_icon(self) -> str:
         #Go through all icons by priority
         for content_id, content in enumerate(
             [

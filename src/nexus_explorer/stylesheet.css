@@ -106,21 +106,21 @@ QLabel {
 
 }
 
-#localizedTextIdAcceptResponse, #localizedTextIdCompleteResponse, #localizedTextIdMoreInfoSay00, #localizedTextIdMoreInfoSay01, #localizedTextIdMoreInfoSay02, #localizedTextIdMoreInfoSay03, #localizedTextIdMoreInfoSay04 {
+#acceptResponse, #completeResponse, #moreInfoSay00, #moreInfoSay01, #moreInfoSay02, #moreInfoSay03, #moreInfoSay04 {
 
     background-color: qlineargradient(x1:0 y1:0, x2:0 y2:1, stop:0 rgb(16, 55, 78), stop:0.1 rgb(13, 43, 59), stop:0.9 rgb(20, 23, 34), stop:1 rgb(26, 27, 40));
     padding-left: 20px;
 
 }
 
-#localizedTextIdGiverTextUnknown, #localizedTextIdMoreInfoText00, #localizedTextIdMoreInfoText01, #localizedTextIdMoreInfoText02, #localizedTextIdMoreInfoText03, #localizedTextIdMoreInfoText04, #localizedTextIdGiverSayAccepted, #localizedTextIdReceiverTextAccepted, #localizedTextIdReceiverTextAchieved, #localizedTextIdReceiverSayCompleted, #localizedTextIdSoldierOrders, #localizedTextIdCommunicator, #pathSay {
+#giverTextUnknown, #moreInfoText00, #moreInfoText01, #moreInfoText02, #moreInfoText03, #moreInfoText04, #giverSayAccepted, #receiverTextAccepted, #receiverTextAchieved, #receiverSayCompleted, #soldierOrders, #communicator, #pathSay {
 
     background-color: qlineargradient(x1:0 y1:0, x2:0 y2:1, stop:0 rgb(16, 55, 78), stop:0.1 rgb(13, 43, 59), stop:0.9 rgb(20, 23, 34), stop:1 rgb(26, 27, 40));
     border-radius: 25%;
 
 }
 
-#QuestObjective, #PublicEventObjective, #PathObjective, #localizedTextIdProgress  {
+#questObjective, #publicEventObjective, #pathObjective, #progress  {
 
     background-color: rgb(5, 11, 12);
     border: 3px solid rgb(89, 167, 200);

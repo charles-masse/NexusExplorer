@@ -3,7 +3,10 @@ from PyQt6.QtCore import *
 from PyQt6.QtGui import *
 from PyQt6.QtWidgets import *
 
+from ...data import DBDict, LoadingManager
+from ..map_viewer.map_icons import LocationIcon
 from .content_display import (
+    ContentLabel,
     display_challenge,
     display_datacube,
     display_event,
@@ -11,53 +14,48 @@ from .content_display import (
     display_quest,
 )
 
-# from src.actions.links import linkGameObject
-
 WINDOW_WIDTH = 400
 
 class ContentViewerWindow(QWidget):
 
-    def __init__(self, loading_manager, content, icon):
+    def __init__(self, loading_manager: LoadingManager, content: DBDict, icon: LocationIcon | None = None):
         super().__init__()
 
         self.loading_manager = loading_manager
+        self.content = content
         self.icon = icon
 
         # screen = QScreen.availableGeometry(QApplication.primaryScreen())
         # self.move(screen.x(), screen.y())
 
-        self.layout = QVBoxLayout(self)
-        self.layout.setSpacing(3)
+        self.main_layout = QVBoxLayout(self)
+        self.main_layout.setSpacing(3)
         #General title vs challenge title
         self.setWindowTitle(content.get('name') or content.get('title') or content.get('short') or '- Unnamed -')
 
         if content.name == 'Datacube':
-            widgets = display_datacube(content)
+            display_datacube(self)
 
         elif content.name == 'Quest2':
-            widgets = display_quest(content)
+            display_quest(self)
 
         elif content.name == 'PublicEvent':
-            widgets = display_event(loading_manager, content)
+            display_event(self)
 
         elif content.name == 'Challenge':
-            widgets = display_challenge(content)
+            display_challenge(self)
 
         elif content.name == 'PathMission':
-            widgets = display_mission(content)
+            display_mission(self)
             
         else:
             raise TypeError('Cannot parse this data.')
+        # Quest directions
+        # PathMission, Quest, Challenge
+        # test = data.get('questDirectionId') or data.get('questDirectionIdCompletion') or data.get('questDirectionIdActive')
 
-    #     # Quest directions
-    #     # PathMission, Quest, Challenge
-    #     test = data.get('questDirectionId') or data.get('questDirectionIdCompletion') or data.get('questDirectionIdActive')
-
-    #     if test:
-    #         self.addQuestDirections(test, 1)
-
-        for widget in widgets:
-            self.layout.addWidget(widget)
+        # if test:
+        #     self.addQuestDirections(test, 1)
 
         self.setFixedWidth(WINDOW_WIDTH)
         # Add floating icons
@@ -73,8 +71,8 @@ class ContentViewerWindow(QWidget):
     #     heightOffset = 0
     #     objId = 1
 
-    #     for i in range(self.layout.count()):
-    #         item = self.layout.itemAt(i)
+    #     for i in range(self.main_layout.count()):
+    #         item = self.main_layout.itemAt(i)
     #         widget = item.widget()
 
     #         if widget.objectName() in ['QuestObjective', 'PublicEventObjective']:
@@ -85,15 +83,23 @@ class ContentViewerWindow(QWidget):
 
     #         heightOffset += widget.sizeHint().height() + 3
     
+    def add_label(self, string_name: str):
+
+        text = self.content.get(string_name)
+        if text:
+            self.main_layout.addWidget(ContentLabel(text, string_name))
+
     def showEvent(self, event):
         #Focus on icon
-        self.icon.parent.focus(self.icon)
+        if self.icon:
+            self.icon.map_scene.focus(self.icon)
 
         super().showEvent(event)
 
     def closeEvent(self, event):
         #Remove focus from icon
-        self.icon.parent.focus()
+        if self.icon:
+            self.icon.map_scene.focus()
 
         super().closeEvent(event)
 

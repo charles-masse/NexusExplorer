@@ -3,15 +3,17 @@ from PyQt6.QtCore import *
 from PyQt6.QtGui import *
 from PyQt6.QtWidgets import *
 
+from ..data import DBDict, LoadingManager
 from .content_types import CONTENT_TYPES
 from .content_viewer import ContentViewerWindow
+from .map_viewer import LocationIcon
 from .widgets import HtmlDelegate
 
 WINDOW_WIDTH = 400
 
 class ContentCategory(QTreeWidgetItem):
 
-    def __init__(self, content, content_dict, tree):
+    def __init__(self, content: list[DBDict], content_dict: dict, tree: QTreeWidget):
         super().__init__(tree)
 
         name = content_dict['name']
@@ -30,12 +32,12 @@ class ContentCategory(QTreeWidgetItem):
 class ContentItem(QTreeWidgetItem):
     """Tree item that retains data
     """
-    def __init__(self, content, parent):
+    def __init__(self, content: DBDict, parent: ContentCategory):
         super().__init__(parent, [self.get_name(content)])
 
         self.content = content
 
-    def get_name(self, content):
+    def get_name(self, content: DBDict) -> str:
         name_list = []
         #Name
         #TODO linked objects with $
@@ -56,7 +58,7 @@ class ContentItem(QTreeWidgetItem):
 class ContentSelectWindow(QWidget):
     """Categorize the content into their different types
     """
-    def __init__(self, loading_manager, icon):
+    def __init__(self, loading_manager: LoadingManager, icon: LocationIcon):
         super().__init__()
 
         self.loading_manager = loading_manager
@@ -69,8 +71,8 @@ class ContentSelectWindow(QWidget):
         self.setFixedSize(WINDOW_WIDTH, screen.height() - self.style().PixelMetric(QStyle.PixelMetric.PM_TitleBarHeight))
         self.move(screen.getRect()[0] + screen.getRect()[2] - WINDOW_WIDTH, screen.y())
 
-        self.layout = QVBoxLayout()
-        self.setLayout(self.layout)
+        self.main_layout = QVBoxLayout()
+        self.setLayout(self.main_layout)
         # Add Tree
         self.tree = QTreeWidget(self)
         self.tree.setItemDelegate(HtmlDelegate(self.tree))
@@ -79,9 +81,9 @@ class ContentSelectWindow(QWidget):
 
         self.populate_list()
 
-        self.layout.addWidget(self.tree)
+        self.main_layout.addWidget(self.tree)
 
-    def add_category(self, content, content_dict):
+    def add_category(self, content: list[DBDict], content_dict: dict):
         category = ContentCategory(content, content_dict, self.tree)
         self.tree.addTopLevelItem(category)
         category.setExpanded(True)
@@ -110,11 +112,11 @@ class ContentSelectWindow(QWidget):
                 else:
                     self.add_category(content, CONTENT_TYPES[content_id])
 
-    def select_content(self, item):
+    def select_content(self, item: ContentItem):
         # If it's not a category header
         if item.childCount() == 0:
             #Focus on icon
-            self.icon.parent.focus(self.icon)
+            self.icon.map_scene.focus(self.icon)
 
             self.content_viewer = ContentViewerWindow(self.loading_manager, item.content, self.icon)
             self.content_viewer.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, True)
@@ -123,6 +125,6 @@ class ContentSelectWindow(QWidget):
     def closeEvent(self, event):
         #Remove focus from icon
         self.icon.setSelected(False)
-        self.icon.parent.focus()
+        self.icon.map_scene.focus()
         
         super().closeEvent(event)

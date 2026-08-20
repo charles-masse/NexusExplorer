@@ -1,3 +1,4 @@
+
 map_size = 128
 MAP_CHUNK_RESOLUTION = 512
 HALF_MAP = int((map_size / 2) * MAP_CHUNK_RESOLUTION)

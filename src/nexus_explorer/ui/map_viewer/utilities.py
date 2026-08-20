@@ -6,12 +6,12 @@ from ...constants import HALF_MAP, MAP_SCALE
 #     """
 #     return int(bounds0) * (32 / settings['mapScale']), int(bounds1) * (32 / settings['mapScale']), int(bounds2) * (32 / settings['mapScale']), int(bounds3) * (32 / settings['mapScale'])
 
-def world_to_screen_pos(world_x, world_y):
+def world_to_screen_pos(world_x, world_y) -> tuple[float, float]:
     """World coords to map coords
     """
     return (HALF_MAP + float(world_x)) * MAP_SCALE, (HALF_MAP + float(world_y)) * MAP_SCALE
 
-def screen_to_world_pos(screen_x, screen_y):
+def screen_to_world_pos(screen_x, screen_y) -> tuple[int, int]:
     """Map coords to world coords
     """
     return -int(HALF_MAP - (screen_x / MAP_SCALE)), -int(HALF_MAP - (screen_y / MAP_SCALE))

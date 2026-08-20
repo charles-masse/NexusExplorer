@@ -1,29 +1,34 @@
 
-def soldier_security(content): #'PathSoldierEventWave' ??? Wave info probably server side
-    return []
+from typing import TYPE_CHECKING
 
-def scientist_analysis(content): #Biology/Botany/Analysis/Diagnostic/Chemistry/Archeology??
-    return []
+if TYPE_CHECKING:
+    from . import ContentViewerWindow
 
-def explorer_stalking(content): #What is this???
-    return []
+def soldier_security(window: "ContentViewerWindow"): #'PathSoldierEventWave' ??? Wave info probably server side
+    pass
 
-def soldier_assassinate(content):
+def scientist_analysis(window: "ContentViewerWindow"): #Biology/Botany/Analysis/Diagnostic/Chemistry/Archeology??
+    pass
+
+def explorer_stalking(window: "ContentViewerWindow"): #What is this???
+    pass
+
+def soldier_assassinate(window: "ContentViewerWindow"):
     # assassination = loadManager['PathSoldierAssassinate'][data['objectId']]
     # self.layout.addWidget(ContentLabel(f"Assassinate {assassination['count']} $(creature={assassination['creature2Id']})", 'PathObjective'))
-    return []
+    pass
 
-def soldier_demolition(content):
+def soldier_demolition(window: "ContentViewerWindow"):
     # demolition = loadManager['PathSoldierActivate'][data['objectId']]
     # self.layout.addWidget(ContentLabel(f"Destroy {demolition['count']} $(creature={demolition['creature2Id']})", 'PathObjective'))
-    return []
+    pass
 
-def soldier_rescue(content):
+def soldier_rescue(window: "ContentViewerWindow"):
     # rescue = loadManager['PathSoldierActivate'][data['objectId']]
     # self.layout.addWidget(ContentLabel(f"Rescue {rescue['count']} $(creature={rescue['creature2Id']})", 'PathObjective'))
-    return []
+    pass
 
-def soldier_SWAT(content):
+def soldier_SWAT(window: "ContentViewerWindow"):
     # swat = loadManager['PathSoldierSWAT'][data['objectId']]
     
     # group = loadManager['TargetGroup'].get(swat['targetGroupId'])
@@ -47,18 +52,18 @@ def soldier_SWAT(content):
     #     groupName = f'<i>{groupName}</i>'
         
     # self.layout.addWidget(ContentLabel(f"Kill {swat['count']} {groupName} with $(vitem={swat['virtualItemIdDisplay']})", 'PathObjective'))
-    return []
+    pass
 
-def explorer_exploration(content):
+def explorer_exploration(window: "ContentViewerWindow"):
     # doorEntrance = loadManager['PathExplorerDoorEntrance'].get(data['objectId'])
     # # There's also Door with group activate and kill
     # if doorEntrance:
     #     self.layout.addWidget(ContentLabel(f"<b>Entrance:</b> $(creature={doorEntrance['creature2IdSurface']})", 'PathObjective'))
     #     self.layout.addWidget(ContentLabel(f"<b>Inside:</b> $(creature={doorEntrance['creature2IdMicro']})", 'PathObjective'))
     #     # 'worldLocation2IdSurfaceRevealed'  Not accurate--probably minimap position
-    return []
+    pass
 
-def explorer_scavenger(content):
+def explorer_scavenger(window: "ContentViewerWindow"):
     # hunt = loadManager['PathExplorerScavengerHunt'].get(data['objectId'])
 
     # if hunt:
@@ -84,9 +89,9 @@ def explorer_scavenger(content):
     #             pos = loadManager['WorldLocation2'].get(clue['worldLocation2IdMiniMap'])
     #             if pos:
     #                 self.mapView.drawObjective(pos['position0'], pos['position2'], i + 1)
-    return []
+    pass
 
-def explorer_vista(content):
+def explorer_vista(window: "ContentViewerWindow"):
     # node = loadManager['PathExplorerNode']
 
     # for x in node.values():
@@ -97,21 +102,21 @@ def explorer_vista(content):
     #             self.mapView.drawObjective(pos['position0'], pos['position2'], i + 1)
 
     #         self.addQuestDirections(x['questDirectionId'], 1)
-    return []
+    pass
 
-def explorer_cartography(content): #explore whole map? 'PathExplorerPowerMap'
-    return []
+def explorer_cartography(window: "ContentViewerWindow"): #explore whole map? 'PathExplorerPowerMap'
+    pass
 
-def explorer_operation(content):
+def explorer_operation(window: "ContentViewerWindow"):
     # operation = loadManager['PathExplorerActivate'][data['objectId']]
     # self.layout.addWidget(ContentLabel(f"Investigate {operation['count']} $(creature={operation['creature2Id']})", 'PathObjective'))
-    return []
+    pass
 
-def settler_expansion(content):
+def settler_expansion(window: "ContentViewerWindow"):
     # hub = loadManager['PathSettlerHub'][data['objectId']] # Link ressource items?
-    return []
+    pass
 
-def scientist_study(content):
+def scientist_study(window: "ContentViewerWindow"):
     # study = loadManager['PathScientistFieldStudy'][data['objectId']]
 
     # for i in range(8):
@@ -121,14 +126,17 @@ def scientist_study(content):
         
     #     if pos:
     #         self.mapView.drawObjective(pos['position0'], pos['position2'], i + 1)
-    return []
+    pass
 
-def settler_project(content):
+def settler_project(window: "ContentViewerWindow"):
 #     # infrastructure =  loadManager['PathSettlerInfrastructure'][data['objectId']] # Link hubs?
 #     # self.createLabel(infrastructure.get('Objective'), 'PathObjective')
-    return []
+    pass
 
-def scientist_speciment(content):
+def scientist_experimentation(window: "ContentViewerWindow"):
+    pass
+
+def scientist_speciment(window: "ContentViewerWindow"):
     # specimen = loadManager['PathScientistSpecimenSurvey'][data['objectId']]
 
     # for i in range(10):
@@ -140,12 +148,12 @@ def scientist_speciment(content):
     #         self.mapView.drawObjective(pos['position0'], pos['position2'], i + 1)
 
     #     self.addQuestDirections(specimen[f'questDirectionId0{i}'], i + 1)
-    return []
+    pass
 
-def scientist_datacube(content):
-    return []
+def scientist_datacube(window: "ContentViewerWindow"):
+    pass
 
-def settler_service(content):
+def settler_service(window: "ContentViewerWindow"):
     # mayor = loadManager['PathSettlerMayor'][data['objectId']] # Add locations of objectives to map
 
     # for i in range(8):
@@ -156,16 +164,16 @@ def settler_service(content):
     #         self.mapView.drawObjective(pos['position0'], pos['position2'], i + 1)
 
     #     self.addQuestDirections(mayor.get(f'questDirectionId0{i}'), i + 1)
-    return []
+    pass
 
-def settler_safety(content):
+def settler_safety(window: "ContentViewerWindow"):
     # sheriff = loadManager['PathSettlerSheriff'][data['objectId']]
 
     # for i in range(8):
     #     descriptionId = LocalizedStrings[sheriff.get(f'Description0{i}')]
     #     if descriptionId:
     #         self.layout.addWidget(ContentLabel(f"{descriptionId}\\n$(quest={sheriff.get(f'quest2IdSheriff0{i}', '0')})", 'PathObjective'))
-    return []
+    pass
 
-def settler_cache(content):
-    return []
+def settler_cache(window: "ContentViewerWindow"):
+    pass

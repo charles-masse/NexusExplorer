@@ -1,7 +1,14 @@
 
 class WorldData:
 
-    def __init__(self, itemId, assetPath, name, WorldLocation2=None, **kargs): #chunkBounds00, chunkBounds01, chunkBounds02, chunkBounds03,
+    def __init__(
+            self,
+            itemId: str,
+            assetPath: str,
+            name: str,
+            WorldLocation2: list["LocationData"]|None = None,
+            **kargs
+        ) -> None:
 
         self.id = itemId
         self.name = name
@@ -12,9 +19,9 @@ class WorldData:
 
         self.locations = WorldLocation2 or []
 
-    def cleanup_locations(self):
+    def cleanup_locations(self) -> None:
         #TODO CBB
-        new_list = []
+        new_list: list[LocationData] = []
 
         for location in self.locations:
             new_list.append(LocationData(**location))
@@ -23,10 +30,23 @@ class WorldData:
 
 class LocationData:
 
-    def __init__(self, radius, position0, position2, WorldZone=None, Challenge=None, Datacube=None, PublicEvent=None, Quest2=None, QuestHub=None, PathMission=None, **kargs): # worldId, worldZoneId, itemId,
+    def __init__(
+            self,
+            position0: str,
+            position2: str,
+            radius: str ='1',
+            WorldZone: list[dict]| None=None,
+            Challenge: list[dict]| None=None,
+            Datacube: list[dict]| None=None,
+            PublicEvent: list[dict]| None=None,
+            Quest2: list[dict]| None=None,
+            QuestHub: list[dict]| None=None,
+            PathMission: list[dict]| None=None,
+            **kargs
+        ) -> None:
         
         self.position = [float(position0), float(position2)]
-        self.radius = radius
+        self.radius = float(radius)
 
         # self.worldZoneId = worldZoneId #TODO Make sure we're not losing zones because they're not linking back to their location
 
@@ -40,16 +60,16 @@ class LocationData:
 
         self.name = self._get_name()
 
-    def calculate_weight(self):
+    def calculate_weight(self) -> float:
 
         if self.name != '':
-            return 1 * self.radius #TODO testing with radius scaling
+            return (1. * self.radius) #TODO testing with radius scaling
 
-        return 0
+        return 0.
 
-    def _get_name(self):
+    def _get_name(self) -> str|None:
 
-        names = []
+        names: list[str|None] = []
 
         for hub in [h for h in self.hubs if h.get('name')]:
             names.append(hub.get('name'))

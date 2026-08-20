@@ -11,6 +11,7 @@ from PyQt6.QtWidgets import (
     QWidget,
 )
 
+from ..data import LoadingManager, WorldData
 from .map_viewer import MapViewerWindow
 from .widgets import HtmlDelegate
 
@@ -19,7 +20,7 @@ WINDOW_WIDTH = 325
 class WorldListItem(QListWidgetItem):
     """Custom list item that contains a world.
     """
-    def __init__(self, world, *args, **kwargs):
+    def __init__(self, world: WorldData, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.world = world
@@ -44,7 +45,7 @@ class WorldListItem(QListWidgetItem):
 class WorldSelectWindow(QWidget):
     """Display all available worlds and open the selected one in the map viewer.
     """
-    def __init__(self, loading_manager):
+    def __init__(self, loading_manager: LoadingManager):
         super().__init__()
 
         self.loading_manager = loading_manager
@@ -63,9 +64,9 @@ class WorldSelectWindow(QWidget):
         self.world_list.setItemDelegate(self.delegate)
         layout.addWidget(self.world_list)
         #Add Load Buttom
-        load_world_button = QPushButton('Load World')
-        load_world_button.released.connect(self._select_map)
-        layout.addWidget(load_world_button)
+        self.load_world_button = QPushButton('Load World')
+        self.load_world_button.released.connect(self._select_map)
+        layout.addWidget(self.load_world_button)
 
         self._populate_world_list()
 

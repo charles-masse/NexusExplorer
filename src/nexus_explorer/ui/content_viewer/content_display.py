@@ -1,8 +1,11 @@
 
+from typing import TYPE_CHECKING
+
 from PyQt6.QtCore import *
 from PyQt6.QtGui import *
 from PyQt6.QtWidgets import *
 
+from ...data import link_game_object
 from .mission_types import (
     explorer_cartography,
     explorer_exploration,
@@ -12,6 +15,7 @@ from .mission_types import (
     explorer_vista,
     scientist_analysis,
     scientist_datacube,
+    scientist_experimentation,
     scientist_speciment,
     scientist_study,
     settler_cache,
@@ -26,29 +30,34 @@ from .mission_types import (
     soldier_SWAT,
 )
 
+if TYPE_CHECKING:
+    from . import ContentViewerWindow
 
 class ContentLabel(QLabel):
 
-    def __init__(self, text, name='ContentLabel'):
+    def __init__(self, text: str, name: str):
         super().__init__()
-        # Create hyperlinks
-        # if '$' in text:
-        #     text = linkGameObject(text)
-
-        if name.startswith('localizedTextIdMoreInfoSay0') or name in ['localizedTextIdAcceptResponse', 'localizedTextIdCompleteResponse']:
+        #Class name for stylesheet
+        self.setObjectName(name)
+        #Create hyperlinks
+        if '$' in text:
+            text = link_game_object(text)
+        #User input text
+        if any(name.startswith(string) for string in ['moreInfoSay0', 'acceptResponse', 'completeResponse']):
             text = f'> <b>{text}</b>'
 
         self.setText(f'<div>{text.replace('\\n', '<br>')}</div>')
-        self.setObjectName(name)
+
         self.setWordWrap(True)
-        # Handle links
-        # self.setOpenExternalLinks(False)
-        # self.setTextInteractionFlags(Qt.TextInteractionFlag.TextBrowserInteraction)
-        # self.linkActivated.connect(self.popup)
+        #Handle links
+        self.setOpenExternalLinks(False)
+        self.setTextInteractionFlags(Qt.TextInteractionFlag.TextBrowserInteraction)
+        self.linkActivated.connect(self.popup)
 
         self.setFixedHeight(self.sizeHint().height())
 
-    # def popup(self, link):
+    def popup(self, link):
+        return link
 
     #     try:
     #         modelId = eval(link)['creature2ModelInfoId']
@@ -61,8 +70,10 @@ class ContentLabel(QLabel):
     #     except:
     #         pass
 
-def display_datacube(content):
+def display_datacube(window: "ContentViewerWindow"):
     #TODO Play sound
+    content = window.content
+
     datacube_text = []
 
     for datacube_string_id in range(6):
@@ -72,11 +83,9 @@ def display_datacube(content):
         if datacub_string:
             datacube_text.append(datacub_string)
 
-    return [ContentLabel('\n'.join(datacube_text), 'localizedTextIdFull')]
+    window.main_layout.addWidget(ContentLabel('\n'.join(datacube_text), 'TextIdFull'))
 
-def display_quest(content):
-
-    widgets = []
+def display_quest(window: "ContentViewerWindow"):
 
     for text_name in [
         'text',
@@ -85,11 +94,7 @@ def display_quest(content):
         'acceptResponse',
         'giverSayAccepted'
     ]:
-
-        quest_text = content.get(text_name)
-
-        if quest_text:
-            widgets.append(ContentLabel(quest_text))
+        window.add_label(text_name)
 
 #     for i in reversed(range(6)):
 
@@ -120,11 +125,8 @@ def display_quest(content):
 #                   ]:
 #         self.createLabel(data.get(string), string)
 
-    return widgets
-
-def display_event(loading_manager, content):
+def display_event(window: "ContentViewerWindow"):
     #TODO type?, parent
-    widgets = []
 #     for objectiveId, objective in enumerate(data.get('PublicEventObjective', [])):
 
 #         objectiveData = loadManager['PublicEventObjective'].get(objective)
@@ -141,102 +143,84 @@ def display_event(loading_manager, content):
 
 #     self.createLabel(data.get('localizedTextIdEnd'), 'localizedTextIdEnd')
 
-    end_text = content.get('End')
-    if end_text:
-        widgets.append(ContentLabel(end_text))
+    window.add_label('End')
 
-    return widgets
-
-def display_challenge(content):
+def display_challenge(window: "ContentViewerWindow"):
     #TODO type?, target, flag?, quest directions, items
     #The location string seems to be the same as the actual location name in most cases--double-check
-    widgets = []
+    window.add_label('progress')
 
-    progress_text = content.get('progress')
-    if progress_text:
-        widgets.append(ContentLabel(progress_text))
+def display_mission(window: "ContentViewerWindow"):
 
-    return widgets
+    window.add_label('unlock')
+    window.add_label('soldierOrders')
 
-def display_mission(content):
-
-    widgets = []
-
-    unlock_text = content.get('unlock')
-    if unlock_text:
-        widgets.append(ContentLabel(unlock_text))
-
-    orders_text = content.get('soldierOrders')
-    if orders_text:
-        widgets.append(ContentLabel(orders_text))
-
-    mission_id = content['pathTypeEnum']
-
+    mission_id = window.content['pathMissionTypeEnum']
+    
     if mission_id in ['0']:
-        widgets.extends(soldier_security(content))
+        soldier_security(window)
 
     elif mission_id in ['2', '14']:
-        widgets.extends(scientist_analysis(content))
+        scientist_analysis(window)
 
     elif mission_id in ['3']:
-        widgets.extends(explorer_stalking(content))
+        explorer_stalking(window)
 
     elif mission_id in ['4']:
-        widgets.extends(soldier_assassinate(content))
+        soldier_assassinate(window)
 
     elif mission_id in ['5']:
-        widgets.extends(soldier_demolition(content))
+        soldier_demolition(window)
 
     elif mission_id in ['6']:
-        widgets.extends(soldier_rescue(content))
+        soldier_rescue(window)
 
     elif mission_id in ['7']:
-        widgets.extends(soldier_SWAT(content))
+        soldier_SWAT(window)
 
     elif mission_id in ['12']:
-        widgets.extends(explorer_exploration(content))
+        explorer_exploration(window)
 
     elif mission_id in ['13', '18']:
-        widgets.extends(explorer_scavenger(content))
+        explorer_scavenger(window)
 
     elif mission_id in ['15']:
-        widgets.extends(explorer_vista(content))
+        explorer_vista(window)
 
     elif mission_id in ['16']:
-        widgets.extends(explorer_cartography(content))
+        explorer_cartography(window)
 
     elif mission_id in ['17']:
-        widgets.extends(explorer_operation(content))
+        explorer_operation(window)
 
     elif mission_id in ['19']:
-        widgets.extends(settler_expansion(content))
+        settler_expansion(window)
 
     elif mission_id in ['20']:
-        widgets.extends(scientist_study(content))
+        scientist_study(window)
         
     elif mission_id in ['21']:
-        widgets.extends(settler_project(content))
+        settler_project(window)
+
+    elif mission_id in ['22']:
+        scientist_experimentation(window)
 
     elif mission_id in ['23']:
-        widgets.extends(scientist_speciment(content))
+        scientist_speciment(window)
 
     elif mission_id in ['24']:
-        widgets.extends(scientist_datacube(content))
+        scientist_datacube(window)
 
     elif mission_id in ['25']:
-        widgets.extends(settler_service(content))
+        settler_service(window)
 
     elif mission_id in ['26']:
-        widgets.extends(settler_safety(content))
+        settler_safety(window)
 
     elif mission_id in ['27']:
-        widgets.extends(settler_cache(content))
+        settler_cache(window)
     
     else:
         raise TypeError(f'Cannot parse this path mission id {mission_id}.')
 
-    communicator_text = content.get('communicator')
-    if communicator_text:
-        widgets.append(ContentLabel(communicator_text))
-
-    return widgets
+    window.add_label('communicator')

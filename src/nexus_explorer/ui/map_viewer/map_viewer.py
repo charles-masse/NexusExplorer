@@ -6,27 +6,22 @@ from PyQt6.QtGui import *
 from PyQt6.QtWidgets import *
 
 from ...constants import HALF_MAP, MAP_SCALE
+from ...data import LoadingManager, LocationData, WorldData
 from ...map import cluster_locations, generate_map
-from ..content_select import ContentSelectWindow
-from .map_icons import LocationObject
+from . import LocationIcon
 from .utilities import screen_to_world_pos
 
+SCALED_HALF = int(HALF_MAP * MAP_SCALE)
 
-class MapViewerWindow(QGraphicsScene):
-    """The map viewer
-    """
-    def __init__(self, loading_manager, world):
-        super().__init__()
+class MapScene(QGraphicsScene):
+
+    def __init__(self, loading_manager, world, parent=None):
+        super().__init__(parent)
 
         self.loading_manager = loading_manager
         self.world = world
 
-        self.view = QGraphicsView(self)
-        self.view.setMouseTracking(True)
-        self.view.setWindowTitle("Map Viewer")
-
-        scaled_half = int(HALF_MAP * MAP_SCALE)
-        self.setSceneRect(0, 0, scaled_half * 2, scaled_half * 2)
+        self.setSceneRect(0, 0, SCALED_HALF * 2, SCALED_HALF * 2)
         #Display the map in the view (if there's a map)
         if self.world.isMap:
             pixmap = self.display_map()
@@ -35,8 +30,6 @@ class MapViewerWindow(QGraphicsScene):
         locations = cluster_locations(self.world.locations)
         for location in locations:
             self.draw_location(location)
-        #Center view to world center
-        self.view.centerOn(QPointF(scaled_half, scaled_half))
         #Add coords on mouse pointer
         self.coords_text = QGraphicsTextItem()
         self.coords_text.setDefaultTextColor(QColor(79, 204, 60))
@@ -45,7 +38,7 @@ class MapViewerWindow(QGraphicsScene):
         self.coords_text.setFont(font)
         self.addItem(self.coords_text)
 
-    def display_map(self):
+    def display_map(self) -> QPixmap:
         """Display the map when it's done generating/opening
         """
         world_image = generate_map('/'.join([self.loading_manager.game_files, self.world.map_path.replace('\\', '/')]))
@@ -54,10 +47,10 @@ class MapViewerWindow(QGraphicsScene):
 
         return pixmap
 
-    def draw_location(self, location):
+    def draw_location(self, location: LocationData):
         """Place a location on the map
         """
-        location_obj = LocationObject(location, self)
+        location_obj = LocationIcon(location, self)
         location_obj.clicked.connect(self.select_location)
         self.addItem(location_obj)
 
@@ -69,12 +62,12 @@ class MapViewerWindow(QGraphicsScene):
     #     position = world_to_screen_pos(worldX, worldY)
     #     obj.setPos(position[0] - (obj.pixmap.width() / 2), position[1] - (obj.pixmap.height() / 2))
 
-    def focus(self, focus=None):
+    def focus(self, focus:LocationIcon | None = None):
         """Focus on a specific icon on the map and clear objectives
         """
         for item in self.items():
 
-            if isinstance(item, LocationObject):
+            if isinstance(item, LocationIcon):
 
                 if (not focus or item == focus):
                     item.setOpacity(1.0)
@@ -83,6 +76,15 @@ class MapViewerWindow(QGraphicsScene):
 
             # elif isinstance(item, ObjectiveIcon):
             #     self.removeItem(item)
+
+    def select_location(self, icon: LocationIcon):
+        """Open the window with current location's content
+        """
+        from .. import ContentSelectWindow
+        
+        self.content_select = ContentSelectWindow(self.loading_manager, icon)
+        self.content_select.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, True)
+        self.content_select.show()
 
     def mouseMoveEvent(self, event):
         """Display the map coords on the mouse
@@ -100,9 +102,16 @@ class MapViewerWindow(QGraphicsScene):
         pyperclip.copy(f"!tele {self.mouse_x} 0 {self.mouse_y} {self.world.id}")
         super().mousePressEvent(event)
 
-    def select_location(self, icon):
-        """Open the window with current location's content
-        """
-        self.content_select = ContentSelectWindow(self.loading_manager, icon)
-        self.content_select.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, True)
-        self.content_select.show()
+class MapViewerWindow(QWidget):
+    """The map viewer
+    """
+    def __init__(self, loading_manager: LoadingManager, world: WorldData):
+        super().__init__()
+
+        self.scene = MapScene(loading_manager, world, self)
+
+        self.view = QGraphicsView(self.scene)
+        self.view.setMouseTracking(True)
+        self.view.setWindowTitle("Map Viewer")
+        #Center view to world center
+        self.view.centerOn(QPointF(SCALED_HALF, SCALED_HALF))
