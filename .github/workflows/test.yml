@@ -14,46 +14,56 @@ jobs:
         python-version: ["3.12"]
 
     steps:
-          - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-          - name: Set up Python ${{ matrix.python-version }}
-            uses: actions/setup-python@v5
-            with:
-              python-version: ${{ matrix.python-version }}
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
 
-          - name: Set up uv
-            uses: astral-sh/setup-uv@v5
-            with:
-              python-version: ${{ matrix.python-version }}
-              enable-cache: true 
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
 
-          - name: Install dependencies
-            run: uv sync --frozen
+      - name: Install dependencies
+        run: uv sync --frozen
 
-          - name: Install Linux GUI dependencies
-            run: |
-              sudo apt-get update
-              sudo apt-get install -y libegl1 libgl1 libglx-mesa0 xvfb libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xinput0 libxcb-shape0
+      - name: Install Linux GUI dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libegl1 \
+            libgl1 \
+            libglx-mesa0
 
-          - name: Run tests with virtual display
-            run: |
-              xvfb-run --auto-servernum pytest --junitxml=pytest.xml --cov-report=term-missing --cov=src tests/ | tee pytest-coverage.txt
+      - name: Run tests
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: |
+          uv run pytest \
+            --junitxml=pytest.xml \
+            --cov-report=term-missing \
+            --cov=src \
+            tests/ | tee pytest-coverage.txt
 
-          - name: Coverage comment
-            id: coverage
-            uses: MishaKav/pytest-coverage-comment@v1
-            with:
-              pytest-coverage-path: ./pytest-coverage.txt
-              junitxml-path: ./pytest.xml
-              hide-comment: true
-              hide-report: true
+      - name: Coverage comment
+        id: coverage
+        uses: MishaKav/pytest-coverage-comment@v1
+        with:
+          pytest-coverage-path: ./pytest-coverage.txt
+          junitxml-path: ./pytest.xml
+          hide-comment: true
+          hide-report: true
 
-          - name: Update README
-            run: |
-              sed -i 's|<!-- Pytest Coverage Comment:Begin -->.*<!-- Pytest Coverage Comment:End -->|<!-- Pytest Coverage Comment:Begin -->${{ steps.coverage.outputs.coverageHtml }}<!-- Pytest Coverage Comment:End -->|' README.md
-          
-          - name: Commit changes
-            uses: stefanzweifel/git-auto-commit-action@v7
-            with:
-              commit_message: 'docs: update coverage badge'
-              file_pattern: README.md
+      - name: Update README
+        run: |
+          sed -i 's|<!-- Pytest Coverage Comment:Begin -->.*<!-- Pytest Coverage Comment:End -->|<!-- Pytest Coverage Comment:Begin --> ${{ steps.coverage.outputs.coverageHtml }} <!-- Pytest Coverage Comment:End -->|' README.md
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: "Updated coverage badge"
+          file_pattern: README.md
