@@ -1,5 +1,5 @@
 
-from .map_icons import LocationIcon
-from .map_viewer import MapViewerWindow
+from .objects import LocationObject, ObjectiveObject, RegionObject
+from .window import MapViewer
 
-__all__ = ['LocationIcon', 'MapViewerWindow']
+__all__ = ['LocationObject', 'MapViewer', 'ObjectiveObject', 'RegionObject']

@@ -52,17 +52,14 @@ uv run nexus_explorer "PATH_TO_EXTRACTED_GAME_DATA"
 > You can click on underlined names to have more info on that game object.
 
 ## Roadmap
-- [x] Display minimap
-- [x] Cluster map features
+- [x] Display map
 - [x] Show Quests
 - [x] Show Challenges
 - [x] Show Events
 - [X] Show Datacubes
-- [X] Show Quest and Event objectives
 - [X] Show Path missions
-- [X] Show quest/mission objectives on map
+- [X] Show Objectives
 - [ ] Linked items
 - [ ] Show Episodes/Quest chains
 - [ ] Linked NPC/creature models
-- [ ] Show Nemesis (?)
 - [ ] Communicator messages (?)

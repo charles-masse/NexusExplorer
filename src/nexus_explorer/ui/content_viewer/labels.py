@@ -1,11 +1,11 @@
 
 from typing import TYPE_CHECKING
 
-from PyQt6.QtCore import *
-from PyQt6.QtGui import *
-from PyQt6.QtWidgets import *
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QPixmap
+from PyQt6.QtWidgets import QLabel
 
-from ...data import link_game_object
+from ...data import link_referenced
 from .mission_types import (
     explorer_cartography,
     explorer_exploration,
@@ -40,10 +40,10 @@ class ContentLabel(QLabel):
         #Class name for stylesheet
         self.setObjectName(name)
         #Create hyperlinks
-        if '$' in text:
-            text = link_game_object(text)
+        # if '$' in text:
+        #     text = link_referenced(text)
         #User input text
-        if any(name.startswith(string) for string in ['moreInfoSay0', 'acceptResponse', 'completeResponse']):
+        if any(name.startswith(string) for string in ['localizedTextIdMoreInfoSay0', 'localizedTextIdAcceptResponse', 'localizedTextIdCompleteResponse']):
             text = f'> <b>{text}</b>'
 
         self.setText(f'<div>{text.replace('\\n', '<br>')}</div>')
@@ -76,25 +76,41 @@ def display_datacube(window: "ContentViewerWindow"):
 
     datacube_text = []
 
+    image = content.get('assetPathImage')
+
+    if image:
+
+        image_file = image.replace('Icon_ItemTBF_', '')
+
+        label = QLabel()
+        pixmap = QPixmap(f'{window.loading_manager.game_files}/UI/Icon/Item/TBF/{image_file}/{image_file}.png')
+        label.setPixmap(pixmap)
+        window.main_layout.addWidget(label)
+
     for datacube_string_id in range(6):
 
-        datacub_string = content.get(f'text0{datacube_string_id}')
+        datacub_string = content.get(f'localizedTextIdText0{datacube_string_id}')
 
         if datacub_string:
             datacube_text.append(datacub_string)
 
-    window.main_layout.addWidget(ContentLabel('\n'.join(datacube_text), 'TextIdFull'))
+    window.main_layout.addWidget(ContentLabel('\n'.join(datacube_text), 'QuestObjective'))
 
 def display_quest(window: "ContentViewerWindow"):
 
-    for text_name in [
-        'text',
-        'giverTextUnknown',
-        *[s for i in range(5) for s in [f'moreInfoSay0{i}', f'moreInfoText0{i}']],
-        'acceptResponse',
-        'giverSayAccepted'
-    ]:
-        window.add_label(text_name)
+    if window.content.name ==  'Quest2':
+
+        for text_name in [
+            'localizedTextIdText',
+            'localizedTextIdGiverTextUnknown',
+            *[s for i in range(5) for s in [f'localizedTextIdMoreInfoSay0{i}', f'localizedTextIdMoreInfoText0{i}']],
+            'localizedTextIdAcceptResponse',
+            'localizedTextIdGiverSayAccepted'
+        ]:
+            window.add_label(text_name)
+
+    else:
+        print('THIS IS AN OBJECTIVE')
 
 #     for i in reversed(range(6)):
 
@@ -143,84 +159,84 @@ def display_event(window: "ContentViewerWindow"):
 
 #     self.createLabel(data.get('localizedTextIdEnd'), 'localizedTextIdEnd')
 
-    window.add_label('End')
+    window.add_label('localizedTextIdEnd')
 
 def display_challenge(window: "ContentViewerWindow"):
     #TODO type?, target, flag?, quest directions, items
     #The location string seems to be the same as the actual location name in most cases--double-check
-    window.add_label('progress')
+    window.add_label('localizedTextIdProgress')
 
 def display_mission(window: "ContentViewerWindow"):
 
-    window.add_label('unlock')
-    window.add_label('soldierOrders')
+    window.add_label('localizedTextIdUnlock')
+    window.add_label('localizedTextIdSoldierOrders')
 
     mission_id = window.content['pathMissionTypeEnum']
     
-    if mission_id in ['0']:
+    if mission_id in [0]:
         soldier_security(window)
 
-    elif mission_id in ['2', '14']:
+    elif mission_id in [2, 14]:
         scientist_analysis(window)
 
-    elif mission_id in ['3']:
+    elif mission_id in [3]:
         explorer_stalking(window)
 
-    elif mission_id in ['4']:
+    elif mission_id in [4]:
         soldier_assassinate(window)
 
-    elif mission_id in ['5']:
+    elif mission_id in [5]:
         soldier_demolition(window)
 
-    elif mission_id in ['6']:
+    elif mission_id in [6]:
         soldier_rescue(window)
 
-    elif mission_id in ['7']:
+    elif mission_id in [7]:
         soldier_SWAT(window)
 
-    elif mission_id in ['12']:
+    elif mission_id in [12]:
         explorer_exploration(window)
 
-    elif mission_id in ['13', '18']:
+    elif mission_id in [13, 18]:
         explorer_scavenger(window)
 
-    elif mission_id in ['15']:
+    elif mission_id in [15]:
         explorer_vista(window)
 
-    elif mission_id in ['16']:
+    elif mission_id in [16]:
         explorer_cartography(window)
 
-    elif mission_id in ['17']:
+    elif mission_id in [17]:
         explorer_operation(window)
 
-    elif mission_id in ['19']:
+    elif mission_id in [19]:
         settler_expansion(window)
 
-    elif mission_id in ['20']:
+    elif mission_id in [20]:
         scientist_study(window)
         
-    elif mission_id in ['21']:
+    elif mission_id in [21]:
         settler_project(window)
 
-    elif mission_id in ['22']:
+    elif mission_id in [22]:
         scientist_experimentation(window)
 
-    elif mission_id in ['23']:
+    elif mission_id in [23]:
         scientist_speciment(window)
 
-    elif mission_id in ['24']:
+    elif mission_id in [24]:
         scientist_datacube(window)
 
-    elif mission_id in ['25']:
+    elif mission_id in [25]:
         settler_service(window)
 
-    elif mission_id in ['26']:
+    elif mission_id in [26]:
         settler_safety(window)
 
-    elif mission_id in ['27']:
+    elif mission_id in [27]:
         settler_cache(window)
     
     else:
         raise TypeError(f'Cannot parse this path mission id {mission_id}.')
 
-    window.add_label('communicator')
+    window.add_label('localizedTextIdCommunicator')

@@ -7,8 +7,7 @@ from ..constants import MAP_CHUNK_RESOLUTION, MAP_SCALE
 
 
 def chunk_coords(chunk_name):
-    """Parse the minimap chunk name into map coords
-    """
+    """Parse the minimap chunk name into map coords"""
     split_name = chunk_name.split('.')[-1]
     x = int(split_name[2:4], 16)
     y = int(split_name[0:2], 16)
@@ -33,7 +32,7 @@ def generate_map(chunk_path, cache=True):
         im = Image.new('RGB', (max_x, max_y))
 
         for (chunk_name, chunk_x, chunk_y) in chunks:
-            #Load chunk #TODO loading bar
+            #Load chunk
             with Image.open('/'.join([chunk_path, chunk_name, chunk_name + '.png'])) as chunk_image:
                 #Scale map and paste at the right postion
                 chunk_image = ImageOps.scale(chunk_image, MAP_SCALE)

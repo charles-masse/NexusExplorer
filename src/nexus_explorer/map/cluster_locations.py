@@ -5,7 +5,7 @@ from sklearn.neighbors import KDTree
 
 from ..data import LocationData
 
-CLUSTER_DISTANCE = 256
+CLUSTER_DISTANCE = 128
 
 def merge_locations(locations):
     #Grab the biggest radius and the median position
@@ -20,25 +20,23 @@ def merge_locations(locations):
         [challenge for loc in locations for challenge in loc.challenges],
         [datacube for loc in locations for datacube in loc.datacubes],
         [event for loc in locations for event in loc.events],
+        [event_obj for loc in locations for event_obj in loc.event_objectives],
         [quest for loc in locations for quest in loc.quests],
+        [quest_obj for loc in locations for quest_obj in loc.quest_objectives],
         [hub for loc in locations for hub in loc.hubs],
         [mission for loc in locations for mission in loc.missions]
     )
 
 def cluster_locations(locations):
-    """
-    Use sklearn to cluster the different world locations
-    """
-    #TODO separate each operation in its own function
+    """Use sklearn to cluster the different world locations"""
     if len(locations) == 0:
-        return locations
-    
+        return []
     #Merge locations with the same name together
     duplicate_names = {}
 
     for loc in locations:
         duplicate_names.setdefault(loc.name, []).append(loc)
-    
+
     merged_locs = []
 
     for name, loc_list in duplicate_names.items():
@@ -49,6 +47,7 @@ def cluster_locations(locations):
         else:
             merged_loc = merge_locations(loc_list)
             merged_locs.append(merged_loc)
+    #TODO Merged named locations that are too close based on their radius
     #DBSCAN setup
     dbscan = DBSCAN(eps=CLUSTER_DISTANCE, min_samples=1)
     #Clustering locations around locations with named hubs/zones/named challenge
@@ -82,6 +81,6 @@ def cluster_locations(locations):
         merged_loc = merge_locations(cluster)
         final_locations.append(merged_loc)
     #Sort for icon layering
-    final_locations.sort(key=lambda index: float(index.position[1]))
+    final_locations.sort(key=lambda index: index.position[1])
 
     return final_locations

@@ -1,11 +1,11 @@
 
-from PyQt6.QtCore import *
-from PyQt6.QtGui import *
-from PyQt6.QtWidgets import *
+from PyQt6.QtGui import QCloseEvent, QShowEvent
+from PyQt6.QtWidgets import QVBoxLayout
 
-from ...data import DBDict, LoadingManager
-from ..map_viewer.map_icons import LocationIcon
-from .content_display import (
+from ...data import DBDict, LoadingManager, link_referenced
+from ..extensions import NEWidget
+from ..map_viewer.objects import LocationObject
+from .labels import (
     ContentLabel,
     display_challenge,
     display_datacube,
@@ -14,32 +14,34 @@ from .content_display import (
     display_quest,
 )
 
-WINDOW_WIDTH = 400
+WINDOW_WIDTH = 375
 
-class ContentViewerWindow(QWidget):
+class ContentViewerWindow(NEWidget):
 
-    def __init__(self, loading_manager: LoadingManager, content: DBDict, icon: LocationIcon | None = None):
+    def __init__(self, loading_manager: LoadingManager, content: DBDict, object: LocationObject | None = None):
         super().__init__()
 
         self.loading_manager = loading_manager
         self.content = content
-        self.icon = icon
+        self.object = object
 
-        # screen = QScreen.availableGeometry(QApplication.primaryScreen())
-        # self.move(screen.x(), screen.y())
+        print(content)
 
         self.main_layout = QVBoxLayout(self)
         self.main_layout.setSpacing(3)
         #General title vs challenge title
-        self.setWindowTitle(content.get('name') or content.get('title') or content.get('short') or '- Unnamed -')
+        name = content.get('localizedTextIdName') or content.get('localizedTextIdTitle') or content.get('localizedTextIdShort') or '- Unnamed -'
+        if '$' in name:
+            name = link_referenced(loading_manager, name, False)
+        self.setWindowTitle(name)
 
         if content.name == 'Datacube':
             display_datacube(self)
 
-        elif content.name == 'Quest2':
+        elif content.name in ['Quest2', 'QuestObjective']:
             display_quest(self)
 
-        elif content.name == 'PublicEvent':
+        elif content.name in ['PublicEvent', 'PublicEventObjective']:
             display_event(self)
 
         elif content.name == 'Challenge':
@@ -47,7 +49,7 @@ class ContentViewerWindow(QWidget):
 
         elif content.name == 'PathMission':
             display_mission(self)
-            
+
         else:
             raise TypeError('Cannot parse this data.')
         # Quest directions
@@ -76,7 +78,7 @@ class ContentViewerWindow(QWidget):
     #         widget = item.widget()
 
     #         if widget.objectName() in ['QuestObjective', 'PublicEventObjective']:
-    #             test = mapViewer.ObjectiveIcon(objId)
+    #             test = mapViewer.ObjectiveObject(objId)
     #             test.setPos(1, heightOffset)
     #             scene.addItem(test)
     #             objId += 1 
@@ -89,17 +91,17 @@ class ContentViewerWindow(QWidget):
         if text:
             self.main_layout.addWidget(ContentLabel(text, string_name))
 
-    def showEvent(self, event):
-        #Focus on icon
-        if self.icon:
-            self.icon.map_scene.focus(self.icon)
+    def showEvent(self, event: QShowEvent | None):
+        #Focus on object
+        if self.object:
+            self.object.map_scene.focus(self.object)
 
         super().showEvent(event)
 
-    def closeEvent(self, event):
-        #Remove focus from icon
-        if self.icon:
-            self.icon.map_scene.focus()
+    def closeEvent(self, event: QCloseEvent | None):
+        #Remove focus from object
+        if self.object:
+            self.object.map_scene.focus()
 
         super().closeEvent(event)
 
