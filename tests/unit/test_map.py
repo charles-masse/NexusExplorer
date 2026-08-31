@@ -14,8 +14,6 @@ def test_generate_map():
 def test_merge_locations():
     merge_locations([sample_location0, sample_location1])
 
-    #TODO
-
 def test_cluster_no_locations():
     clustered_locs = cluster_locations([])
 

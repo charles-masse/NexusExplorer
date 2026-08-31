@@ -6,9 +6,8 @@ from . import WorldData
 
 
 class DBDict(dict):
-    """A dictionary that keeps the name of the database
-    """
-    def __init__(self, name: str, data: dict[str, str] | None = None):
+    """A dictionary that keeps the name of the database"""
+    def __init__(self, name: str, data: dict[str, str] | None = None, **kwargs):
         
         if data:
             super().__init__(data)
@@ -51,7 +50,7 @@ class LoadingManager:
         - db_name: Name of the requested .csv
         - folder: Nexusvault folder where the .csv is stored
         """
-        dbDict = DBDict(db_name)
+        new_dict = DBDict(db_name)
 
         with open('/'.join([self.game_files, folder, db_name, db_name + '.csv']), encoding='utf') as f:
             #Skip first line
@@ -59,29 +58,58 @@ class LoadingManager:
 
             reader = csv.DictReader(f, delimiter=';')
 
-            keyField = reader.fieldnames[0]
-            valueFields = [field for field in reader.fieldnames[1:]]
+            id_field = reader.fieldnames[0]
+            value_fields = [field for field in reader.fieldnames[1:]]
 
             for row in reader:
-                for field in valueFields:
 
-                    field_name = field.split(' [')[0]
-                    #Localize strings #TODO is this smart?
-                    if field_name.startswith('localizedTextId'):
-                        #Remove 'localizedStringId' from name and lowercase the first letter
-                        field_name = field_name.replace('localizedTextId', '')
-                        field_name = field_name[0].lower() + field_name[1:]
+                try:
+                    new_entry = {'id':int(row[id_field])}
 
-                        localized_string = self[self.language].get(row[field])
+                    for field in value_fields:
 
-                        if localized_string and localized_string.get('Text') != '':
-                            data = localized_string.get('Text')
+                        split_field = field.split(' [')
+                        field_name = split_field[0]
+                        #Localize strings
+                        if field_name.startswith('localizedTextId'):
+
+                            localized_string = self[self.language].get(int(row[field]))
+
+                            if localized_string:
+                                data = localized_string.get('Text')
+                            else:
+                                data = ''
+                        #Convert value to the right type
+                        elif split_field[-1] not in ['Text', '']:
+
+                            field_type = split_field[-1].split(' ')[0]
+
+                            if field_type == "FLOAT":
+                                data = float(row[field])
+
+                            elif field_type == "INT32":
+                                data = int(row[field])
+
+                            elif field_type == "BOOL":
+                                data = bool(row[field])
+
+                            elif field_type == "STRING":
+                                data = row[field]
+
+                            else:
+                                print(f'[LoadingManager] Cannot convert data to data type "{field_type}"')
+
                         else:
-                            data = False
+                            data = row[field]
 
-                    else:
-                        data = row[field]
-                        
-                    dbDict.setdefault(row[keyField], {'itemId':row[keyField]}).setdefault(field_name, data)
+                        new_entry.setdefault(field_name, data)
+                    #Cleanup data with no human readable strings
+                    localized_values = [value for field, value in new_entry.items() if field.startswith('localizedTextId')]
 
-        return dbDict
+                    if db_name == 'World' or not localized_values or any(value.strip() != '' for value in localized_values):
+                        new_dict.setdefault(int(row[id_field]), new_entry)
+
+                except ValueError:
+                    print(f'[LoadingManager][{db_name}] "{row[id_field]}" is not a valid Id. -SKIPPED-')
+
+        return new_dict

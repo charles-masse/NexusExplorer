@@ -1,6 +1,5 @@
 
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QScreen
 from PyQt6.QtWidgets import (
     QApplication,
     QListWidget,
@@ -8,18 +7,16 @@ from PyQt6.QtWidgets import (
     QPushButton,
     QStyle,
     QVBoxLayout,
-    QWidget,
 )
 
 from ..data import LoadingManager, WorldData
-from .map_viewer import MapViewerWindow
-from .widgets import HtmlDelegate
+from .extensions import HtmlDelegate, NEWidget
+from .map_viewer import MapViewer
 
 WINDOW_WIDTH = 325
 
 class WorldListItem(QListWidgetItem):
-    """Custom list item that contains a world.
-    """
+    """Custom list item that contains a world."""
     def __init__(self, world: WorldData, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -28,7 +25,7 @@ class WorldListItem(QListWidgetItem):
         self.set_world_name()
 
     def set_world_name(self):
-
+        #TODO get name from continent
         world_string = []
         #World Id
         world_string.append(f"<b>[{self.world.id}]</b>")
@@ -42,20 +39,20 @@ class WorldListItem(QListWidgetItem):
         
         self.setText(' '.join(world_string))
 
-class WorldSelectWindow(QWidget):
-    """Display all available worlds and open the selected one in the map viewer.
-    """
+class WorldSelectWindow(NEWidget):
+    """Display all available worlds and open the selected one in the map viewer."""
     def __init__(self, loading_manager: LoadingManager):
         super().__init__()
-
+        
         self.loading_manager = loading_manager
         #Window settings
         self.setWindowTitle("World Select")
         self.setWindowFlags(self.windowFlags() | Qt.WindowType.WindowStaysOnTopHint)
         #Size/Pos
-        screen = QScreen.availableGeometry(QApplication.primaryScreen())
-        self.setFixedSize(WINDOW_WIDTH, screen.height() - self.style().PixelMetric(QStyle.PixelMetric.PM_TitleBarHeight))
-        self.move(screen.x(), screen.y())
+        screen = QApplication.primaryScreen()
+        geometry = screen.availableGeometry()
+        self.setFixedSize(WINDOW_WIDTH, geometry.height() - self.style().pixelMetric(QStyle.PixelMetric.PM_TitleBarHeight))
+        self.move(geometry.topLeft())
 
         layout = QVBoxLayout(self)
         #Add World list
@@ -63,7 +60,7 @@ class WorldSelectWindow(QWidget):
         self.delegate = HtmlDelegate(self.world_list)
         self.world_list.setItemDelegate(self.delegate)
         layout.addWidget(self.world_list)
-        #Add Load Buttom
+        #Add Load World Buttom
         self.load_world_button = QPushButton('Load World')
         self.load_world_button.released.connect(self._select_map)
         layout.addWidget(self.load_world_button)
@@ -71,15 +68,15 @@ class WorldSelectWindow(QWidget):
         self._populate_world_list()
 
     def _populate_world_list(self):
-        """Populate the world list with worlds with map or features
-        """
-        for world in self.loading_manager.worlds:
+        """Populate the world list with worlds with map or features"""
+        #Skip duplicates
+        worlds = self.loading_manager.worlds
+        for world in [w for w in worlds if (w.name or w.map_name) not in [w.name or w.map_name for w in worlds] or w.locations]:
             self.world_list.addItem(WorldListItem(world))
 
     def _select_map(self):
-        """Load the selected map inside the map viewer
-        """
+        """Load the selected map inside the map viewer"""
         current_item = self.world_list.currentItem()
         if current_item:
-            self.mapScreen = MapViewerWindow(self.loading_manager, current_item.world)
-            self.mapScreen.view.showMaximized()
+            self.popup = MapViewer(self.loading_manager, current_item.world)
+            self.popup.showMaximized()

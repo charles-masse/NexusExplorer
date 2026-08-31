@@ -1,10 +1,10 @@
 
-from PyQt6.QtGui import QColor, QPalette, QTextDocument
-from PyQt6.QtWidgets import QStyle, QStyledItemDelegate, QTreeView
+from PyQt6.QtGui import QCloseEvent, QColor, QPalette, QTextDocument
+from PyQt6.QtWidgets import QStyle, QStyledItemDelegate, QTreeView, QWidget
 
 
 class HtmlDelegate(QStyledItemDelegate):
-
+    """Adding html formatting and links to text"""
     def paint(self, painter, option, index):
         
         widget = option.widget
@@ -48,3 +48,17 @@ class HtmlDelegate(QStyledItemDelegate):
         doc.setDocumentMargin(0)
 
         return doc.size().toSize()
+
+class NEWidget(QWidget):
+    """A widget that also closes their popup when closing"""
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        self.popup = None
+
+    def closeEvent(self, event: QCloseEvent | None):
+
+        if self.popup:
+            self.popup.close()
+
+        super().closeEvent(event)

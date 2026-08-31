@@ -1,6 +1,6 @@
 <h1 align="center">Nexus Explorer</h1>
 
-![Static Badge](https://img.shields.io/badge/Status-Work_in_Progress-orange) [![Run Tests](https://github.com/charles-masse/NexusExplorer/actions/workflows/test.yml/badge.svg)](https://github.com/charles-masse/NexusExplorer/actions/workflows/test.yml) <!-- Pytest Coverage Comment:Begin --> <a href="https://github.com/charles-masse/NexusExplorer/blob/main/README.md"><img alt="Coverage" src="https://img.shields.io/badge/Coverage-58%25-orange.svg" /></a> <!-- Pytest Coverage Comment:End -->
+![Static Badge](https://img.shields.io/badge/Status-Work_in_Progress-orange) [![Run Tests](https://github.com/charles-masse/NexusExplorer/actions/workflows/test.yml/badge.svg)](https://github.com/charles-masse/NexusExplorer/actions/workflows/test.yml) <!-- Pytest Coverage Comment:Begin --> <a href="https://github.com/charles-masse/NexusExplorer/blob/main/README.md"><img alt="Coverage" src="https://img.shields.io/badge/Coverage-72%25-yellow.svg" /></a> <!-- Pytest Coverage Comment:End -->
 
 ![Demo](/../gh-images/images//demo.gif)
 
@@ -52,17 +52,14 @@ uv run nexus_explorer "PATH_TO_EXTRACTED_GAME_DATA"
 > You can click on underlined names to have more info on that game object.
 
 ## Roadmap
-- [x] Display minimap
-- [x] Cluster map features
+- [x] Display map
 - [x] Show Quests
 - [x] Show Challenges
 - [x] Show Events
 - [X] Show Datacubes
-- [X] Show Quest and Event objectives
 - [X] Show Path missions
-- [X] Show quest/mission objectives on map
+- [X] Show Objectives
 - [ ] Linked items
 - [ ] Show Episodes/Quest chains
 - [ ] Linked NPC/creature models
-- [ ] Show Nemesis (?)
 - [ ] Communicator messages (?)

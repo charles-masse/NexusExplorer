@@ -1,4 +1,4 @@
 
-from .content_viewer import ContentViewerWindow
+from .window import ContentViewerWindow
 
 __all__ = ['ContentViewerWindow']
