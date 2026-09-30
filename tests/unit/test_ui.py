@@ -1,6 +1,6 @@
 
-from nexus_explorer.data.data_types import LocationData, WorldData
-from nexus_explorer.data.load_data import DBDict, LoadingManager
+from nexus_explorer.data.load import DBDict, LoadingManager
+from nexus_explorer.data.types import LocationData, WorldData
 from nexus_explorer.ui import (
     ContentSelectWindow,
     ContentViewerWindow,

@@ -1,4 +1,5 @@
 
+from pprint import pprint
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QCloseEvent, QFont, QIcon
@@ -11,11 +12,11 @@ from PyQt6.QtWidgets import (
 )
 
 from ..data import DBDict, LoadingManager
-from ..data.parse_data import link_referenced
+from ..data.process import link_referenced
 from .content_types import CONTENT_TYPES
 from .content_viewer import ContentViewerWindow
 from .extensions import HtmlDelegate, NEWidget
-from .map_viewer import LocationObject
+from .map_viewer import LocationObject, RegionObject
 
 WINDOW_WIDTH = 400
 
@@ -79,14 +80,16 @@ class ContentItem(QTreeWidgetItem):
 
 class ContentSelectWindow(NEWidget):
     """Categorize the content into their different types"""
-    def __init__(self, loading_manager: LoadingManager, object: LocationObject):
+    def __init__(self, loading_manager: LoadingManager, object: LocationObject | RegionObject):
         super().__init__()
 
         self.loading_manager = loading_manager
         self.object = object
 
-        self.setWindowTitle(object.location.name or 'Untitled Location')
-        self.setWindowIcon(QIcon(object.pixmap))
+        pprint(object.content)
+
+        self.setWindowTitle(object.content['localizedTextIdName'] or 'Untitled Location')
+        # self.setWindowIcon(QIcon(object.pixmap)) #TODO
 
         screen = QApplication.primaryScreen()
         geometry = screen.availableGeometry()
@@ -119,19 +122,20 @@ class ContentSelectWindow(NEWidget):
 
     def populate_list(self):
 
-        location = self.object.location
-
-        for content_id, content in enumerate([
-            location.datacubes,
-            location.quests,
-            location.missions,
-            location.events,
-            location.challenges,
-            location.event_objectives,
-            location.quest_objectives,
+        for content_id, content_type in enumerate([
+            'Datacube',
+            'Quest2',
+            'PathMission',
+            'PublicEvent',
+            'Challenge',
+            'PublicEventObjective',
+            'QuestObjective',
         ]):
-            if len(content):
-                self.add_category(content, content_id)
+
+            content_data = self.object.content.get(content_type)
+            
+            if content_data:
+                self.add_category(content_data, content_id)
 
     def select_content(self, item: ContentItem):
         #If it's not a category header

@@ -1,8 +1,7 @@
 
-import os
 import re
 
-from . import DBDict, LoadingManager, LocationData, WorldData
+from . import DBDict, LoadingManager
 
 
 def link_data(target:DBDict, field_name:str, source:list[DBDict]) -> DBDict:
@@ -40,7 +39,6 @@ def prep_worlds(loading_manager: LoadingManager):
     #Adding zone datacubes
     link_data(loading_manager['WorldZone'], 'worldZoneId', [loading_manager['Datacube']])
     #Link content to their location
-    replace_data(loading_manager['WorldLocation2'], 'worldZoneId', loading_manager['WorldZone'])
     link_data(loading_manager['WorldLocation2'], 'worldlocation', [
         loading_manager['Challenge'],
         loading_manager['Datacube'],
@@ -53,33 +51,6 @@ def prep_worlds(loading_manager: LoadingManager):
     ]) #'QuestDirectionEntry' #???
     #Link locations to their world
     link_data(loading_manager['World'], 'worldId', [loading_manager['WorldLocation2']])
-
-    for world in loading_manager['World'].values():
-        world_data = WorldData(**world)
-        #Can we find the map in the files
-        world_data.isMap = world_data.map_name in os.listdir(f"{loading_manager.game_files}/Map/")
-        #Location cleanup
-        cleaned_locs = []
-
-        for location in world_data.locations:
-            loc = LocationData(**location)
-            
-            if any([
-                loc.challenges,
-                loc.datacubes,
-                loc.events,
-                loc.event_objectives,
-                loc.quests,
-                loc.quest_objectives,
-                loc.hubs,
-                loc.missions
-            ]):
-                cleaned_locs.append(loc)
-
-        world_data.locations = cleaned_locs
-        #Add world to list if world has a map and/or locations with content
-        if world_data.isMap or world_data.locations:
-            loading_manager.worlds.append(world_data)
 
 DATABASES = {
     'creature' : 'Creature2',
