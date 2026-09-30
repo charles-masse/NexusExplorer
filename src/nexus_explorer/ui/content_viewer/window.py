@@ -1,4 +1,6 @@
 
+from pprint import pprint
+
 from PyQt6.QtGui import QCloseEvent, QShowEvent
 from PyQt6.QtWidgets import QVBoxLayout
 
@@ -25,7 +27,7 @@ class ContentViewerWindow(NEWidget):
         self.content = content
         self.object = object
 
-        print(content)
+        pprint(content)
 
         self.main_layout = QVBoxLayout(self)
         self.main_layout.setSpacing(3)

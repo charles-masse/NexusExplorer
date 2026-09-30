@@ -16,7 +16,6 @@ def merge_locations(locations):
         x,
         y,
         radius,
-        [zone for loc in locations for zone in loc.zones],
         [challenge for loc in locations for challenge in loc.challenges],
         [datacube for loc in locations for datacube in loc.datacubes],
         [event for loc in locations for event in loc.events],

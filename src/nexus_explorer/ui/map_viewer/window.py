@@ -7,7 +7,6 @@ from PyQt6.QtGui import (
     QColor,
     QFont,
     QPixmap,
-    QPolygonF,
 )
 from PyQt6.QtWidgets import (
     QGraphicsScene,
@@ -21,7 +20,6 @@ from ...data import LoadingManager, LocationData, WorldData
 from ...map import cluster_locations, generate_map
 from . import LocationObject, ObjectiveObject, RegionObject
 from .utilities import (
-    hex_to_world_coordinates,
     screen_to_world_coordinates,
     world_to_screen_pos,
 )
@@ -38,11 +36,17 @@ class MapScene(QGraphicsScene):
 
         self.popup = None
 
+        self.world_x = 0
+        self.world_y = 0
+
         self.setSceneRect(0, 0, SCALED_HALF * 2, SCALED_HALF * 2)
         #Display the map in the view (if there's a map)
         if world.isMap:
             pixmap = self.display_map()
             self.addPixmap(pixmap)
+        #Add map objects
+        # self.display_locations()
+        self.display_regions()
         #Add coords on mouse pointer
         self.coords_text = QGraphicsTextItem()
         self.coords_text.setDefaultTextColor(QColor(79, 204, 60))
@@ -50,15 +54,6 @@ class MapScene(QGraphicsScene):
         font.setBold(True)
         self.coords_text.setFont(font)
         self.addItem(self.coords_text)
-        #Objects
-        self.display_locations(world.locations)
-        self.display_regions(loading_manager)
-    
-    def display_locations(self, locations):
-        #Cluster locations and add them to the map
-        locations = cluster_locations(locations)
-        for location in locations:
-            self.draw_location(location)
 
     def display_map(self) -> QPixmap:
         """Display the map when it's done generating/loading."""
@@ -68,29 +63,54 @@ class MapScene(QGraphicsScene):
 
         return pixmap
 
-    def display_regions(self, loading_manager):
+    def display_locations(self):
+        #Cluster locations and add them to the map
+        # if any([
+            #     loc.challenges,
+            #     loc.datacubes,
+            #     loc.events,
+            #     loc.event_objectives,
+            #     loc.quests,
+            #     loc.quest_objectives,
+            #     loc.hubs,
+            #     loc.missions
+            # ]):
+        locations = cluster_locations(self.world.locations)
+        for location in locations:
+            self.draw_location(location)
 
-        zones = loading_manager['MapZone']
+    def display_regions(self):
+        #TODO Cleanup
+        regions = []
 
-        for zone in zones.values():
-            if zone['mapContinentId'] == 6: #Get from continent
+        for map_zone in self.loading_manager['MapZone'].values():
+            if map_zone['worldZoneId'] in self.world.zones:
 
-                testA, testB = world_to_screen_pos(*hex_to_world_coordinates(zone['hexMinX'], zone['hexMinY']))
-                testC, testD = world_to_screen_pos(*hex_to_world_coordinates(zone['hexLimX'], zone['hexLimY']))
+                world_map =  self.loading_manager['WorldZone'].get(map_zone['worldZoneId'])
 
-                if zone['flags'] == 0:
-                    poly = QPolygonF([QPointF(testA, testB), QPointF(testC, testB), QPointF(testC, testD), QPointF(testA, testD)])
-                    self.draw_region(poly)
-    
-    def draw_location(self, location: LocationData): #TODO x, y
+                if world_map:
+                    regions.append([map_zone,world_map ])
+
+        for map_zone in self.loading_manager['MapZoneWorldJoin'].values():
+
+            map_zone_data = self.loading_manager['MapZone'].get(map_zone['mapZoneId'])
+
+            if map_zone['worldId'] == self.world.id and map_zone_data and map_zone_data['worldZoneId'] not in self.world.zones:
+                regions.append([map_zone_data, self.loading_manager['WorldZone'].get(map_zone_data['worldZoneId'])])
+        #Sort from biggest to smallest
+        regions.sort(key=lambda region: (region[0]['hexLimX'] - region[0]['hexMinX'], region[0]['hexLimY'] - region[0]['hexMinY']), reverse=True)
+
+        for region in regions:
+            self.draw_region(region)
+
+    def draw_location(self, location: LocationData):
         """Place a location on the map."""
         location_obj = LocationObject(location, self)
-        location_obj.clicked.connect(self.select_location)
         self.addItem(location_obj)
 
-    def draw_region(self, region):
+    def draw_region(self, zone):
         """Draw a region on the map."""
-        region_obj = RegionObject(region)
+        region_obj = RegionObject(*zone, self)
         self.addItem(region_obj)
 
     def drawObjective(self, x: float, y: float, objective_id: int):
@@ -114,7 +134,7 @@ class MapScene(QGraphicsScene):
             elif isinstance(item, ObjectiveObject):
                 self.removeItem(item)
 
-    def select_location(self, icon: LocationObject):
+    def select_object(self, icon: LocationObject):
         """Open the window with current location's content"""
         from .. import ContentSelectWindow  #TODO
 
@@ -129,14 +149,16 @@ class MapScene(QGraphicsScene):
         super().mouseMoveEvent(event)
 
         if event != None:
+
             coords = event.scenePos()
-            self.mouse_x, self.mouse_y = screen_to_world_coordinates(coords.x(), coords.y())
+            self.world_x, self.world_y = screen_to_world_coordinates(coords.x(), coords.y())
+            
             self.coords_text.setPos(coords.x() + 11, coords.y() + 1)
-            self.coords_text.setHtml(f"<div style='background-color:rgba(24, 25, 23, 100);'>&nbsp;&nbsp;({self.mouse_x}, {self.mouse_y})&nbsp;</div>")
+            self.coords_text.setHtml(f"<div style='background-color:rgba(24, 25, 23, 100);'>&nbsp;&nbsp;({self.world_x}, {self.world_y})&nbsp;</div>")
 
     def mousePressEvent(self, event: QGraphicsSceneMouseEvent | None):
         """Copy the teleport command for the current coords on click to teleport in-game"""
-        pyperclip.copy(f"!tele {self.mouse_x} 0 {self.mouse_y} {self.world.id}")
+        pyperclip.copy(f"!tele {self.world_x} 0 {self.world_y} {self.world.id}")
         super().mousePressEvent(event)
 
 class MapViewer(QGraphicsView):

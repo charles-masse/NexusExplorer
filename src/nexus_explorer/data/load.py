@@ -1,8 +1,9 @@
 
 import csv
-from typing import Self
+from typing import TYPE_CHECKING, Self
 
-from . import WorldData
+if TYPE_CHECKING:
+    from . import WorldData
 
 
 class DBDict(dict):
@@ -64,7 +65,7 @@ class LoadingManager:
             for row in reader:
 
                 try:
-                    new_entry = {'id':int(row[id_field])}
+                    new_entry = {'ID':int(row[id_field])}
 
                     for field in value_fields:
 
@@ -97,7 +98,7 @@ class LoadingManager:
                                 data = row[field]
 
                             else:
-                                print(f'[LoadingManager] Cannot convert data to data type "{field_type}"')
+                                print(f'[LoadingManager] Cannot convert data to data type "{field_type}"') #TODO
 
                         else:
                             data = row[field]
@@ -110,6 +111,6 @@ class LoadingManager:
                         new_dict.setdefault(int(row[id_field]), new_entry)
 
                 except ValueError:
-                    print(f'[LoadingManager][{db_name}] "{row[id_field]}" is not a valid Id. -SKIPPED-')
+                    print(f'[LoadingManager][{db_name}] "{row[id_field]}" is not a valid Id. -SKIPPED-') #TODO
 
         return new_dict

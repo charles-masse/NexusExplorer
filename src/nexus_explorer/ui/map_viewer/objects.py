@@ -1,8 +1,11 @@
 
+from pathlib import Path
 from typing import TYPE_CHECKING
 
-from PyQt6.QtCore import QRectF, pyqtSignal
-from PyQt6.QtGui import QColor, QFont, QPen, QPixmap
+from PIL import Image
+from PIL.ImageQt import ImageQt
+from PyQt6.QtCore import QPointF, QRectF, QSize, Qt, pyqtSignal
+from PyQt6.QtGui import QColor, QFont, QPen, QPixmap, QPolygonF
 from PyQt6.QtWidgets import (
     QGraphicsItem,
     QGraphicsObject,
@@ -11,30 +14,30 @@ from PyQt6.QtWidgets import (
     QStyle,
 )
 
-from ...data import LocationData
 from ..content_types import CONTENT_TYPES
-from .utilities import world_to_screen_pos
+from .utilities import hex_to_world_coordinates, world_to_screen_pos
 
 if TYPE_CHECKING:
-    from .map_viewer import MapScene
+    from ...data.types import LocationData
+    from .window import MapScene
 
 ICON_SIZE = 32
 
 class LocationObject(QGraphicsObject):
-    """An icon on the map that retains data, sends signals and has a glow effect"""
+    """An icon on the map that retains data and has a glow effect"""
     clicked = pyqtSignal(QGraphicsObject)
 
-    def __init__(self, location: LocationData, map_scene: "MapScene"):
+    def __init__(self, content: "LocationData", map_scene: "MapScene"):
         super().__init__()
 
-        self.location = location
+        self.content = content
         self.map_scene = map_scene
 
         self._pen = QPen(QColor(255, 255, 0, 180), 6)
         
-        self.pixmap = QPixmap(f'{self.map_scene.loading_manager.game_files}/UI/Icon/{self.get_icon()}').scaled(ICON_SIZE, ICON_SIZE)
+        self.pixmap = QPixmap(f'{map_scene.loading_manager.game_files}/UI/Icon/{self.get_icon()}').scaled(ICON_SIZE, ICON_SIZE)
 
-        screen_x, screen_y = world_to_screen_pos(*self.location.position)
+        screen_x, screen_y = world_to_screen_pos(*self.content.position)
         self.setPos(screen_x - (ICON_SIZE / 2), screen_y - (ICON_SIZE / 2))
 
         self.setFlags(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
@@ -51,12 +54,12 @@ class LocationObject(QGraphicsObject):
         #Go through all icons by priority
         for content_id, content in enumerate(
             [
-                self.location.hubs,
-                self.location.datacubes,
-                self.location.quests,
-                self.location.missions,
-                self.location.events,
-                self.location.challenges
+                self.content.hubs,
+                self.content.datacubes,
+                self.content.quests,
+                self.content.missions,
+                self.content.events,
+                self.content.challenges
             ]
         ):
                     
@@ -70,7 +73,7 @@ class LocationObject(QGraphicsObject):
                         'Map/Node/Map_QuestHub/Map_QuestHub.png'
                     ]
                             
-                    quest_factions = [quest['questPlayerFactionEnum'] for quest in self.location.quests]
+                    quest_factions = [quest['questPlayerFactionEnum'] for quest in self.content.quests]
 
                     if len(quest_factions):
                         faction_id = max(quest_factions, key=quest_factions.count)
@@ -111,43 +114,110 @@ class LocationObject(QGraphicsObject):
 
         option.state &= ~QStyle.StateFlag.State_Selected
 
-    def mouseReleaseEvent(self, event):
-        self.clicked.emit(self)
-        super().mouseReleaseEvent(event)
+    def mousePressEvent(self, event):
+
+        self.map_scene.select_object(self)
+
+        super().mousePressEvent(event)
 
 class ObjectiveObject(QGraphicsPixmapItem):
 
     def __init__(self, objectiveId: int, game_files: str):
         super().__init__()
 
-        self.im = QPixmap(f'{game_files}/UI/Assets/TexPieces/UI_CRB_HUD_Tracker_349_73/UI_CRB_HUD_Tracker_349_73.png')
-        self.setPixmap(self.im)
+        im = QPixmap(f'{game_files}/UI/Assets/TexPieces/UI_CRB_HUD_Tracker_349_73/UI_CRB_HUD_Tracker_349_73.png')
+        self.setPixmap(im)
 
-        self.text = QGraphicsTextItem(str(objectiveId), self)
-        self.text.setDefaultTextColor(QColor('white'))
-        self.text.setFont(QFont(f'{game_files}/UI/Fonts/segoeuib.ttf', 10))
+        text = QGraphicsTextItem(str(objectiveId), self)
+        text.setDefaultTextColor(QColor('white'))
+        text.setFont(QFont(f'{game_files}/UI/Fonts/segoeuib.ttf', 10))
 
-        textRect = self.text.boundingRect()
-        self.text.setPos((self.im.width() / 2) - (textRect.width() / 2), 0)
+        textRect = text.boundingRect()
+        text.setPos((im.width() / 2) - (textRect.width() / 2), 0)
 
 class RegionObject(QGraphicsObject):
-    clicked = pyqtSignal()
 
-    def __init__(self, polygon, parent=None):
-        super().__init__(parent)
+    def __init__(self, map_zone: dict, content: dict, map_scene: "MapScene"):
+        super().__init__()
 
-        self._polygon = polygon
-        self._pen = QPen(QColor("black"), 2)
+        self.map_zone = map_zone
+        self.content = content
+        self.map_scene = map_scene
+
+        self.setAcceptHoverEvents(True)
+        self.is_hovered = False
+        self._pixmap = None
+        self._pixmap_rect = QRectF()
+        #Create polygon
+        min_x, min_y = world_to_screen_pos(*hex_to_world_coordinates(map_zone['hexMinX'] - 1, map_zone['hexMinY'] - 0.5))
+        max_x, max_y = world_to_screen_pos(*hex_to_world_coordinates(map_zone['hexLimX'] + 1, map_zone['hexLimY'] + 1))
+        self._polygon = QPolygonF([QPointF(min_x, min_y), QPointF(max_x, min_y), QPointF(max_x, max_y), QPointF(min_x, max_y)])
+
+        self._pen = QPen(QColor("green"), 2)
+
+        try:
+            base_image = Image.open(f'{self.map_scene.loading_manager.game_files}/UI/Maps/{map_zone["folder"]}/UI_CRB_Revealed/UI_CRB_Revealed.png')
+            mask_image = Image.open(Path(__file__).resolve().parents[2] / "assets" / "region_alpha.png").convert("L")
+
+            base_image.putalpha(mask_image)
+
+            image_qt = ImageQt(base_image).copy()
+
+            self._pixmap = QPixmap.fromImage(image_qt).scaled(
+                QSize(round(max_x - min_x), round(max_x - min_x)),
+                Qt.AspectRatioMode.KeepAspectRatio,
+                Qt.TransformationMode.SmoothTransformation
+            )
+
+            center = self._polygon.boundingRect().center()
+            x = round(center.x() - (self._pixmap.width() / 2))
+            y = round(center.y() - (self._pixmap.height() / 2))
+            self._pixmap_rect = QRectF(x, y, self._pixmap.width(), self._pixmap.height())
+
+        except FileNotFoundError as e:
+            print(f"Error loading pixmap for region {map_zone['folder']}: {e}")
 
     def boundingRect(self):
+
         pad = self._pen.widthF() / 2.0
-        return self._polygon.boundingRect().adjusted(-pad, -pad, pad, pad)
+        bounds = self._polygon.boundingRect().adjusted(-pad, -pad, pad, pad)
+
+        if self.map_zone['mapZoneIdParent']:
+            bounds = bounds.united(self._pixmap_rect)
+
+        return bounds
 
     def paint(self, painter, option, widget=None):
-        """Draws the actual polygon on the scene."""
-        painter.setPen(self._pen)
-        painter.drawPolygon(self._polygon)
 
-    # def mousePressEvent(self, event):
-    #     self.clicked.emit()
-    #     super().mousePressEvent(event)
+        if self.is_hovered:
+
+            if self.map_zone['mapZoneIdParent']:
+                if self._pixmap:
+                    painter.drawPixmap(round(self._pixmap_rect.x()), round(self._pixmap_rect.y()), self._pixmap)
+            #TODO
+            else:
+                painter.setPen(self._pen)
+                painter.drawPolygon(self._polygon)
+
+    def mousePressEvent(self, event):
+
+        if self.is_hovered and self.content.get('Datacube'):
+            self.map_scene.select_object(self)
+
+        super().mousePressEvent(event)
+
+    def hoverEnterEvent(self, event):
+
+        self.is_hovered = True
+
+        self.update()
+
+        super().hoverEnterEvent(event)
+
+    def hoverLeaveEvent(self, event):
+
+        self.is_hovered = False
+
+        self.update()
+
+        super().hoverLeaveEvent(event)

@@ -1,6 +1,6 @@
 
 from nexus_explorer.map.cluster_locations import cluster_locations, merge_locations
-from nexus_explorer.map.generate_map import generate_map
+from nexus_explorer.map.generate import generate_map
 
 from ..sample_data import sample_location0, sample_location1
 
