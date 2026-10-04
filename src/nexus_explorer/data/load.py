@@ -1,21 +1,6 @@
 
 import csv
-from typing import TYPE_CHECKING, Self
 
-if TYPE_CHECKING:
-    from . import WorldData
-
-
-class DBDict(dict):
-    """A dictionary that keeps the name of the database"""
-    def __init__(self, name: str, data: dict[str, str] | None = None, **kwargs):
-        
-        if data:
-            super().__init__(data)
-        else:
-            super().__init__()
-
-        self.name = name
 
 class LoadingManager:
     _instance = None
@@ -25,17 +10,15 @@ class LoadingManager:
         self.language = language
         #Load language file right away
         self._loaded = {language : self.read_csv(language, '')}
-        # Parsed data
-        self.worlds: list[WorldData] = []
 
-    def __new__(cls, game_files: str) -> Self:
+    def __new__(cls, game_files: str):
 
         if cls._instance is None:
             cls._instance = super().__new__(cls)
 
         return cls._instance
 
-    def __getitem__(self, db_name: str) -> DBDict:
+    def __getitem__(self, db_name: str) -> dict:
 
         self.load(db_name)
             
@@ -46,12 +29,12 @@ class LoadingManager:
         if db_name not in self._loaded:
             self._loaded[db_name] = self.read_csv(db_name)
 
-    def read_csv(self, db_name:str, folder:str='DB') -> DBDict:
+    def read_csv(self, db_name:str, folder:str='DB') -> dict:
         """Read a .csv file
         - db_name: Name of the requested .csv
         - folder: Nexusvault folder where the .csv is stored
         """
-        new_dict = DBDict(db_name)
+        new_dict = {}
 
         with open('/'.join([self.game_files, folder, db_name, db_name + '.csv']), encoding='utf') as f:
             #Skip first line

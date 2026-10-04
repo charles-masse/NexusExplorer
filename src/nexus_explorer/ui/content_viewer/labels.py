@@ -5,7 +5,8 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtWidgets import QLabel
 
-from ...data import link_referenced
+from nexus_explorer.data.utilities import link_referenced
+
 from .mission_types import (
     explorer_cartography,
     explorer_exploration,

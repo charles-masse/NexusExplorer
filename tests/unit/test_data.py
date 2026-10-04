@@ -1,6 +1,5 @@
 
-from nexus_explorer.data.load import DBDict, LoadingManager
-from nexus_explorer.data.process import link_data
+from nexus_explorer.data import DBDict, LoadingManager, link_data
 
 
 def test_loading_data_from_db():

@@ -1,7 +1,7 @@
 
 import math
 
-from ...constants import HALF_MAP, MAP_SCALE
+from nexus_explorer.constants import HALF_MAP, MAP_SCALE
 
 
 def hex_to_world_coordinates(hex_x: int, hex_y: int) -> tuple[float, float]:

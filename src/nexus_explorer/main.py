@@ -5,7 +5,7 @@ from pathlib import Path
 from PyQt6.QtGui import QCursor, QIcon, QPixmap
 from PyQt6.QtWidgets import QApplication
 
-from .data import LoadingManager, prep_worlds
+from .data import LoadingManager
 from .ui import WorldSelectWindow
 
 
@@ -15,9 +15,8 @@ def main():
 
     if game_files == None:
         raise ValueError('Please add the path to the exported game files in your command.\nexemple: nexus_explorer "Nexusvault\\output\\export"')
-    #Init loading manager and start prepping the world data
+    #Init loading manager
     loading_manager = LoadingManager(game_files)
-    prep_worlds(loading_manager)
     #PyQt
     app = QApplication(sys.argv)
     #Visual Theme

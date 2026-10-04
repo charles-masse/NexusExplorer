@@ -1,12 +1,13 @@
 
 from pprint import pprint
+from typing import TYPE_CHECKING
 
 from PyQt6.QtGui import QCloseEvent, QShowEvent
 from PyQt6.QtWidgets import QVBoxLayout
 
-from ...data import DBDict, LoadingManager, link_referenced
-from ..extensions import NEWidget
-from ..map_viewer.objects import LocationObject
+from nexus_explorer.data.utilities import link_referenced
+from nexus_explorer.ui.extensions import NEWidget
+
 from .labels import (
     ContentLabel,
     display_challenge,
@@ -16,11 +17,16 @@ from .labels import (
     display_quest,
 )
 
+if TYPE_CHECKING:
+    from nexus_explorer.data import LoadingManager
+    from nexus_explorer.ui.map_viewer.objects import LocationObject
+        
+
 WINDOW_WIDTH = 375
 
 class ContentViewerWindow(NEWidget):
 
-    def __init__(self, loading_manager: LoadingManager, content: DBDict, object: LocationObject | None = None):
+    def __init__(self, loading_manager: "LoadingManager", content, object: "LocationObject"):
         super().__init__()
 
         self.loading_manager = loading_manager
@@ -31,25 +37,25 @@ class ContentViewerWindow(NEWidget):
 
         self.main_layout = QVBoxLayout(self)
         self.main_layout.setSpacing(3)
-        #General title vs challenge title
-        name = content.get('localizedTextIdName') or content.get('localizedTextIdTitle') or content.get('localizedTextIdShort') or '- Unnamed -'
-        if '$' in name:
-            name = link_referenced(loading_manager, name, False)
-        self.setWindowTitle(name)
+        # #General title vs challenge title
+        # name = content.get('localizedTextIdName') or content.get('localizedTextIdTitle') or content.get('localizedTextIdShort') or '- Unnamed -'
+        # if '$' in name:
+        #     name = link_referenced(loading_manager, name, False)
+        # self.setWindowTitle(name)
 
-        if content.name == 'Datacube':
+        if content.content_id == 0:
             display_datacube(self)
 
-        elif content.name in ['Quest2', 'QuestObjective']:
+        elif content.content_id in [1, 6]:
             display_quest(self)
 
-        elif content.name in ['PublicEvent', 'PublicEventObjective']:
+        elif content.content_id in [3, 5]:
             display_event(self)
 
-        elif content.name == 'Challenge':
+        elif content.content_id == 4:
             display_challenge(self)
 
-        elif content.name == 'PathMission':
+        elif content.content_id == 2:
             display_mission(self)
 
         else:

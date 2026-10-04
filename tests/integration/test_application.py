@@ -1,7 +1,7 @@
 
 from nexus_explorer.data import LoadingManager, prep_worlds
 from nexus_explorer.ui import WorldSelectWindow
-from nexus_explorer.ui.map_viewer import LocationObject
+from nexus_explorer.ui.map_viewer.objects import LocationObject
 
 
 def test_kitchen_sink(qtbot):

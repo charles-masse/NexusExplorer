@@ -3,7 +3,7 @@ import os
 
 from PIL import Image, ImageOps
 
-from ..constants import MAP_CHUNK_RESOLUTION, MAP_SCALE
+from nexus_explorer.constants import MAP_CHUNK_RESOLUTION, MAP_SCALE
 
 
 def chunk_coords(chunk_name):
