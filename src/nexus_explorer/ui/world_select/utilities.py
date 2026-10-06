@@ -25,7 +25,7 @@ class WorldData:
         self.name_map = assetPath.split('\\')[-1]
 
         self.locations = WorldLocation2 or []
-        self.zones: dict[int | None, list[dict | None]] = {}
+        self.zones: list[dict] = []
 
 def prep_worlds(loading_manager: "LoadingManager"):
 
@@ -35,6 +35,8 @@ def prep_worlds(loading_manager: "LoadingManager"):
     link_data(loading_manager, 'PublicEvent', 'publicEventId', ['PublicEventObjective'])
     #Zone datacubes
     link_data(loading_manager, 'WorldZone', 'worldZoneId', ['Datacube'])
+    #Link map zones to their zone
+    link_data(loading_manager, 'WorldZone', 'worldZoneId', ['MapZone'])
     #Location content
     link_data(loading_manager, 'WorldLocation2', 'worldlocation', [
         'Challenge',
@@ -48,8 +50,6 @@ def prep_worlds(loading_manager: "LoadingManager"):
     ])
     #Link locations to their world
     link_data(loading_manager, 'World', 'worldId', ['WorldLocation2'])
-    #List of zone ids that have a map
-    map_zone_ids = [map_zone['worldZoneId'] for map_zone in loading_manager['mapZone'].values()]
     #Create world list
     for world in loading_manager['World'].values():
         world_data = WorldData(**world)
@@ -59,7 +59,7 @@ def prep_worlds(loading_manager: "LoadingManager"):
                 if continent['assetPath'] == world_data.map:
                     world_data.name = continent['localizedTextIdName']
                     break
-        #Can we find the map in the game files #TODO
+        #Can we find the map in the game files
         map_found = world_data.name_map in os.listdir(f"{loading_manager.game_files}/Map/")
         if not map_found:
             world_data.map = ''
@@ -67,26 +67,44 @@ def prep_worlds(loading_manager: "LoadingManager"):
         worlds.append(world_data)
         #Revealing zones
         new_locations = []
-
+        #TODO cleanup
         for location in world_data.locations:
-            #Check if the location has content
-            if any(location.get(key) for key in [
-                'Challenge',
-                'Datacube',
-                'PublicEvent',
-                'PublicEventObjective',
-                'Quest2',
-                'QuestObjective',
-                'QuestHub',
-                'PathMission'
-            ]):
-                #Sort in their map zone or as a regular location
-                zone_id = location['worldZoneId']
-                if zone_id and zone_id in map_zone_ids:
-                    world_data.zones.setdefault(zone_id, []).append(location)
-                else:
-                    new_locations.append(location)
 
+            world_zone = loading_manager['WorldZone'].get(location['worldZoneId'])
+
+            if world_zone:
+                map_zone = world_zone.get('MapZone')
+
+            if world_zone and map_zone and map_zone[0]["mapZoneIdParent"]:
+                #Add it to the list
+                if world_zone not in world_data.zones:
+                    world_data.zones.append(world_zone)
+                #Link location to their zone
+                if any(location.get(key) for key in [
+                    'Challenge',
+                    'Datacube',
+                    'PublicEvent',
+                    'PublicEventObjective',
+                    'Quest2',
+                    'QuestObjective',
+                    'QuestHub',
+                    'PathMission'
+                ]):
+                    world_zone.setdefault('WorldLocation2', []).append(location)
+                
+            else:
+                new_locations.append(location)
+                    
         world_data.locations = new_locations
+        #Join zones #TODO FIX THIS
+        for map_zone in loading_manager['MapZoneWorldJoin'].values():
+
+            map_zone_data = loading_manager['MapZone'].get(map_zone['mapZoneId'])
+            
+            if map_zone_data:
+                world_zone_data = loading_manager['WorldZone'].get(map_zone_data['worldZoneId'])
+
+                if world_data and world_zone_data and world_data.id == map_zone['worldId'] and world_zone_data not in world_data.zones:
+                    world_data.zones.append(world_zone_data)
 
     return worlds

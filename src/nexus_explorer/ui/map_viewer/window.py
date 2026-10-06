@@ -52,8 +52,8 @@ class MapScene(QGraphicsScene):
             pixmap = self.display_map()
             self.addPixmap(pixmap)
         #Add map objects
-        self.display_locations()
-        self.display_regions()
+        self.display_locations(self.world.locations)
+        self.display_zones(self.world.zones)
         #Add coords on mouse pointer
         self.coords_text = QGraphicsTextItem()
         self.coords_text.setDefaultTextColor(QColor(79, 204, 60))
@@ -71,40 +71,34 @@ class MapScene(QGraphicsScene):
 
         return pixmap
 
-    def display_locations(self):
+    def display_locations(self, locations, test=None):
         
-        if len(self.world.locations):
+        if len(locations):
             #Convert to location data
-            locations = [LocationData(**location) for location in self.world.locations]
+            locations = [LocationData(**location) for location in locations]
             #Cluster locations and add them to the map
             clustered_locations = cluster_locations(locations)
             for location in clustered_locations:
-                self.addItem(LocationObject(location, self))
+                location_object = LocationObject(location, self)
+                if test: #TODO
+                    location_object.setParent(test)
+                self.addItem(location_object)
 
-    def display_regions(self):
+    def display_zones(self, zones):
+        
+        if len(zones):
+            #Sort from biggest to smallest
+            zones.sort(
+                key=lambda region: (
+                    max(zone["hexLimX"] - zone["hexMinX"] for zone in region["MapZone"]),
+                    max(zone["hexLimY"] - zone["hexMinY"] for zone in region["MapZone"]),
+                ),
+                reverse=True,
+            )
 
-        regions = []
-
-        for map_zone in self.loading_manager['MapZone'].values():
-            #Check if the mapZone is part of the world
-            if map_zone['worldZoneId'] in self.world.zones:
-
-                world_map =  self.loading_manager['WorldZone'].get(map_zone['worldZoneId'], {})
-                if world_map:
-                    regions.append([map_zone, world_map])
-
-        for map_zone in self.loading_manager['MapZoneWorldJoin'].values():
-
-            map_zone_data = self.loading_manager['MapZone'].get(map_zone['mapZoneId'], {})
-            #Check if the mapZone is part of the world and if the worldZoneId is not already in the world zones
-            if map_zone_data and map_zone['worldId'] == self.world.id and map_zone_data['worldZoneId'] not in self.world.zones:
-                regions.append([map_zone_data, self.loading_manager['WorldZone'].get(map_zone_data['worldZoneId'], {})])
-        #Sort from biggest to smallest
-        regions.sort(key=lambda region: (region[0]['hexLimX'] - region[0]['hexMinX'], region[0]['hexLimY'] - region[0]['hexMinY']), reverse=True)
-
-        for region in regions:
-            region_obj = RegionObject(region[0], region[1], self)
-            self.addItem(region_obj)
+            for zone in zones:
+                region_obj = RegionObject(zone, self)
+                self.addItem(region_obj)
 
     def draw_objective(self, objective_id: int):
         """Place an Objective on the map"""

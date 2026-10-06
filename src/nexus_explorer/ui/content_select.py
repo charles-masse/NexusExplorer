@@ -1,5 +1,4 @@
 
-from pprint import pprint
 from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import Qt

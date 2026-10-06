@@ -45,7 +45,7 @@ class LoadingManager:
             id_field = reader.fieldnames[0]
             value_fields = [field for field in reader.fieldnames[1:]]
 
-            for row in reader:
+            for row in reader: #convert to generator
 
                 try:
                     new_entry = {'ID':int(row[id_field])}
