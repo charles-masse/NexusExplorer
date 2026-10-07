@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 
     from .map_viewer.objects import LocationObject, RegionObject
 
-WINDOW_WIDTH = 400
+WINDOW_WIDTH = 425
 
 class ContentCategory(QTreeWidgetItem):
 

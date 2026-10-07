@@ -85,7 +85,7 @@ class RegionObject(QGraphicsObject):
 
         return bounds
 
-    def paint(self, painter, option, widget = None):
+    def paint(self, painter, option, widget=None):
 
         if self.contents["MapZone"][0]["mapZoneIdParent"]:
             if self._pixmap:
@@ -104,7 +104,7 @@ class RegionObject(QGraphicsObject):
                 child.setOpacity(1)
 
         else:
-            faded_opacity = 0.65
+            faded_opacity = 0.6
 
             self.setOpacity(faded_opacity)
             for child in self.children():

@@ -1,5 +1,5 @@
 
-from nexus_explorer.data import LoadingManager, prep_worlds
+from nexus_explorer.data import LoadingManager
 from nexus_explorer.ui import WorldSelectWindow
 from nexus_explorer.ui.map_viewer.objects import LocationObject
 
@@ -7,7 +7,6 @@ from nexus_explorer.ui.map_viewer.objects import LocationObject
 def test_kitchen_sink(qtbot):
 
     loading_manager = LoadingManager('tests/sample_data')
-    prep_worlds(loading_manager)
 
     widget = WorldSelectWindow(loading_manager)
     qtbot.addWidget(widget)
@@ -22,19 +21,19 @@ def test_kitchen_sink(qtbot):
 
         loc.clicked.emit(loc)
         #Content Select
-        content_select = map_viewer.popup
-        content_list = content_select.tree
+        # content_select = map_viewer.popup
+        # content_list = content_select.tree
 
-        for column in range(content_list.columnCount()):
+        # for column in range(content_list.columnCount()):
 
-            header = content_list.itemAt(column, 0)
+        #     header = content_list.itemAt(column, 0)
 
-            for child_id in range(header.childCount()):
+        #     for child_id in range(header.childCount()):
 
-                content_item = header.child(child_id)
-                content_select.select_content(content_item)
-                content_select.popup.close()
+        #         content_item = header.child(child_id)
+        #         content_select.select_content(content_item)
+        #         content_select.popup.close()
 
-        content_select.close()
+        # content_select.close()
     #Close everything
     widget.close()

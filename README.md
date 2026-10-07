@@ -1,4 +1,4 @@
-<h1 align="center">Nexus Explorer</h1>
+<h1>Nexus Explorer</h1>
 
 ![Static Badge](https://img.shields.io/badge/Status-Work_in_Progress-orange) [![Run Tests](https://github.com/charles-masse/NexusExplorer/actions/workflows/test.yml/badge.svg)](https://github.com/charles-masse/NexusExplorer/actions/workflows/test.yml) <!-- Pytest Coverage Comment:Begin --> <a href="https://github.com/charles-masse/NexusExplorer/blob/main/README.md"><img alt="Coverage" src="https://img.shields.io/badge/Coverage-50%25-orange.svg" /></a> <!-- Pytest Coverage Comment:End -->
 
@@ -9,21 +9,25 @@ Explore the worlds of the defunct MMORPG **WildStar**.
 **NexusExplorer** is a tool that allows you to browse extracted minimap, model and world data including dialog not present on [JabbitHole](https://www.jabbithole.com/).
 
 ## Installation
+
 - [Install uv](https://docs.astral.sh/uv/getting-started/installation/).
 
 - Clone the repo and install dependencies :
-```
+
+```bash
 git clone https://github.com/charles-masse/NexusExplorer.git
 cd NexusExplorer
 uv sync
 ```
 
 - You will need the game assets extracted with a tool like [NexusVault](https://github.com/MarbleBag/NexusVault-CLI).
+
 > [!TIP]
 > To export everything with NexusVault, point to your game's `Patch/ClientData.archive` with `archive-path PATH_TO_ARCHIVE` and :
-> ```
-> > search \\
-> > export
+>
+> ```bash
+> search \\
+> export
 > ```
 
 - Extract also one language file (e.g.:`en-US.csv` from `Patch/ClientEn.archive`).
@@ -31,7 +35,8 @@ uv sync
 ## How to use NexusExplorer
 
 - Go to the cloned repo and :
-```
+
+```bash
 uv run nexus_explorer "PATH_TO_EXTRACTED_GAME_DATA"
 ```
 
@@ -52,13 +57,8 @@ uv run nexus_explorer "PATH_TO_EXTRACTED_GAME_DATA"
 > You can click on underlined names to have more info on that game object.
 
 ## Roadmap
-- [x] Display map
-- [x] Show Quests
-- [x] Show Challenges
-- [x] Show Events
-- [X] Show Datacubes
-- [X] Show Path missions
-- [X] Show Objectives
+
+- [X] Map Zones
 - [ ] Linked items
 - [ ] Show Episodes/Quest chains
 - [ ] Linked NPC/creature models

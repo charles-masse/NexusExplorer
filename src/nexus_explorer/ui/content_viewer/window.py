@@ -30,37 +30,39 @@ class ContentViewerWindow(NEWidget):
         super().__init__()
 
         self.loading_manager = loading_manager
-        self.content = content
+        self.content = content.content
         self.object = object
 
-        pprint(content)
+        pprint(self.content)
 
         self.main_layout = QVBoxLayout(self)
         self.main_layout.setSpacing(3)
-        # #General title vs challenge title
+        #General title vs challenge title
         # name = content.get('localizedTextIdName') or content.get('localizedTextIdTitle') or content.get('localizedTextIdShort') or '- Unnamed -'
         # if '$' in name:
         #     name = link_referenced(loading_manager, name, False)
         # self.setWindowTitle(name)
 
-        if content.content_id == 0:
+        content_id = content.content_id
+
+        if content_id == 0:
             display_datacube(self)
 
-        elif content.content_id in [1, 6]:
+        elif content_id in [1, 6]:
             display_quest(self)
 
-        elif content.content_id in [3, 5]:
+        elif content_id in [3, 5]:
             display_event(self)
 
-        elif content.content_id == 4:
+        elif content_id == 4:
             display_challenge(self)
 
-        elif content.content_id == 2:
+        elif content_id == 2:
             display_mission(self)
 
         else:
             raise TypeError('Cannot parse this data.')
-        # Quest directions
+        #Quest directions
         # PathMission, Quest, Challenge
         # test = data.get('questDirectionId') or data.get('questDirectionIdCompletion') or data.get('questDirectionIdActive')
 
@@ -68,7 +70,7 @@ class ContentViewerWindow(NEWidget):
         #     self.addQuestDirections(test, 1)
 
         self.setFixedWidth(WINDOW_WIDTH)
-        # Add floating icons
+        #Add floating icons
     #     view = QGraphicsView(self)
     #     view.setStyleSheet("background: transparent; border: 0;")
     #     view.setFixedSize(WINDOW_WIDTH, self.sizeHint().height())

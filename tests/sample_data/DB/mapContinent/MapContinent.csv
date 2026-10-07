@@ -1,0 +1,52 @@
+MapContinent
+ID [INT32 24];localizedTextIdName [INT32 24];assetPath [STRING 104];imagePath [STRING 104];imageWidth [INT32 24];imageHeight [INT32 24];imageOffsetX [INT32 24];imageOffsetY [INT32 24];hexMinX [INT32 24];hexMinY [INT32 24];hexLimX [INT32 24];hexLimY [INT32 24];flags [INT32 24]
+1;1;iusto ratione;dicta accusamus;1;3;1;3;3;5;0;0;1
+2;0;est quasi odio omnis;dicta accusamus;0;3;5;4;3;1;5;3;0
+3;1;similique quod fuga;dicta accusamus;5;1;3;2;3;5;1;1;0
+4;3;recusandae necessitatibus;est quasi odio omnis;1;0;4;5;5;4;5;1;2
+5;0;similique quod fuga;iusto ratione;0;5;0;3;1;5;5;1;3
+6;2;dicta accusamus;est quasi odio omnis;2;2;3;1;3;3;1;1;0
+7;3;iusto ratione;est quasi odio omnis;2;4;5;4;3;2;4;1;2
+8;1;similique quod fuga;similique quod fuga;2;4;2;2;1;3;3;4;5
+9;4;iusto ratione;recusandae necessitatibus;1;2;5;5;1;3;2;4;4
+10;5;iusto ratione;similique quod fuga;4;0;4;5;0;3;4;4;4
+11;3;dicta accusamus;est quasi odio omnis;3;5;5;4;4;1;2;1;2
+12;4;est quasi odio omnis;iusto ratione;1;4;0;3;0;1;2;3;3
+13;3;iusto ratione;similique quod fuga;5;5;1;4;1;1;2;0;1
+14;1;iusto ratione;recusandae necessitatibus;0;4;2;2;3;5;2;5;3
+15;5;est quasi odio omnis;similique quod fuga;0;1;1;5;0;2;5;4;2
+16;0;est quasi odio omnis;recusandae necessitatibus;3;2;2;4;4;5;3;0;5
+17;5;est quasi odio omnis;dicta accusamus;2;2;1;5;4;2;0;5;4
+18;3;est quasi odio omnis;iusto ratione;0;3;0;2;3;3;2;4;0
+19;2;dicta accusamus;similique quod fuga;0;2;1;3;5;1;3;0;3
+20;2;iusto ratione;iusto ratione;1;0;0;4;2;0;1;4;0
+21;1;iusto ratione;est quasi odio omnis;0;4;1;5;4;0;0;3;1
+22;5;est quasi odio omnis;similique quod fuga;4;0;0;2;0;3;1;1;5
+23;0;est quasi odio omnis;iusto ratione;1;3;0;4;2;5;2;2;3
+24;5;similique quod fuga;dicta accusamus;4;1;2;4;3;4;1;1;4
+25;1;recusandae necessitatibus;dicta accusamus;5;3;0;0;2;0;0;4;2
+26;5;recusandae necessitatibus;iusto ratione;3;2;2;0;2;0;3;4;0
+27;2;est quasi odio omnis;recusandae necessitatibus;0;2;1;2;2;4;4;2;2
+28;3;est quasi odio omnis;est quasi odio omnis;1;3;4;4;0;2;4;5;2
+29;0;similique quod fuga;est quasi odio omnis;2;5;1;5;1;2;5;4;2
+30;4;iusto ratione;dicta accusamus;5;0;0;0;0;5;3;2;2
+31;1;dicta accusamus;similique quod fuga;2;4;0;3;0;3;2;3;0
+32;2;recusandae necessitatibus;similique quod fuga;0;0;0;0;1;0;3;4;0
+33;0;dicta accusamus;iusto ratione;1;2;3;2;1;2;3;3;3
+34;4;recusandae necessitatibus;recusandae necessitatibus;0;4;1;4;0;0;3;5;0
+35;1;est quasi odio omnis;est quasi odio omnis;5;1;3;4;5;3;0;5;1
+36;1;dicta accusamus;dicta accusamus;2;4;0;5;4;4;5;2;0
+37;3;recusandae necessitatibus;iusto ratione;0;5;4;5;4;4;1;0;4
+38;2;est quasi odio omnis;iusto ratione;2;4;1;2;5;4;3;1;2
+39;2;similique quod fuga;recusandae necessitatibus;5;2;1;0;4;0;1;3;3
+40;4;recusandae necessitatibus;iusto ratione;3;1;2;5;3;3;0;0;5
+41;3;similique quod fuga;dicta accusamus;4;3;5;5;0;4;4;0;5
+42;4;similique quod fuga;iusto ratione;5;4;2;2;0;2;0;0;5
+43;2;recusandae necessitatibus;est quasi odio omnis;5;0;3;5;5;5;3;1;5
+44;0;recusandae necessitatibus;recusandae necessitatibus;2;1;4;1;1;3;3;4;4
+45;4;recusandae necessitatibus;similique quod fuga;5;4;1;3;5;3;3;1;4
+46;2;iusto ratione;similique quod fuga;1;3;4;4;5;0;2;2;5
+47;5;iusto ratione;est quasi odio omnis;0;1;2;1;1;3;2;3;2
+48;0;recusandae necessitatibus;similique quod fuga;2;4;5;1;0;4;5;4;4
+49;0;dicta accusamus;est quasi odio omnis;4;3;5;2;5;3;2;5;4
+50;0;recusandae necessitatibus;recusandae necessitatibus;5;3;2;5;0;4;5;0;2

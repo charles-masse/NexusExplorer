@@ -55,7 +55,7 @@ def prep_worlds(loading_manager: "LoadingManager"):
         world_data = WorldData(**world)
         #Use the continent name if the world is a continent
         if not world_data.name:
-            for continent in loading_manager['mapContinent'].values():
+            for continent in loading_manager['MapContinent'].values():
                 if continent['assetPath'] == world_data.map:
                     world_data.name = continent['localizedTextIdName']
                     break

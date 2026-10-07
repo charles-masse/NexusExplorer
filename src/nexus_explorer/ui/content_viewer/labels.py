@@ -99,19 +99,19 @@ def display_datacube(window: "ContentViewerWindow"):
 
 def display_quest(window: "ContentViewerWindow"):
 
-    if window.content.name ==  'Quest2':
+    # if window.content.name ==  'Quest2':
 
-        for text_name in [
-            'localizedTextIdText',
-            'localizedTextIdGiverTextUnknown',
-            *[s for i in range(5) for s in [f'localizedTextIdMoreInfoSay0{i}', f'localizedTextIdMoreInfoText0{i}']],
-            'localizedTextIdAcceptResponse',
-            'localizedTextIdGiverSayAccepted'
-        ]:
-            window.add_label(text_name)
+    for text_name in [
+        'localizedTextIdText',
+        'localizedTextIdGiverTextUnknown',
+        *[s for i in range(5) for s in [f'localizedTextIdMoreInfoSay0{i}', f'localizedTextIdMoreInfoText0{i}']],
+        'localizedTextIdAcceptResponse',
+        'localizedTextIdGiverSayAccepted'
+    ]:
+        window.add_label(text_name)
 
-    else:
-        print('THIS IS AN OBJECTIVE')
+    # else:
+    #     print('THIS IS AN OBJECTIVE')
 
 #     for i in reversed(range(6)):
 
