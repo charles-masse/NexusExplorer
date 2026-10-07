@@ -1,4 +1,5 @@
 
+from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QCloseEvent, QFont, QIcon
@@ -10,23 +11,29 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
 )
 
-from ..data import DBDict, LoadingManager
-from ..data.parse_data import link_referenced
+from nexus_explorer.data.utilities import link_referenced
+
 from .content_types import CONTENT_TYPES
 from .content_viewer import ContentViewerWindow
 from .extensions import HtmlDelegate, NEWidget
-from .map_viewer import LocationObject
 
-WINDOW_WIDTH = 400
+if TYPE_CHECKING:
+    from nexus_explorer.data import LoadingManager
+
+    from .map_viewer.objects import LocationObject, RegionObject
+
+WINDOW_WIDTH = 425
 
 class ContentCategory(QTreeWidgetItem):
 
-    def __init__(self, content: list[DBDict], content_dict: dict, parent: QTreeWidget):
+    def __init__(self, content: list[dict], content_type: dict[str, int | str],  parent: QTreeWidget):
         super().__init__(parent)
 
-        loading_manager = self.treeWidget().parent().loading_manager
+        tree = self.treeWidget()
+        if tree and tree.parent():
+            loading_manager = tree.parent().loading_manager
         #Set category name and icon
-        name = content_dict['name']
+        name = content_type['name']
         self.setText(0, name)
         self.setExpanded(True)
 
@@ -34,11 +41,10 @@ class ContentCategory(QTreeWidgetItem):
         categoryFont.setBold(True)
         self.setFont(0, categoryFont)
 
-        icon = f"{loading_manager.game_files}/UI/Icon/{content_dict['icon']}"
-        self.setIcon(0, QIcon(icon))
+        self.setIcon(0, QIcon(f"{loading_manager.game_files}/UI/Icon/{content_type['icon']}"))
         #Add content under this category
         for item in content:
-            self.addChild(ContentItem(loading_manager, item))
+            self.addChild(ContentItem(loading_manager, item, content_type))
 
     def addChild(self, child):
         if child.text(0) not in [self.child(i).text(0) for i in range(self.childCount())]:
@@ -46,11 +52,12 @@ class ContentCategory(QTreeWidgetItem):
 
 class ContentItem(QTreeWidgetItem):
     """Tree item that retains data"""
-    def __init__(self, loading_manager: LoadingManager, content: DBDict):
+    def __init__(self, loading_manager: "LoadingManager", content: dict, content_type: dict):
         super().__init__()
 
         self.loading_manager = loading_manager
         self.content = content
+        self.content_id = content_type['id']
 
         self.setText(0, self.get_name())
 
@@ -79,19 +86,21 @@ class ContentItem(QTreeWidgetItem):
 
 class ContentSelectWindow(NEWidget):
     """Categorize the content into their different types"""
-    def __init__(self, loading_manager: LoadingManager, object: LocationObject):
+    def __init__(self, loading_manager: "LoadingManager", object: "LocationObject | RegionObject"):
         super().__init__()
 
         self.loading_manager = loading_manager
         self.object = object
 
-        self.setWindowTitle(object.location.name or 'Untitled Location')
-        self.setWindowIcon(QIcon(object.pixmap))
+        self.setWindowIcon(QIcon(self.object._pixmap))
+        self.setWindowTitle(self.object.name)
 
         screen = QApplication.primaryScreen()
-        geometry = screen.availableGeometry()
-        self.setFixedSize(WINDOW_WIDTH, geometry.height() - self.style().pixelMetric(QStyle.PixelMetric.PM_TitleBarHeight))
-        self.move(geometry.right() - WINDOW_WIDTH, geometry.y())
+        style = self.style()
+        if screen and style:
+            geometry = screen.availableGeometry()
+            self.setFixedSize(WINDOW_WIDTH, geometry.height() - style.pixelMetric(QStyle.PixelMetric.PM_TitleBarHeight))
+            self.move(geometry.right() - WINDOW_WIDTH, geometry.y())
 
         self.main_layout = QVBoxLayout()
         self.setLayout(self.main_layout)
@@ -100,38 +109,38 @@ class ContentSelectWindow(NEWidget):
         self.tree.setItemDelegate(HtmlDelegate(self.tree))
         self.tree.setHeaderHidden(True)
         self.tree.itemClicked.connect(self.select_content)
+        self.main_layout.addWidget(self.tree)
 
         self.populate_list()
 
-        self.main_layout.addWidget(self.tree)
-
-    def add_category(self, content: list[DBDict], content_id: int):
+    def add_category(self, content_id: int, content_data: list[dict]):
         #Path missions
         if content_id == 2:
             #One category per path
-            for type_id in {mission['pathTypeEnum'] for mission in content}:
-                category = ContentCategory([mission for mission in content if mission['pathTypeEnum'] == type_id], CONTENT_TYPES[content_id][type_id], self.tree)
-                self.tree.addTopLevelItem(category)
+            for type_id in {mission['pathTypeEnum'] for mission in content_data}:
+                self.tree.addTopLevelItem(
+                    ContentCategory([mission for mission in content_data if mission['pathTypeEnum'] == type_id], CONTENT_TYPES[content_id][type_id], self.tree)
+                )
         #Everything else
         else:
-            category = ContentCategory(content, CONTENT_TYPES[content_id], self.tree)
-            self.tree.addTopLevelItem(category)
+            self.tree.addTopLevelItem(
+                ContentCategory(content_data, CONTENT_TYPES[content_id], self.tree)
+            )
 
     def populate_list(self):
 
-        location = self.object.location
-
-        for content_id, content in enumerate([
-            location.datacubes,
-            location.quests,
-            location.missions,
-            location.events,
-            location.challenges,
-            location.event_objectives,
-            location.quest_objectives,
+        for content_id, content_name in enumerate([
+            'Datacube',
+            'Quest2',
+            'PathMission',
+            'PublicEvent',
+            'Challenge',
+            'PublicEventObjective',
+            'QuestObjective',
         ]):
-            if len(content):
-                self.add_category(content, content_id)
+            content_data = self.object.contents.get(content_name)
+            if content_data:
+                self.add_category(content_id, content_data)
 
     def select_content(self, item: ContentItem):
         #If it's not a category header
@@ -139,7 +148,7 @@ class ContentSelectWindow(NEWidget):
             #Focus on object
             self.object.map_scene.focus(self.object)
 
-            self.popup = ContentViewerWindow(self.loading_manager, item.content, self.object)
+            self.popup = ContentViewerWindow(self.loading_manager, item, self.object)
             self.popup.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, True)
             self.popup.show()
 

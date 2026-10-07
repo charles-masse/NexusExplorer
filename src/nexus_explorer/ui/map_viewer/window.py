@@ -1,5 +1,8 @@
 
-import pyperclip
+from pathlib import Path
+from typing import TYPE_CHECKING
+
+import pyperclip  # type: ignore[import-untyped]
 from PIL.ImageQt import ImageQt
 from PyQt6.QtCore import QPointF, Qt
 from PyQt6.QtGui import (
@@ -7,7 +10,6 @@ from PyQt6.QtGui import (
     QColor,
     QFont,
     QPixmap,
-    QPolygonF,
 )
 from PyQt6.QtWidgets import (
     QGraphicsScene,
@@ -16,91 +18,94 @@ from PyQt6.QtWidgets import (
     QGraphicsView,
 )
 
-from ...constants import HALF_MAP, MAP_SCALE
-from ...data import LoadingManager, LocationData, WorldData
-from ...map import cluster_locations, generate_map
-from . import LocationObject, ObjectiveObject, RegionObject
-from .utilities import (
-    hex_to_world_coordinates,
-    screen_to_world_coordinates,
-    world_to_screen_pos,
-)
+from nexus_explorer.constants import HALF_MAP, MAP_SCALE
+from nexus_explorer.ui.content_select import ContentSelectWindow
+
+from .cluster import LocationData, cluster_locations
+from .generate import generate_map
+from .objects import LocationObject, ObjectiveObject, RegionObject
+from .utilities import screen_to_world_coordinates
+
+if TYPE_CHECKING:
+    from nexus_explorer.data import LoadingManager
+    from nexus_explorer.ui.world_select.utilities import WorldData
 
 SCALED_HALF = int(HALF_MAP * MAP_SCALE)
+ICON_SIZE = 32 #TODO
 
 class MapScene(QGraphicsScene):
 
-    def __init__(self, loading_manager, world, parent=None):
-        super().__init__(parent)
+    def __init__(self, loading_manager: "LoadingManager", world: "WorldData"):
+        super().__init__()
 
         self.loading_manager = loading_manager
         self.world = world
 
         self.popup = None
 
+        self.world_x = 0
+        self.world_y = 0
+
         self.setSceneRect(0, 0, SCALED_HALF * 2, SCALED_HALF * 2)
         #Display the map in the view (if there's a map)
-        if world.isMap:
+        if world.map:
             pixmap = self.display_map()
             self.addPixmap(pixmap)
+        #Add map objects
+        self.display_locations(self.world.locations)
+        self.display_zones(self.world.zones)
         #Add coords on mouse pointer
         self.coords_text = QGraphicsTextItem()
         self.coords_text.setDefaultTextColor(QColor(79, 204, 60))
-        font = QFont(f'{loading_manager.game_files}/UI/Fonts/segoeuib.ttf', 10)
+
+        font = QFont(str(Path(__file__).resolve().parents[2] / "assets" / "segoeuib.ttf"), 10)
         font.setBold(True)
         self.coords_text.setFont(font)
         self.addItem(self.coords_text)
-        #Objects
-        self.display_locations(world.locations)
-        self.display_regions(loading_manager)
-    
-    def display_locations(self, locations):
-        #Cluster locations and add them to the map
-        locations = cluster_locations(locations)
-        for location in locations:
-            self.draw_location(location)
 
     def display_map(self) -> QPixmap:
         """Display the map when it's done generating/loading."""
-        world_image = generate_map('/'.join([self.loading_manager.game_files, self.world.map_path.replace('\\', '/')]))
+        world_image = generate_map(f'{self.loading_manager.game_files}/{self.world.map}')
         image_qt = ImageQt(world_image).copy()
         pixmap = QPixmap.fromImage(image_qt)
 
         return pixmap
 
-    def display_regions(self, loading_manager):
+    def display_locations(self, locations, test=None):
+        
+        if len(locations):
+            #Convert to location data
+            locations = [LocationData(**location) for location in locations]
+            #Cluster locations and add them to the map
+            clustered_locations = cluster_locations(locations)
+            for location in clustered_locations:
+                location_object = LocationObject(location, self)
+                if test: #TODO
+                    location_object.setParent(test)
+                self.addItem(location_object)
 
-        zones = loading_manager['MapZone']
+    def display_zones(self, zones):
+        
+        if len(zones):
+            #Sort from biggest to smallest
+            zones.sort(
+                key=lambda region: (
+                    max(zone["hexLimX"] - zone["hexMinX"] for zone in region["MapZone"]),
+                    max(zone["hexLimY"] - zone["hexMinY"] for zone in region["MapZone"]),
+                ),
+                reverse=True,
+            )
 
-        for zone in zones.values():
-            if zone['mapContinentId'] == 6: #Get from continent
+            for zone in zones:
+                region_obj = RegionObject(zone, self)
+                self.addItem(region_obj)
 
-                testA, testB = world_to_screen_pos(*hex_to_world_coordinates(zone['hexMinX'], zone['hexMinY']))
-                testC, testD = world_to_screen_pos(*hex_to_world_coordinates(zone['hexLimX'], zone['hexLimY']))
-
-                if zone['flags'] == 0:
-                    poly = QPolygonF([QPointF(testA, testB), QPointF(testC, testB), QPointF(testC, testD), QPointF(testA, testD)])
-                    self.draw_region(poly)
-    
-    def draw_location(self, location: LocationData): #TODO x, y
-        """Place a location on the map."""
-        location_obj = LocationObject(location, self)
-        location_obj.clicked.connect(self.select_location)
-        self.addItem(location_obj)
-
-    def draw_region(self, region):
-        """Draw a region on the map."""
-        region_obj = RegionObject(region)
-        self.addItem(region_obj)
-
-    def drawObjective(self, x: float, y: float, objective_id: int):
+    def draw_objective(self, objective_id: int):
         """Place an Objective on the map"""
-        obj = ObjectiveObject(objective_id, self.loading_manager.game_files)
-        position = world_to_screen_pos(x, y) #TODO include in icon class
-        obj.setPos(position[0] - (obj.im.width() / 2), position[1] - (obj.im.height() / 2))
-        self.addItem(obj)
+        objective_obj = ObjectiveObject(objective_id, self.loading_manager.game_files)
+        self.addItem(objective_obj)
 
-    def focus(self, focus:LocationObject | None = None):
+    def focus(self, focus: LocationObject | None = None):
         """Focus on a specific icon on the map and clear objectives."""
         for item in self.items():
 
@@ -114,13 +119,12 @@ class MapScene(QGraphicsScene):
             elif isinstance(item, ObjectiveObject):
                 self.removeItem(item)
 
-    def select_location(self, icon: LocationObject):
+    def select_object(self, icon: LocationObject | RegionObject):
         """Open the window with current location's content"""
-        from .. import ContentSelectWindow  #TODO
-
         self.popup = ContentSelectWindow(self.loading_manager, icon)
-        self.popup.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, True)
-        self.popup.show()
+        if self.popup:
+            self.popup.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, True)
+            self.popup.show()
         #Defocus from previous focus
         self.focus()
 
@@ -129,22 +133,23 @@ class MapScene(QGraphicsScene):
         super().mouseMoveEvent(event)
 
         if event != None:
+
             coords = event.scenePos()
-            self.mouse_x, self.mouse_y = screen_to_world_coordinates(coords.x(), coords.y())
+            self.world_x, self.world_y = screen_to_world_coordinates(coords.x(), coords.y())
+            
             self.coords_text.setPos(coords.x() + 11, coords.y() + 1)
-            self.coords_text.setHtml(f"<div style='background-color:rgba(24, 25, 23, 100);'>&nbsp;&nbsp;({self.mouse_x}, {self.mouse_y})&nbsp;</div>")
+            self.coords_text.setHtml(f"<div style='background-color:rgba(24, 25, 23, 100);'>&nbsp;&nbsp;({self.world_x}, {self.world_y})&nbsp;</div>")
 
     def mousePressEvent(self, event: QGraphicsSceneMouseEvent | None):
         """Copy the teleport command for the current coords on click to teleport in-game"""
-        pyperclip.copy(f"!tele {self.mouse_x} 0 {self.mouse_y} {self.world.id}")
+        pyperclip.copy(f"!tele {self.world_x} 0 {self.world_y} {self.world.id}")
         super().mousePressEvent(event)
 
 class MapViewer(QGraphicsView):
 
-    def __init__(self, loading_manager: LoadingManager, world: WorldData, parent: QGraphicsScene | None = None):
+    def __init__(self, loading_manager: "LoadingManager", world: "WorldData"):
 
         self.map_scene = MapScene(loading_manager, world)
-
         super().__init__(self.map_scene)
 
         self.setMouseTracking(True)
@@ -153,7 +158,7 @@ class MapViewer(QGraphicsView):
         self.centerOn(QPointF(SCALED_HALF, SCALED_HALF))
 
     def closeEvent(self, event: QCloseEvent | None):
-        # #Remove focus from icon
+        #Remove focus from icon
         if self.map_scene.popup:
             self.map_scene.popup.close()
 

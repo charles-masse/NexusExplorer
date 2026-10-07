@@ -1,10 +1,13 @@
 
+from pprint import pprint
+from typing import TYPE_CHECKING
+
 from PyQt6.QtGui import QCloseEvent, QShowEvent
 from PyQt6.QtWidgets import QVBoxLayout
 
-from ...data import DBDict, LoadingManager, link_referenced
-from ..extensions import NEWidget
-from ..map_viewer.objects import LocationObject
+from nexus_explorer.data.utilities import link_referenced
+from nexus_explorer.ui.extensions import NEWidget
+
 from .labels import (
     ContentLabel,
     display_challenge,
@@ -14,45 +17,52 @@ from .labels import (
     display_quest,
 )
 
+if TYPE_CHECKING:
+    from nexus_explorer.data import LoadingManager
+    from nexus_explorer.ui.map_viewer.objects import LocationObject
+        
+
 WINDOW_WIDTH = 375
 
 class ContentViewerWindow(NEWidget):
 
-    def __init__(self, loading_manager: LoadingManager, content: DBDict, object: LocationObject | None = None):
+    def __init__(self, loading_manager: "LoadingManager", content, object: "LocationObject"):
         super().__init__()
 
         self.loading_manager = loading_manager
-        self.content = content
+        self.content = content.content
         self.object = object
 
-        print(content)
+        pprint(self.content)
 
         self.main_layout = QVBoxLayout(self)
         self.main_layout.setSpacing(3)
         #General title vs challenge title
-        name = content.get('localizedTextIdName') or content.get('localizedTextIdTitle') or content.get('localizedTextIdShort') or '- Unnamed -'
-        if '$' in name:
-            name = link_referenced(loading_manager, name, False)
-        self.setWindowTitle(name)
+        # name = content.get('localizedTextIdName') or content.get('localizedTextIdTitle') or content.get('localizedTextIdShort') or '- Unnamed -'
+        # if '$' in name:
+        #     name = link_referenced(loading_manager, name, False)
+        # self.setWindowTitle(name)
 
-        if content.name == 'Datacube':
+        content_id = content.content_id
+
+        if content_id == 0:
             display_datacube(self)
 
-        elif content.name in ['Quest2', 'QuestObjective']:
+        elif content_id in [1, 6]:
             display_quest(self)
 
-        elif content.name in ['PublicEvent', 'PublicEventObjective']:
+        elif content_id in [3, 5]:
             display_event(self)
 
-        elif content.name == 'Challenge':
+        elif content_id == 4:
             display_challenge(self)
 
-        elif content.name == 'PathMission':
+        elif content_id == 2:
             display_mission(self)
 
         else:
             raise TypeError('Cannot parse this data.')
-        # Quest directions
+        #Quest directions
         # PathMission, Quest, Challenge
         # test = data.get('questDirectionId') or data.get('questDirectionIdCompletion') or data.get('questDirectionIdActive')
 
@@ -60,7 +70,7 @@ class ContentViewerWindow(NEWidget):
         #     self.addQuestDirections(test, 1)
 
         self.setFixedWidth(WINDOW_WIDTH)
-        # Add floating icons
+        #Add floating icons
     #     view = QGraphicsView(self)
     #     view.setStyleSheet("background: transparent; border: 0;")
     #     view.setFixedSize(WINDOW_WIDTH, self.sizeHint().height())

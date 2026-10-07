@@ -1,7 +1,7 @@
 
 from .content_select import ContentSelectWindow
 from .content_viewer import ContentViewerWindow
-from .map_viewer import LocationObject, MapViewer
+from .map_viewer import MapViewer
 from .world_select import WorldSelectWindow
 
-__all__ = ["ContentSelectWindow", "ContentViewerWindow", "LocationObject", "MapViewer", "WorldSelectWindow"]
+__all__ = ["ContentSelectWindow", "ContentViewerWindow", "MapViewer", "WorldSelectWindow"]
