@@ -61,8 +61,8 @@ def map_viewer_window(loading_manager, qtbot):
 
     return widget
 
-# def test_map_viewer_window(map_viewer_window):
-#     map_viewer_window.show()
+def test_map_viewer_window(map_viewer_window):
+    map_viewer_window.show()
 
 def test_map_viewer_displays_objects(map_viewer_window):
     assert len(map_viewer_window.map_scene.items()) > 0
@@ -89,7 +89,7 @@ def test_map_viewer_mouse_click(map_view, qtbot):
 
 def test_map_viewer_select_location(map_viewer_window):
 
-    loc = map_viewer_window.map_scene.items()[0]
+    loc = map_viewer_window.map_scene.items()[1]
     map_viewer_window.map_scene.select_object(loc)
 
     assert map_viewer_window.map_scene.popup

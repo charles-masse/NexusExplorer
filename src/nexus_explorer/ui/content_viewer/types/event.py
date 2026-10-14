@@ -1,25 +1,31 @@
 
+from pprint import pprint
 from typing import TYPE_CHECKING
+
+from nexus_explorer.data.utilities import link_referenced
+from nexus_explorer.ui.content_viewer.labels import ContentLabel
 
 if TYPE_CHECKING:
     from nexus_explorer.ui.content_viewer import ContentViewerWindow
 
 def display_event(window: "ContentViewerWindow"):
-    #TODO type?, parent
-#     for objectiveId, objective in enumerate(data.get('PublicEventObjective', [])):
+    #TODO parent
+    content = window.content
 
-#         objectiveData = loadManager['PublicEventObjective'].get(objective)
-        
-#         if objectiveData:
-#             pprint(objectiveData)
-#             self.createLabel(objectiveData['localizedTextId'], 'PublicEventObjective')
+    pprint(content)
+    
+    for objective in content.get('PublicEventObjective', []):
 
-#             pos = loadManager['WorldLocation2'].get(objectiveData['worldLocation2Id'])
-#             if pos:
-#                 self.mapView.drawObjective(pos['position0'], pos['position2'], objectiveId + 1)
+        objective_text = link_referenced(window.loading_manager, objective['localizedTextId'])
 
-#             self.addQuestDirections(objectiveData['questDirectionId'], objectiveId + 1)
+        window.right_layout.addWidget(ContentLabel(objective_text, 'PublicEventObjective'))
 
-#     self.createLabel(data.get('localizedTextIdEnd'), 'localizedTextIdEnd')
+    #         pos = loadManager['WorldLocation2'].get(objectiveData['worldLocation2Id'])
+    #         if pos:
+    #             self.mapView.drawObjective(pos['position0'], pos['position2'], objective_id + 1)
 
-    window.add_label('localizedTextIdEnd')
+    #         self.addQuestDirections(objectiveData['questDirectionId'], objective_id + 1)
+
+    text_end = content.get('localizedTextIdEnd')
+    if text_end:
+        window.right_layout.addWidget(ContentLabel(text_end, 'localizedTextIdEnd'))

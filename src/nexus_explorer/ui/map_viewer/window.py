@@ -61,6 +61,7 @@ class MapScene(QGraphicsScene):
         font = QFont(str(Path(__file__).resolve().parents[2] / "assets" / "segoeuib.ttf"), 10)
         font.setBold(True)
         self.coords_text.setFont(font)
+        self.coords_text.setZValue(3)
         self.addItem(self.coords_text)
 
     def display_map(self) -> QPixmap:

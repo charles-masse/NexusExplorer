@@ -1,6 +1,7 @@
 
 from nexus_explorer.data import LoadingManager
 from nexus_explorer.ui import WorldSelectWindow
+
 # from nexus_explorer.ui.map_viewer.objects import LocationObject
 
 

@@ -1,10 +1,10 @@
 
+from typing import TYPE_CHECKING
+
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtWidgets import QLabel
 
 from nexus_explorer.ui.content_viewer.labels import ContentLabel
-
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from nexus_explorer.ui.content_viewer import ContentViewerWindow

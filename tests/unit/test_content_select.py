@@ -20,7 +20,7 @@ def loading_manager():
     return LoadingManager('tests/sample_data')
 #UI
 @pytest.fixture
-def world_select_window(loading_manager, qtbot):
+def content_select_window(loading_manager, qtbot):
 
     scene = MapScene(loading_manager, WorldData('0', '', 'TestWorld'))
     widget = ContentSelectWindow(loading_manager, LocationObject(LocationData(0, 0), scene))
@@ -28,5 +28,5 @@ def world_select_window(loading_manager, qtbot):
 
     return widget
 
-def test_world_select(world_select_window):
-    world_select_window.show()
+def test_content_select(content_select_window):
+    content_select_window.show()

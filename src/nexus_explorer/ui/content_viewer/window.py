@@ -1,5 +1,4 @@
 
-from pprint import pprint
 from typing import TYPE_CHECKING
 
 from PyQt6.QtGui import QCloseEvent, QShowEvent
@@ -8,7 +7,7 @@ from PyQt6.QtWidgets import QHBoxLayout, QVBoxLayout
 from nexus_explorer.data.utilities import link_referenced
 from nexus_explorer.ui.extensions import NEWidget
 
-from .types import display_datacube
+from .types import display_challenge, display_datacube, display_event, display_quest
 
 if TYPE_CHECKING:
     from nexus_explorer.data import LoadingManager
@@ -24,8 +23,6 @@ class ContentViewerWindow(NEWidget):
         self.loading_manager = loading_manager
         self.content = content.content
         self.object = object
-        #DEBUG
-        pprint(self.content)
         #General title vs challenge title
         name = self.content.get('localizedTextIdName') or self.content.get('localizedTextIdTitle') or self.content.get('localizedTextIdShort') or '- Unnamed -'
         if '$' in name:
@@ -43,14 +40,14 @@ class ContentViewerWindow(NEWidget):
         if content_id == 0:
             display_datacube(self)
 
-        # elif content_id in [1, 6]:
-        #     display_quest(self)
+        elif content_id in [1]: # , 6
+            display_quest(self)
 
-        # elif content_id in [3, 5]:
-        #     display_event(self)
+        elif content_id in [3]: # , 5
+            display_event(self)
 
-        # elif content_id == 4:
-        #     display_challenge(self)
+        elif content_id == 4:
+            display_challenge(self)
 
         # elif content_id == 2:
         #     display_mission(self)
@@ -89,12 +86,6 @@ class ContentViewerWindow(NEWidget):
     #             objId += 1 
 
     #         heightOffset += widget.sizeHint().height() + 3
-    
-    def add_label(self, string_name: str):
-
-        text = self.content.get(string_name)
-        if text:
-            self.right_layout.addWidget(ContentLabel(text, string_name))
 
     def showEvent(self, event: QShowEvent | None):
         #Focus on object

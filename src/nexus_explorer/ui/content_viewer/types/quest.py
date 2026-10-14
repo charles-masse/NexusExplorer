@@ -1,24 +1,30 @@
 
+from pprint import pprint
 from typing import TYPE_CHECKING
+
+from nexus_explorer.data.utilities import link_referenced
+from nexus_explorer.ui.content_viewer.labels import ContentLabel
 
 if TYPE_CHECKING:
     from nexus_explorer.ui.content_viewer import ContentViewerWindow
-
+    
 def display_quest(window: "ContentViewerWindow"):
+    #TODO faction, rewards, items
+    content = window.content
 
-    # if window.content.name ==  'Quest2':
+    pprint(content)
 
-    for text_name in [
+    for string in [
         'localizedTextIdText',
         'localizedTextIdGiverTextUnknown',
         *[s for i in range(5) for s in [f'localizedTextIdMoreInfoSay0{i}', f'localizedTextIdMoreInfoText0{i}']],
         'localizedTextIdAcceptResponse',
         'localizedTextIdGiverSayAccepted'
     ]:
-        window.add_label(text_name)
-
-    # else:
-    #     print('THIS IS AN OBJECTIVE')
+        text = content.get(string)
+        if text:
+            text = link_referenced(window.loading_manager, text)
+            window.right_layout.addWidget(ContentLabel(text, string))
 
 #     for i in reversed(range(6)):
 
@@ -41,10 +47,13 @@ def display_quest(window: "ContentViewerWindow"):
 
 #                 self.addQuestDirections(objectiveData['questDirectionId'], i + 1)
 
-#     for string in [
-#                    'localizedTextIdReceiverTextAchieved',
-#                    'localizedTextIdCompleteResponse',
-#                    'localizedTextIdReceiverSayCompleted',
-#                    'localizedTextIdCompletedSummary'
-#                   ]:
-#         self.createLabel(data.get(string), string)
+    for string in [
+        'localizedTextIdReceiverTextAchieved',
+        'localizedTextIdCompleteResponse',
+        'localizedTextIdReceiverSayCompleted',
+        'localizedTextIdCompletedSummary'
+    ]:
+        text = content.get(string)
+        if text:
+            text = link_referenced(window.loading_manager, text)
+            window.right_layout.addWidget(ContentLabel(text, string))
