@@ -2,7 +2,82 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from . import ContentViewerWindow
+    from nexus_explorer.ui.content_viewer import ContentViewerWindow
+
+def display_mission(window: "ContentViewerWindow"):
+
+    window.add_label('localizedTextIdUnlock')
+    window.add_label('localizedTextIdSoldierOrders')
+
+    mission_id = window.content['pathMissionTypeEnum']
+    
+    if mission_id in [0]:
+        soldier_security(window)
+
+    elif mission_id in [2, 14]:
+        scientist_analysis(window)
+
+    elif mission_id in [3]:
+        explorer_stalking(window)
+
+    elif mission_id in [4]:
+        soldier_assassinate(window)
+
+    elif mission_id in [5]:
+        soldier_demolition(window)
+
+    elif mission_id in [6]:
+        soldier_rescue(window)
+
+    elif mission_id in [7]:
+        soldier_SWAT(window)
+
+    elif mission_id in [12]:
+        explorer_exploration(window)
+
+    elif mission_id in [13, 18]:
+        explorer_scavenger(window)
+
+    elif mission_id in [15]:
+        explorer_vista(window)
+
+    elif mission_id in [16]:
+        explorer_cartography(window)
+
+    elif mission_id in [17]:
+        explorer_operation(window)
+
+    elif mission_id in [19]:
+        settler_expansion(window)
+
+    elif mission_id in [20]:
+        scientist_study(window)
+        
+    elif mission_id in [21]:
+        settler_project(window)
+
+    elif mission_id in [22]:
+        scientist_experimentation(window)
+
+    elif mission_id in [23]:
+        scientist_speciment(window)
+
+    elif mission_id in [24]:
+        scientist_datacube(window)
+
+    elif mission_id in [25]:
+        settler_service(window)
+
+    elif mission_id in [26]:
+        settler_safety(window)
+
+    elif mission_id in [27]:
+        settler_cache(window)
+    
+    else:
+        raise TypeError(f'Cannot parse this path mission id {mission_id}.')
+
+    window.add_label('localizedTextIdCommunicator')
 
 def soldier_security(window: "ContentViewerWindow"): #'PathSoldierEventWave' ??? Wave info probably server side
     pass

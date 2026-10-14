@@ -1,52 +1,52 @@
 Datacube
 ID [INT32 24];datacubeTypeEnum [INT32 24];localizedTextIdTitle [INT32 24];localizedTextIdText00 [INT32 24];localizedTextIdText01 [INT32 24];localizedTextIdText02 [INT32 24];localizedTextIdText03 [INT32 24];localizedTextIdText04 [INT32 24];localizedTextIdText05 [INT32 24];soundEventId [INT32 24];worldZoneId [INT32 24];unlockCount [INT32 24];assetPathImage [STRING 104];datacubeFactionEnum [INT32 24];worldLocation2Id [INT32 24];questDirectionId [INT32 24]
-1;3;3;4;5;2;1;0;0;4;3;3;recusandae necessitatibus;2;3;2
-2;0;5;5;5;0;5;0;3;5;5;3;dicta accusamus;2;1;5
-3;5;5;5;3;5;0;5;3;3;0;0;similique quod fuga;2;2;4
-4;4;1;2;3;3;0;5;4;5;2;5;dicta accusamus;2;5;4
-5;2;1;2;3;4;0;1;0;2;5;2;dicta accusamus;1;2;4
-6;3;4;4;1;2;0;2;2;1;3;2;est quasi odio omnis;2;3;5
-7;3;5;3;0;3;1;1;2;4;0;2;recusandae necessitatibus;1;3;3
-8;0;3;5;1;0;4;3;5;3;5;4;similique quod fuga;1;1;5
-9;1;4;1;3;2;5;0;4;5;5;4;recusandae necessitatibus;0;0;1
-10;2;5;4;2;0;1;1;0;5;0;0;iusto ratione;0;5;3
-11;3;1;5;0;1;4;3;5;0;3;1;similique quod fuga;0;0;4
-12;0;5;2;0;1;4;4;5;0;2;0;similique quod fuga;2;1;1
-13;4;1;5;5;4;2;2;0;3;3;3;est quasi odio omnis;2;0;0
-14;1;1;1;4;2;0;2;5;3;1;3;dicta accusamus;2;5;5
-15;5;0;3;5;3;0;2;0;2;3;5;iusto ratione;1;3;2
-16;5;2;0;5;0;4;1;0;3;1;2;dicta accusamus;2;4;2
-17;1;5;5;5;2;5;1;2;3;1;1;recusandae necessitatibus;0;5;4
-18;1;1;2;2;0;2;0;4;5;3;1;est quasi odio omnis;0;2;3
-19;4;3;1;0;4;1;1;4;2;3;1;est quasi odio omnis;2;1;2
-20;0;4;0;3;5;4;5;2;0;4;1;recusandae necessitatibus;1;1;4
-21;5;1;1;0;3;5;5;3;2;0;0;est quasi odio omnis;1;1;2
-22;3;0;3;4;1;2;5;1;3;2;0;recusandae necessitatibus;0;2;1
-23;1;0;0;0;1;1;4;1;1;2;0;dicta accusamus;0;0;0
-24;4;2;5;3;2;3;2;0;4;1;1;dicta accusamus;2;1;5
-25;3;5;4;1;1;4;3;2;1;4;4;est quasi odio omnis;2;3;5
-26;0;4;0;2;3;5;5;5;1;5;2;recusandae necessitatibus;1;2;3
-27;3;4;1;1;0;0;4;0;4;2;0;similique quod fuga;0;1;4
-28;4;2;5;3;2;1;3;5;2;0;5;est quasi odio omnis;0;1;5
-29;4;5;0;3;5;2;1;2;4;1;3;similique quod fuga;2;5;4
-30;0;5;1;5;4;1;4;1;1;2;2;dicta accusamus;0;5;4
-31;0;1;3;4;3;3;0;5;2;3;0;est quasi odio omnis;1;5;4
-32;0;5;3;4;5;1;1;2;5;4;4;recusandae necessitatibus;2;1;1
-33;0;4;4;2;5;1;1;1;0;2;3;similique quod fuga;2;2;3
-34;3;1;3;4;3;0;0;3;3;2;0;dicta accusamus;1;1;4
-35;1;2;5;2;2;2;2;0;4;3;5;recusandae necessitatibus;1;5;2
-36;3;1;2;1;0;4;5;3;3;2;2;iusto ratione;0;0;0
-37;3;1;0;1;4;0;1;1;0;4;3;recusandae necessitatibus;0;0;4
-38;1;5;1;0;4;2;3;1;1;1;4;recusandae necessitatibus;2;2;3
-39;2;5;5;3;4;4;0;3;5;1;5;recusandae necessitatibus;1;3;0
-40;1;2;3;4;3;3;3;4;3;1;4;similique quod fuga;0;4;4
-41;5;0;3;1;0;2;0;4;5;3;0;est quasi odio omnis;2;0;4
-42;0;2;1;2;4;0;3;4;1;4;1;recusandae necessitatibus;0;5;5
-43;2;2;1;3;1;2;5;1;1;1;0;est quasi odio omnis;0;1;1
-44;4;4;5;2;4;2;5;2;2;1;0;recusandae necessitatibus;0;2;4
-45;5;2;2;2;5;4;0;3;0;5;4;est quasi odio omnis;2;1;1
-46;5;2;5;0;3;5;2;3;1;4;5;iusto ratione;1;2;3
-47;0;5;0;5;3;3;3;5;5;1;2;iusto ratione;1;5;5
-48;5;5;2;5;3;5;2;4;3;1;1;similique quod fuga;1;1;5
-49;3;0;2;2;0;1;0;4;3;3;0;similique quod fuga;1;5;2
-50;2;3;3;2;3;5;0;2;2;4;0;similique quod fuga;0;4;3
+1;20;32;12;13;30;19;50;1;35;20;41;Map\SampleWorld;1;38;28
+2;27;22;49;28;44;38;41;38;33;1;37;Map\SampleWorld;1;44;28
+3;0;11;10;44;20;18;38;35;2;0;22;Map\SampleWorld;0;31;50
+4;44;50;37;38;3;45;9;19;24;26;14;Map\NoWorld;2;18;33
+5;32;12;49;22;50;29;30;8;2;27;6;Map\SampleWorld;2;32;27
+6;36;3;44;29;30;1;25;39;50;45;45;Map\SampleWorld;0;20;12
+7;16;3;23;46;32;18;40;13;29;22;23;Map\NoWorld;0;47;41
+8;47;10;47;33;43;10;11;5;42;36;19;Map\NoWorld;1;9;18
+9;18;6;39;12;33;35;31;4;29;15;5;Map\SampleWorld;1;47;28
+10;7;37;30;31;6;29;15;38;50;13;3;Map\SampleWorld;1;2;28
+11;27;44;7;49;7;4;3;15;37;26;11;Map\NoWorld;2;14;7
+12;36;12;7;20;34;40;19;3;27;32;9;Map\NoWorld;1;38;18
+13;30;47;29;6;19;0;39;4;8;20;3;Map\SampleWorld;2;36;1
+14;23;5;34;8;10;48;44;18;9;38;17;Map\NoWorld;2;37;33
+15;26;6;47;34;30;1;11;33;29;7;31;Map\NoWorld;2;37;25
+16;44;47;42;10;20;4;14;45;9;5;38;Map\SampleWorld;2;3;28
+17;6;6;49;24;28;46;5;18;0;2;10;Map\NoWorld;2;8;23
+18;16;6;28;13;2;7;31;44;47;24;15;Map\SampleWorld;1;27;12
+19;24;50;14;1;12;50;14;28;37;34;2;Map\SampleWorld;1;32;4
+20;20;37;27;30;40;47;44;25;29;31;49;Map\SampleWorld;2;48;9
+21;33;32;22;0;42;40;23;12;10;21;9;Map\NoWorld;0;31;16
+22;5;33;5;23;46;35;25;13;17;16;3;Map\NoWorld;1;31;16
+23;7;42;29;23;6;15;48;40;6;18;0;Map\SampleWorld;0;17;8
+24;43;15;46;20;49;45;0;7;44;35;3;Map\SampleWorld;1;28;46
+25;10;21;45;19;17;6;9;50;1;1;13;Map\SampleWorld;1;7;26
+26;9;28;20;5;23;43;50;3;49;9;12;Map\NoWorld;1;40;41
+27;15;41;17;6;0;1;28;5;49;45;40;Map\NoWorld;1;17;5
+28;31;32;39;34;29;22;50;38;37;20;46;Map\SampleWorld;2;49;17
+29;36;23;1;45;25;50;45;29;12;19;25;Map\SampleWorld;0;18;32
+30;41;5;41;8;29;19;21;6;38;29;22;Map\SampleWorld;0;45;35
+31;37;33;26;1;34;43;36;0;7;5;23;Map\SampleWorld;1;32;16
+32;13;31;39;49;40;50;22;40;44;13;25;Map\SampleWorld;2;6;32
+33;44;12;44;47;16;29;0;30;7;44;37;Map\NoWorld;0;22;16
+34;31;13;46;6;47;29;7;49;17;44;43;Map\NoWorld;1;25;41
+35;37;21;27;37;47;29;30;14;50;42;32;Map\SampleWorld;0;34;3
+36;40;45;10;45;7;8;39;1;49;33;40;Map\NoWorld;2;4;2
+37;16;22;21;2;35;11;4;23;20;50;9;Map\SampleWorld;0;30;34
+38;26;39;8;0;39;2;0;20;42;49;39;Map\NoWorld;0;1;25
+39;48;1;11;15;30;4;31;24;2;10;45;Map\SampleWorld;2;25;25
+40;35;32;29;23;34;34;42;25;45;26;3;Map\SampleWorld;1;37;32
+41;17;26;48;48;6;11;8;40;24;7;5;Map\NoWorld;0;31;46
+42;22;2;24;36;13;13;34;34;7;12;43;Map\NoWorld;1;0;22
+43;26;25;41;43;50;5;33;39;41;21;49;Map\SampleWorld;0;43;37
+44;9;13;27;33;27;5;49;41;29;37;37;Map\SampleWorld;2;12;43
+45;37;37;9;0;48;22;13;22;16;0;19;Map\SampleWorld;1;46;47
+46;35;16;27;32;5;3;17;16;27;24;30;Map\SampleWorld;1;23;45
+47;12;42;14;47;34;50;38;30;23;2;18;Map\NoWorld;2;37;16
+48;44;6;12;46;33;37;32;29;29;14;49;Map\SampleWorld;0;39;40
+49;18;8;48;4;23;45;39;6;42;50;5;Map\NoWorld;0;37;40
+50;37;26;15;0;45;34;46;9;31;26;49;Map\SampleWorld;2;29;45

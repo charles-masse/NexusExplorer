@@ -20,7 +20,7 @@ from .extensions import HtmlDelegate, NEWidget
 if TYPE_CHECKING:
     from nexus_explorer.data import LoadingManager
 
-    from .map_viewer.objects import LocationObject, RegionObject
+    # from .map_viewer.objects import LocationObject, RegionObject
 
 WINDOW_WIDTH = 425
 
@@ -86,7 +86,7 @@ class ContentItem(QTreeWidgetItem):
 
 class ContentSelectWindow(NEWidget):
     """Categorize the content into their different types"""
-    def __init__(self, loading_manager: "LoadingManager", object: "LocationObject | RegionObject"):
+    def __init__(self, loading_manager: "LoadingManager", object):
         super().__init__()
 
         self.loading_manager = loading_manager
@@ -156,5 +156,6 @@ class ContentSelectWindow(NEWidget):
         #Remove focus from object
         self.object.setSelected(False)
         self.object.map_scene.focus()
+        self.object.map_scene.popup = None
 
         super().closeEvent(event)
