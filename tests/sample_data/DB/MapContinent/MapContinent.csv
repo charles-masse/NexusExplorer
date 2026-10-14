@@ -1,52 +1,52 @@
 MapContinent
 ID [INT32 24];localizedTextIdName [INT32 24];assetPath [STRING 104];imagePath [STRING 104];imageWidth [INT32 24];imageHeight [INT32 24];imageOffsetX [INT32 24];imageOffsetY [INT32 24];hexMinX [INT32 24];hexMinY [INT32 24];hexLimX [INT32 24];hexLimY [INT32 24];flags [INT32 24]
-1;14;Map\NoWorld;eum vitae eos amet inventore;6;16;3;16;47;7;25;19;21
-2;9;Map\SampleWorld;facere commodi nulla recusandae ab;46;23;0;35;2;34;27;21;43
-3;24;Map\NoWorld;similique;23;16;48;4;35;16;10;31;33
-4;32;Map\SampleWorld;est commodi aut tenetur;26;33;46;28;32;32;22;49;15
-5;39;Map\NoWorld;eligendi labore;19;35;11;39;29;24;9;30;6
-6;3;Map\SampleWorld;quasi non provident soluta adipisci;1;31;34;5;19;31;18;34;4
-7;25;Map\NoWorld;laudantium;5;9;43;23;4;17;2;12;22
-8;32;Map\SampleWorld;sunt;3;16;29;25;22;38;6;47;41
-9;5;Map\NoWorld;magni consequatur quaerat vero eligendi;8;10;41;41;41;7;17;33;48
-10;6;Map\SampleWorld;impedit labore et;44;17;8;12;0;12;9;0;14
-11;24;Map\SampleWorld;dignissimos;26;31;14;41;10;14;26;48;14
-12;8;Map\NoWorld;aspernatur perspiciatis quibusdam;9;16;32;9;41;36;38;21;37
-13;27;Map\NoWorld;mollitia recusandae odio asperiores;0;24;21;34;19;5;29;43;35
-14;3;Map\NoWorld;quae;23;42;30;1;16;24;0;14;26
-15;8;Map\SampleWorld;exercitationem provident qui iusto in;13;40;5;34;20;48;50;22;14
-16;47;Map\SampleWorld;distinctio itaque earum culpa aliquid;35;36;50;49;2;38;30;25;18
-17;32;Map\NoWorld;ratione;5;46;4;45;13;4;2;45;5
-18;32;Map\SampleWorld;laboriosam quaerat;30;25;41;3;19;44;44;46;17
-19;2;Map\SampleWorld;eligendi earum animi laudantium libero;22;14;23;28;26;39;41;5;37
-20;31;Map\NoWorld;molestiae harum;29;37;30;15;40;10;5;50;35
-21;40;Map\SampleWorld;omnis ex nihil labore incidunt;19;11;23;2;14;45;3;11;3
-22;1;Map\NoWorld;hic ab voluptatum quasi;3;14;22;0;12;26;33;19;2
-23;27;Map\SampleWorld;aspernatur;9;40;6;6;40;45;7;5;4
-24;47;Map\NoWorld;labore sed laborum doloribus nesciunt;2;5;21;35;48;34;24;15;41
-25;35;Map\SampleWorld;id magni mollitia ut dolorem;2;34;31;20;13;13;6;48;12
-26;11;Map\NoWorld;provident incidunt;25;5;21;44;5;50;48;12;0
-27;12;Map\SampleWorld;tempora nisi maiores sunt molestiae;18;22;13;36;47;19;2;28;1
-28;31;Map\SampleWorld;minima;24;15;0;31;43;33;32;48;12
-29;22;Map\SampleWorld;fugiat;28;35;37;30;8;48;50;7;42
-30;45;Map\NoWorld;et laborum;14;46;12;36;35;24;6;33;40
-31;21;Map\NoWorld;architecto quaerat quasi magni debitis;30;22;49;23;50;15;42;14;20
-32;42;Map\SampleWorld;dolor iure enim iusto;34;26;14;28;19;42;50;36;7
-33;31;Map\NoWorld;fugiat;6;49;42;42;17;16;8;25;35
-34;11;Map\NoWorld;ab accusamus ut;6;6;18;12;47;50;23;50;4
-35;48;Map\SampleWorld;temporibus eligendi quisquam totam adipisci;47;2;50;35;21;35;0;3;0
-36;20;Map\SampleWorld;dignissimos consequuntur aperiam;0;36;24;41;5;18;32;26;46
-37;44;Map\SampleWorld;error explicabo sequi;6;1;24;40;43;10;40;43;19
-38;39;Map\NoWorld;numquam eveniet fuga harum repellat;16;38;25;30;50;3;1;7;29
-39;9;Map\SampleWorld;pariatur facere soluta qui itaque;8;11;39;12;35;20;50;7;46
-40;27;Map\NoWorld;eum perferendis facilis eaque libero;1;30;21;14;33;31;19;7;31
-41;19;Map\NoWorld;suscipit repudiandae;7;49;40;7;19;16;18;47;23
-42;42;Map\SampleWorld;veniam;2;31;13;32;4;28;46;15;42
-43;18;Map\SampleWorld;nobis doloremque;45;39;31;7;48;14;21;32;19
-44;41;Map\SampleWorld;maiores ullam dolores inventore;1;25;28;4;35;19;28;40;46
-45;38;Map\SampleWorld;sint;20;44;35;8;50;43;10;11;30
-46;39;Map\SampleWorld;corrupti natus adipisci quibusdam;29;10;37;50;6;10;10;34;25
-47;40;Map\NoWorld;error sed rerum iure;45;6;26;10;12;31;22;31;6
-48;38;Map\SampleWorld;amet at autem;44;42;39;15;0;8;13;47;0
-49;22;Map\SampleWorld;quaerat sint a quis;13;39;10;3;6;44;1;19;23
-50;29;Map\SampleWorld;quis dolor harum;26;13;23;38;39;11;44;29;4
+1;32;Map/NoWorld;nemo eum voluptatum;14;22;15;26;31;25;2;43;3
+2;25;Map/NoWorld;illo corporis laboriosam;49;6;48;19;13;16;32;24;47
+3;24;Map/NoWorld;culpa quidem ab;28;50;27;12;11;26;25;32;3
+4;15;Map/NoWorld;nostrum qui error nemo;3;31;43;31;12;29;41;42;50
+5;42;Map/SampleWorld;animi temporibus iste;21;10;14;38;19;33;30;32;26
+6;24;Map/NoWorld;optio;25;4;44;3;49;44;22;1;6
+7;13;Map/SampleWorld;minus;21;7;2;31;37;9;15;4;23
+8;36;Map/NoWorld;accusantium ipsam deleniti;8;32;39;45;8;2;39;3;0
+9;46;Map/SampleWorld;culpa doloremque nulla;18;11;44;35;3;28;3;44;25
+10;18;Map/SampleWorld;cum enim labore;7;17;1;34;12;21;26;24;45
+11;42;Map/NoWorld;fuga sed labore natus;25;3;15;39;44;20;17;23;15
+12;44;Map/NoWorld;suscipit temporibus;33;43;26;7;22;21;44;24;42
+13;11;Map/SampleWorld;aspernatur adipisci omnis inventore;17;44;31;29;2;2;0;19;13
+14;29;Map/SampleWorld;doloremque numquam libero vero architecto;8;29;40;8;0;28;2;36;15
+15;11;Map/SampleWorld;illum;36;17;28;5;43;46;33;12;44
+16;41;Map/SampleWorld;nam enim officia consequuntur asperiores;10;41;33;6;7;5;16;21;30
+17;0;Map/SampleWorld;nesciunt consectetur officiis odit;37;33;6;43;30;35;4;21;30
+18;0;Map/SampleWorld;enim;21;15;32;5;46;17;19;49;15
+19;25;Map/NoWorld;maxime cum;30;0;44;24;28;32;27;37;10
+20;37;Map/NoWorld;itaque;25;2;20;45;50;47;41;37;28
+21;6;Map/NoWorld;error ipsum cumque;0;1;47;49;46;31;21;24;46
+22;16;Map/SampleWorld;laboriosam et libero nobis;21;43;48;33;49;30;31;38;37
+23;45;Map/NoWorld;repellat voluptatum;14;41;46;9;47;38;38;20;27
+24;36;Map/NoWorld;officiis fugiat;45;39;17;40;14;32;0;31;25
+25;45;Map/SampleWorld;sint necessitatibus;25;24;37;24;20;22;12;11;25
+26;28;Map/NoWorld;laborum est tenetur;10;11;9;9;46;11;21;1;6
+27;13;Map/SampleWorld;quas perferendis voluptatum error similique;14;20;49;43;14;0;43;9;33
+28;26;Map/SampleWorld;molestiae perferendis corrupti;35;12;37;32;2;33;37;7;28
+29;5;Map/NoWorld;reiciendis voluptas;35;42;41;43;4;8;16;30;6
+30;19;Map/SampleWorld;labore nihil alias;19;38;44;7;42;26;8;37;34
+31;37;Map/NoWorld;consectetur libero;44;9;30;16;9;23;30;34;24
+32;45;Map/SampleWorld;et;10;41;20;2;39;1;26;8;39
+33;0;Map/SampleWorld;unde ipsam explicabo similique praesentium;2;12;43;38;8;45;6;2;2
+34;49;Map/SampleWorld;accusamus quasi;14;1;42;19;11;29;29;41;6
+35;33;Map/NoWorld;veritatis adipisci in assumenda aut;50;39;11;1;7;38;30;19;8
+36;4;Map/NoWorld;culpa;17;44;42;27;5;8;30;12;29
+37;47;Map/NoWorld;amet itaque labore dolore;19;19;1;22;16;49;3;24;24
+38;36;Map/SampleWorld;sequi dolor nostrum;29;1;17;31;23;0;21;10;15
+39;17;Map/NoWorld;totam nobis;17;42;12;4;5;14;8;26;5
+40;17;Map/NoWorld;magni dicta totam natus;27;45;34;17;35;15;7;23;1
+41;7;Map/SampleWorld;nihil soluta explicabo;48;14;28;33;20;6;28;6;23
+42;37;Map/SampleWorld;doloremque;40;28;47;20;39;22;39;22;44
+43;29;Map/NoWorld;asperiores sunt illo placeat;2;39;10;2;34;12;14;20;9
+44;43;Map/SampleWorld;fugit facilis ducimus mollitia optio;35;2;28;44;33;18;2;2;34
+45;21;Map/NoWorld;ratione iusto doloremque sequi non;36;12;24;27;18;20;45;27;31
+46;7;Map/NoWorld;debitis aspernatur consequatur quia vero;31;46;3;28;43;1;37;32;50
+47;39;Map/NoWorld;quo deleniti dignissimos possimus;14;34;25;0;0;47;37;26;13
+48;29;Map/SampleWorld;nesciunt accusantium repudiandae eum dolorem;41;38;28;48;3;13;45;24;4
+49;48;Map/SampleWorld;veniam nulla sit provident vero;50;48;2;39;19;18;0;12;7
+50;47;Map/SampleWorld;magnam;24;50;11;28;9;2;27;37;33

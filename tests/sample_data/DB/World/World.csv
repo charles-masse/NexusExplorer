@@ -1,7 +1,7 @@
 World
 ID [INT32 24];assetPath [STRING 104];flags [INT32 24];type [INT32 24];screenPath [STRING 104];screenModelPath [STRING 104];chunkBounds00 [INT32 24];chunkBounds01 [INT32 24];chunkBounds02 [INT32 24];chunkBounds03 [INT32 24];plugAverageHeight [INT32 24];localizedTextIdName [INT32 24];minItemLevel [INT32 24];maxItemLevel [INT32 24];primeLevelOffset [INT32 24];primeLevelMax [INT32 24];veteranTierScalingType [INT32 24];heroismMenaceLevel [INT32 24];rewardRotationContentId [INT32 24]
-1;Map\NoWorld;10;3;voluptate neque;iste harum maiores voluptates repudiandae;18;30;39;27;42;42;6;26;20;50;31;22;4
-2;Map\NoWorld;11;46;officia error eos;excepturi nam tempora;8;50;36;43;18;33;5;38;26;3;4;24;23
-3;Map\NoWorld;49;12;distinctio omnis veniam ipsam minus;dicta recusandae minima similique fugit;22;5;39;24;25;20;42;47;31;23;43;10;45
-4;Map\SampleWorld;6;12;rerum ut laboriosam consequuntur;rem quod porro perferendis quia;7;42;8;44;4;17;21;3;4;47;9;44;7
-5;Map\SampleWorld;0;46;voluptas eum;quos aspernatur corrupti;41;32;36;37;27;16;39;44;13;5;36;42;34
+1;Map/SampleWorld;26;31;et;a;45;0;45;44;49;14;31;11;33;0;37;21;7
+2;Map/NoWorld;32;50;cumque molestiae;deleniti sed;16;14;15;35;27;42;13;6;20;43;36;35;48
+3;Map/NoWorld;30;16;porro delectus eaque suscipit;sequi recusandae perferendis;22;3;20;19;3;39;18;33;50;2;48;15;49
+4;Map/NoWorld;32;42;dolore suscipit numquam soluta itaque;voluptate;18;8;44;40;27;2;42;49;12;3;32;0;29
+5;Map/NoWorld;38;46;nam;cupiditate;23;2;30;33;42;24;10;28;22;17;12;23;38
