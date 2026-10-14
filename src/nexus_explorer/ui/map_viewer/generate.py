@@ -14,13 +14,13 @@ def chunk_coords(chunk_name):
 
     return [x, y]
 
-def generate_map(chunk_path, cache=True):
+def generate_map(chunk_path, cache_path='.cache'):
 
     map_name = chunk_path.split('/')[-1]
-    cache_path = f'.cache/{map_name}.png'
+    path = f'{cache_path}/{map_name}.png'
     #If the map was already processed in the past
-    if cache and os.path.exists(cache_path):
-        im = Image.open(cache_path)
+    if os.path.exists(path):
+        im = Image.open(path)
     else:
         #Get chunk images
         chunks = [[chunk_name] + chunk_coords(chunk_name) for chunk_name in os.listdir(chunk_path)]
@@ -37,8 +37,7 @@ def generate_map(chunk_path, cache=True):
                 im.paste(chunk_image, (chunk_x * MAP_CHUNK_RESOLUTION, chunk_y * MAP_CHUNK_RESOLUTION))
         im = ImageOps.scale(im, MAP_SCALE)
         #Save map for faster loading
-        if cache:
-            os.makedirs(os.path.dirname(cache_path), exist_ok=True)
-            im.save(cache_path)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        im.save(path)
 
     return im

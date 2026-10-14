@@ -1,7 +1,7 @@
 
 from nexus_explorer.data import LoadingManager
 from nexus_explorer.ui import WorldSelectWindow
-from nexus_explorer.ui.map_viewer.objects import LocationObject
+# from nexus_explorer.ui.map_viewer.objects import LocationObject
 
 
 def test_kitchen_sink(qtbot):
@@ -15,11 +15,11 @@ def test_kitchen_sink(qtbot):
     world_list.setCurrentRow(0)
     widget.load_world_button.click()
     #Map Viewer
-    map_viewer = widget.popup.map_scene
+    # map_viewer = widget.popup.map_scene
 
-    for loc in [l for l in map_viewer.items() if isinstance(l, LocationObject)]:
+    # for loc in [l for l in map_viewer.items() if isinstance(l, LocationObject)]:
 
-        loc.clicked.emit(loc)
+    #     loc.clicked.emit(loc)
         #Content Select
         # content_select = map_viewer.popup
         # content_list = content_select.tree

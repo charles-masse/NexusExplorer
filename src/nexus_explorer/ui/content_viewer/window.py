@@ -3,25 +3,17 @@ from pprint import pprint
 from typing import TYPE_CHECKING
 
 from PyQt6.QtGui import QCloseEvent, QShowEvent
-from PyQt6.QtWidgets import QVBoxLayout
+from PyQt6.QtWidgets import QHBoxLayout, QVBoxLayout
 
 from nexus_explorer.data.utilities import link_referenced
 from nexus_explorer.ui.extensions import NEWidget
 
-from .labels import (
-    ContentLabel,
-    display_challenge,
-    display_datacube,
-    display_event,
-    display_mission,
-    display_quest,
-)
+from .types import display_datacube
 
 if TYPE_CHECKING:
     from nexus_explorer.data import LoadingManager
     from nexus_explorer.ui.map_viewer.objects import LocationObject
         
-
 WINDOW_WIDTH = 375
 
 class ContentViewerWindow(NEWidget):
@@ -32,33 +24,36 @@ class ContentViewerWindow(NEWidget):
         self.loading_manager = loading_manager
         self.content = content.content
         self.object = object
-
+        #DEBUG
         pprint(self.content)
-
-        self.main_layout = QVBoxLayout(self)
-        self.main_layout.setSpacing(3)
         #General title vs challenge title
-        # name = content.get('localizedTextIdName') or content.get('localizedTextIdTitle') or content.get('localizedTextIdShort') or '- Unnamed -'
-        # if '$' in name:
-        #     name = link_referenced(loading_manager, name, False)
-        # self.setWindowTitle(name)
+        name = self.content.get('localizedTextIdName') or self.content.get('localizedTextIdTitle') or self.content.get('localizedTextIdShort') or '- Unnamed -'
+        if '$' in name:
+            name = link_referenced(loading_manager, name, False)
+        self.setWindowTitle(name)
+
+        self.main_layout = QHBoxLayout(self)
+
+        self.right_layout = QVBoxLayout()
+        self.right_layout.setSpacing(3)
+        self.main_layout.addLayout(self.right_layout)
 
         content_id = content.content_id
 
         if content_id == 0:
             display_datacube(self)
 
-        elif content_id in [1, 6]:
-            display_quest(self)
+        # elif content_id in [1, 6]:
+        #     display_quest(self)
 
-        elif content_id in [3, 5]:
-            display_event(self)
+        # elif content_id in [3, 5]:
+        #     display_event(self)
 
-        elif content_id == 4:
-            display_challenge(self)
+        # elif content_id == 4:
+        #     display_challenge(self)
 
-        elif content_id == 2:
-            display_mission(self)
+        # elif content_id == 2:
+        #     display_mission(self)
 
         else:
             raise TypeError('Cannot parse this data.')
@@ -69,7 +64,7 @@ class ContentViewerWindow(NEWidget):
         # if test:
         #     self.addQuestDirections(test, 1)
 
-        self.setFixedWidth(WINDOW_WIDTH)
+        self.setMinimumWidth(WINDOW_WIDTH)
         #Add floating icons
     #     view = QGraphicsView(self)
     #     view.setStyleSheet("background: transparent; border: 0;")
@@ -99,7 +94,7 @@ class ContentViewerWindow(NEWidget):
 
         text = self.content.get(string_name)
         if text:
-            self.main_layout.addWidget(ContentLabel(text, string_name))
+            self.right_layout.addWidget(ContentLabel(text, string_name))
 
     def showEvent(self, event: QShowEvent | None):
         #Focus on object

@@ -41,7 +41,7 @@ class MapScene(QGraphicsScene):
         self.loading_manager = loading_manager
         self.world = world
 
-        self.popup = None
+        self.popup: ContentSelectWindow | None = None
 
         self.world_x = 0
         self.world_y = 0
@@ -100,10 +100,10 @@ class MapScene(QGraphicsScene):
                 region_obj = RegionObject(zone, self)
                 self.addItem(region_obj)
 
-    def draw_objective(self, objective_id: int):
-        """Place an Objective on the map"""
-        objective_obj = ObjectiveObject(objective_id, self.loading_manager.game_files)
-        self.addItem(objective_obj)
+    # def draw_objective(self, objective_id: int):
+    #     """Place an Objective on the map"""
+    #     objective_obj = ObjectiveObject(objective_id, self.loading_manager.game_files)
+    #     self.addItem(objective_obj)
 
     def focus(self, focus: LocationObject | None = None):
         """Focus on a specific icon on the map and clear objectives."""
@@ -121,17 +121,18 @@ class MapScene(QGraphicsScene):
 
     def select_object(self, icon: LocationObject | RegionObject):
         """Open the window with current location's content"""
+        # if self.popup:
+        #     self.popup.close()
+        #     self.popup = None
+
         self.popup = ContentSelectWindow(self.loading_manager, icon)
-        if self.popup:
-            self.popup.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, True)
-            self.popup.show()
+        self.popup.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, True)
+        self.popup.show()
         #Defocus from previous focus
         self.focus()
 
     def mouseMoveEvent(self, event: QGraphicsSceneMouseEvent | None):
         """Display the map coords on the mouse"""
-        super().mouseMoveEvent(event)
-
         if event != None:
 
             coords = event.scenePos()
@@ -140,9 +141,12 @@ class MapScene(QGraphicsScene):
             self.coords_text.setPos(coords.x() + 11, coords.y() + 1)
             self.coords_text.setHtml(f"<div style='background-color:rgba(24, 25, 23, 100);'>&nbsp;&nbsp;({self.world_x}, {self.world_y})&nbsp;</div>")
 
+        super().mouseMoveEvent(event)
+
     def mousePressEvent(self, event: QGraphicsSceneMouseEvent | None):
         """Copy the teleport command for the current coords on click to teleport in-game"""
         pyperclip.copy(f"!tele {self.world_x} 0 {self.world_y} {self.world.id}")
+
         super().mousePressEvent(event)
 
 class MapViewer(QGraphicsView):
@@ -161,5 +165,6 @@ class MapViewer(QGraphicsView):
         #Remove focus from icon
         if self.map_scene.popup:
             self.map_scene.popup.close()
+            self.map_scene.popup = None
 
         super().closeEvent(event)

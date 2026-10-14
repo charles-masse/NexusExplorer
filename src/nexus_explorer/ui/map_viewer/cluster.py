@@ -53,9 +53,9 @@ class LocationData:
 
         for hub in [h for h in self.contents.get('QuestHub', []) if h.get('localizedTextIdName')]:
             names.append(hub.get('localizedTextIdName'))
-
-        for zone in [z for z in self.contents.get('WorldZone', []) if z.get('localizedTextIdName')]:
-            names.append(zone.get('localizedTextIdName'))
+        #TODO double-check if we're not losing any interesting names from non-mapZones
+        # for zone in [z for z in self.contents.get('WorldZone', []) if z.get('localizedTextIdName')]:
+        #     names.append(zone.get('localizedTextIdName'))
 
         for challenge in [c for c in self.contents.get('Challenge', []) if c.get('localizedTextIdLocation')]:
             names.append(challenge.get('localizedTextIdLocation'))

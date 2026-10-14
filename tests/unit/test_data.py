@@ -1,6 +1,6 @@
 
-from nexus_explorer.data import LoadingManager
-from nexus_explorer.data.utilities import link_data
+from nexus_explorer.data import LoadingManager  # type: ignore[import-untyped]
+from nexus_explorer.data.utilities import link_data  # type: ignore[import-untyped]
 
 loading_manager = LoadingManager('tests/sample_data')
 

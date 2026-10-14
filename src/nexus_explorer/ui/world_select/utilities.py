@@ -102,6 +102,7 @@ def prep_worlds(loading_manager: "LoadingManager"):
             map_zone_data = loading_manager['MapZone'].get(map_zone['mapZoneId'])
             
             if map_zone_data:
+                
                 world_zone_data = loading_manager['WorldZone'].get(map_zone_data['worldZoneId'])
 
                 if world_data and world_zone_data and world_data.id == map_zone['worldId'] and world_zone_data not in world_data.zones:
