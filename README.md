@@ -60,6 +60,6 @@ uv run nexus_explorer "PATH_TO_EXTRACTED_GAME_DATA"
 
 - [X] Map Zones
 - [ ] Linked items
-- [ ] Show Episodes/Quest chains
 - [ ] Linked NPC/creature models
-- [ ] Communicator messages (?)
+- [ ] Show Episodes/Quest chains
+- [ ] Communicator messages

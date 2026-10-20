@@ -7,7 +7,13 @@ from PyQt6.QtWidgets import QHBoxLayout, QVBoxLayout
 from nexus_explorer.data.utilities import link_referenced
 from nexus_explorer.ui.extensions import NEWidget
 
-from .types import display_challenge, display_datacube, display_event, display_quest
+from .types import (
+    display_challenge,
+    display_datacube,
+    display_event,
+    display_mission,
+    display_quest,
+)
 
 if TYPE_CHECKING:
     from nexus_explorer.data import LoadingManager
@@ -43,14 +49,14 @@ class ContentViewerWindow(NEWidget):
         elif content_id in [1]: # , 6
             display_quest(self)
 
+        elif content_id == 2:
+            display_mission(self)
+
         elif content_id in [3]: # , 5
             display_event(self)
 
         elif content_id == 4:
             display_challenge(self)
-
-        # elif content_id == 2:
-        #     display_mission(self)
 
         else:
             raise TypeError('Cannot parse this data.')

@@ -9,17 +9,17 @@ from nexus_explorer.ui.world_select.utilities import (  # type: ignore[import-un
 
 
 @pytest.fixture
-def loading_manager():
+def loading_manager_override():
     return LoadingManager('tests/sample_data')
 #Utilities
-def test_prep_worlds(loading_manager):
-    worlds = prep_worlds(loading_manager)
+def test_prep_worlds(loading_manager_override):
+    worlds = prep_worlds(loading_manager_override)
     assert len(worlds)
 #UI
 @pytest.fixture
-def world_select_window(loading_manager, qtbot):
+def world_select_window(loading_manager_override, qtbot):
 
-    widget = WorldSelectWindow(loading_manager)
+    widget = WorldSelectWindow(loading_manager_override)
     qtbot.addWidget(widget)
 
     return widget

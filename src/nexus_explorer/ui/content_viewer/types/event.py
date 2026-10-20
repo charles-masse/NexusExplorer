@@ -1,5 +1,4 @@
 
-from pprint import pprint
 from typing import TYPE_CHECKING
 
 from nexus_explorer.data.utilities import link_referenced
@@ -9,11 +8,9 @@ if TYPE_CHECKING:
     from nexus_explorer.ui.content_viewer import ContentViewerWindow
 
 def display_event(window: "ContentViewerWindow"):
-    #TODO parent
+    #TODO parent event
     content = window.content
 
-    pprint(content)
-    
     for objective in content.get('PublicEventObjective', []):
 
         objective_text = link_referenced(window.loading_manager, objective['localizedTextId'])

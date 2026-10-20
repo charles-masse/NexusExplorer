@@ -28,7 +28,7 @@ DATABASES = {
 }
 
 def link_referenced(loading_manager: LoadingManager, text: str, hyperlink: bool = True) -> str:
-    """Add hypertext to a string.""" #TODO plural vs singular item
+    """Add hypertext to a string.""" #TODO plural vs singular
     regex = re.finditer(r'(?:<text[^>]*?>)?\$\S*?\((\w+)=(\d+)\)|\$(\w+)=(\d+)(?:</text>)?', text)
     for match in regex:
 

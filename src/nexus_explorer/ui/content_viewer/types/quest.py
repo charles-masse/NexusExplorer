@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from nexus_explorer.ui.content_viewer import ContentViewerWindow
     
 def display_quest(window: "ContentViewerWindow"):
-    #TODO faction, rewards, items
+    #TODO faction req
     content = window.content
 
     pprint(content)

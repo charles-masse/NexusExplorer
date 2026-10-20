@@ -11,15 +11,14 @@ if TYPE_CHECKING:
 
 
 def display_datacube(window: "ContentViewerWindow"):
-
-    content = window.content
-
-    datacube_text = []
-    """
+    """ datacubeTypeEnum
     0 - Voice-acted
     1 - with image (TfBtF)
     2 - Text-only
     """
+    content = window.content
+
+    datacube_text = []
     datacube_type_id = content['datacubeTypeEnum']
     
     if datacube_type_id == 0:

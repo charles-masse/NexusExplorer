@@ -120,9 +120,30 @@ QLabel {
 
 }
 
-#QuestObjective, #EventObjective, #pathObjective, #localizedTextIdProgress  {
+#QuestObjective, #EventObjective, #pathObjective, #localizedTextIdProgress {
 
     background-color: rgb(5, 11, 12);
     border: 3px solid rgb(89, 167, 200);
+    
+}
+
+#challengeTierId00 {
+
+    background-color: #705B2F;
+    border: 3px solid #FFD700;
+
+}
+
+#challengeTierId01 {
+
+    background-color: #595E64;
+    border: 3px solid #C0C0C0;
+
+}
+
+#challengeTierId02 {
+
+    background-color: #69472F;
+    border: 3px solid #CD7F32;
     
 }
