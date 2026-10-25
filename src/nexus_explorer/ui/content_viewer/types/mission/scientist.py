@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from nexus_explorer.ui.content_viewer import ContentViewerWindow
 
-
 def scientist_analysis(window: "ContentViewerWindow"):  #Biology/Botany/Analysis/Diagnostic/Chemistry/Archeology??
     pass
 

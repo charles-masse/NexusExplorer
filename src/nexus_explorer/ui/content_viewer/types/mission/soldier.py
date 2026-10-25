@@ -1,8 +1,6 @@
 
 from typing import TYPE_CHECKING
 
-from nexus_explorer.ui.content_viewer.labels import ContentLabel
-
 if TYPE_CHECKING:
     from nexus_explorer.ui.content_viewer import ContentViewerWindow
 
@@ -15,24 +13,21 @@ def soldier_assassinate(window: "ContentViewerWindow"):
     content = window.content
 
     assassination = window.loading_manager['PathSoldierAssassinate'].get(content['objectId'])
-    if assassination:
-        window.right_layout.addWidget(ContentLabel(f"Assassinate {assassination['count']} $(creature={assassination['creature2Id']})", 'PathObjective'))
+    window.add_label(f"Assassinate {assassination['count']} $(creature={assassination['creature2Id']})", 'LabelObjective')
 
 def soldier_demolition(window: "ContentViewerWindow"):
 
     content = window.content
 
     demolition = window.loading_manager['PathSoldierActivate'].get(content['objectId'])
-    if demolition:
-        window.right_layout.addWidget(ContentLabel(f"Assassinate {demolition['count']} $(creature={demolition['creature2Id']})", 'PathObjective'))
+    window.add_label(f"Destroy {demolition['count']} $(creature={demolition['creature2Id']})", 'LabelObjective')
 
 def soldier_rescue(window: "ContentViewerWindow"):
 
     content = window.content
 
     rescue = window.loading_manager['PathSoldierActivate'].get(content['objectId'])
-    if rescue:
-        window.right_layout.addWidget(ContentLabel(f"Rescue {rescue['count']} $(creature={rescue['creature2Id']})", 'PathObjective'))
+    window.add_label(f"Rescue {rescue['count']} $(creature={rescue['creature2Id']})", 'LabelObjective')
 
 def soldier_SWAT(window: "ContentViewerWindow"):
 
@@ -51,9 +46,9 @@ def soldier_SWAT(window: "ContentViewerWindow"):
         creatures = []
 
         for i in range(7):
+            
             creatureId = group[f'data{i}']
-
-            if creatureId != '0':
+            if creatureId:
                 creatures.append(f"$(creature={creatureId})")
 
         group_name = ', '.join(list(set(creatures)))
@@ -61,4 +56,4 @@ def soldier_SWAT(window: "ContentViewerWindow"):
     else:
         group_name = f'<i>{group_name}</i>'
 
-    window.right_layout.addWidget(ContentLabel(f"Kill {swat['count']} {group_name} with $(vitem={swat['virtualItemIdDisplay']})", 'PathObjective'))
+    window.add_label(f"Kill {swat['count']} {group_name} with $(vitem={swat['virtualItemIdDisplay']})", 'LabelObjective')

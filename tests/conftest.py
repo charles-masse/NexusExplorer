@@ -10,4 +10,5 @@ from nexus_explorer.ui.world_select.utilities import (  # type: ignore[import-un
 def loading_manager():
     manager = LoadingManager("tests/sample_data")
     prep_worlds(manager)
+    
     return manager

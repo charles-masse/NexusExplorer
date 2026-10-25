@@ -101,10 +101,12 @@ class MapScene(QGraphicsScene):
                 region_obj = RegionObject(zone, self)
                 self.addItem(region_obj)
 
-    # def draw_objective(self, objective_id: int):
-    #     """Place an Objective on the map"""
-    #     objective_obj = ObjectiveObject(objective_id, self.loading_manager.game_files)
-    #     self.addItem(objective_obj)
+    def draw_objective(self, pos, text):
+        """Place an Objective on the map"""
+        objective_obj = ObjectiveObject(text, pos)
+        self.addItem(objective_obj)
+
+        return objective_obj
 
     def focus(self, focus: LocationObject | None = None):
         """Focus on a specific icon on the map and clear objectives."""
@@ -117,14 +119,14 @@ class MapScene(QGraphicsScene):
                 else:
                     item.setOpacity(0.4)
 
-            elif isinstance(item, ObjectiveObject):
-                self.removeItem(item)
+            # elif isinstance(item, ObjectiveObject):
+            #     self.removeItem(item)
 
     def select_object(self, icon: LocationObject | RegionObject):
         """Open the window with current location's content"""
-        # if self.popup:
-        #     self.popup.close()
-        #     self.popup = None
+        if self.popup:
+            self.popup.close()
+            # self.popup = None
 
         self.popup = ContentSelectWindow(self.loading_manager, icon)
         self.popup.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, True)

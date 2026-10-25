@@ -1,23 +1,34 @@
+from pathlib import Path
 
 from PyQt6.QtGui import QColor, QFont, QPixmap
 from PyQt6.QtWidgets import QGraphicsPixmapItem, QGraphicsTextItem
 
+from ..utilities import world_to_screen_pos
+
 
 class ObjectiveObject(QGraphicsPixmapItem):
-    def __init__(self, objectiveId: int, game_files: str):
+    def __init__(self, objectiveId: str, pos):
         super().__init__()
-        # TODO
-        # position = world_to_screen_pos(x, y) #TODO include in icon class
-        # obj.setPos(position[0] - (obj.im.width() / 2), position[1] - (obj.im.height() / 2))
 
-        self.im = QPixmap(
-            f"{game_files}/UI/Assets/TexPieces/UI_CRB_HUD_Tracker_349_73/UI_CRB_HUD_Tracker_349_73.png"
-        )
-        self.setPixmap(self.im)
+        self.setZValue(2)
 
-        text = QGraphicsTextItem(str(objectiveId), self)
-        text.setDefaultTextColor(QColor("white"))
-        text.setFont(QFont(f"{game_files}/UI/Fonts/segoeuib.ttf", 10))
+        if objectiveId == '-1':
+            im = QPixmap(str(Path(__file__).resolve().parents[3] / "assets" / "icon_start.png"))
+            self.setPixmap(im)
 
-        text_rect = text.boundingRect()
-        text.setPos((self.im.width() / 2) - (text_rect.width() / 2), 0)
+        else:
+            im = QPixmap(str(Path(__file__).resolve().parents[3] / "assets" / "icon_objective.png"))
+            self.setPixmap(im)
+
+            text = QGraphicsTextItem(objectiveId, self)
+            text.setDefaultTextColor(QColor("white"))
+            text.setFont(QFont(str(Path(__file__).resolve().parents[3] / "assets" / "segoeuib.ttf"), 8))
+
+            text_rect = text.boundingRect()
+            text.setPos(
+                (im.width() - text_rect.width()) / 2,
+                (im.height() - text_rect.height()) / 2,
+            )
+
+        position = world_to_screen_pos(*pos)
+        self.setPos(position[0] - (im.width() / 2), position[1] - (im.height() / 2))

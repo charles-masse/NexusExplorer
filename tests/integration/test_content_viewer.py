@@ -1,21 +1,43 @@
 
 import pytest
 
+from nexus_explorer.data import LoadingManager  # type: ignore[import-untyped]
+from nexus_explorer.ui import MapViewer  # type: ignore[import-untyped]
 from nexus_explorer.ui.content_select import ContentItem  # type: ignore[import-untyped]
 from nexus_explorer.ui.content_viewer import (  # type: ignore[import-untyped]
     ContentViewerWindow,
 )
-
-def test_content_viewer_window_datacube(loading_manager):
-
-    sample_content = ContentItem(loading_manager, loading_manager['Datacube'].get(1), {'id':0})
-    ContentViewerWindow(loading_manager, sample_content, None)
+from nexus_explorer.ui.world_select.utilities import (  # type: ignore[import-untyped]
+    prep_worlds,
+)
 
 
-def test_content_viewer_window_quest(loading_manager):
+@pytest.fixture
+def loading_manager_override():
+    manager = LoadingManager("tests/sample_data")
+    
+    return manager
 
-    sample_content = ContentItem(loading_manager, loading_manager['Quest2'].get(1), {'id':1})
-    ContentViewerWindow(loading_manager, sample_content, None)
+@pytest.fixture
+def map_object(loading_manager_override):
+
+    worlds = prep_worlds(loading_manager_override)
+
+    viewer = MapViewer(loading_manager_override, worlds[1])
+    obj = viewer.map_scene.items()[1]
+
+    return obj
+
+def test_content_viewer_window_datacube(loading_manager_override, map_object):
+
+    sample_content = ContentItem(loading_manager_override, loading_manager_override['Datacube'].get(1), {'id':0})
+    ContentViewerWindow(loading_manager_override, sample_content, map_object)
+
+
+def test_content_viewer_window_quest(loading_manager_override, map_object):
+
+    sample_content = ContentItem(loading_manager_override, loading_manager_override['Quest2'].get(1), {'id':1})
+    ContentViewerWindow(loading_manager_override, sample_content, map_object)
 
 """pathTypeEnum
 0 - Soldier
@@ -53,13 +75,14 @@ def test_content_viewer_window_quest(loading_manager):
 )
 
 def test_content_viewer_window_mission_types(
-    loading_manager,
+    loading_manager_override,
+    map_object,
     path_type,
     mission_id,
 ):
 
     sample_content = ContentItem(
-        loading_manager,
+        loading_manager_override,
         {
             'objectId': 1,
             'pathTypeEnum': path_type,
@@ -71,12 +94,12 @@ def test_content_viewer_window_mission_types(
         {'id': 2}
     )
 
-    ContentViewerWindow(loading_manager, sample_content, None)
+    ContentViewerWindow(loading_manager_override, sample_content, map_object)
 
-def test_content_viewer_window_unknown_mission(loading_manager):
+def test_content_viewer_window_unknown_mission(loading_manager_override, map_object):
 
     sample_content = ContentItem(
-        loading_manager,
+        loading_manager_override,
         {
             'pathTypeEnum': 9,
             'pathMissionTypeEnum': 99,
@@ -85,29 +108,29 @@ def test_content_viewer_window_unknown_mission(loading_manager):
     )
 
     with pytest.raises(TypeError):
-        ContentViewerWindow(loading_manager, sample_content, None)
+        ContentViewerWindow(loading_manager_override, sample_content, map_object)
 
-def test_content_viewer_window_event(loading_manager):
+def test_content_viewer_window_event(loading_manager_override, map_object):
 
-    sample_content = ContentItem(loading_manager, loading_manager['PublicEvent'].get(1), {'id':3})
-    ContentViewerWindow(loading_manager, sample_content, None)
+    sample_content = ContentItem(loading_manager_override, loading_manager_override['PublicEvent'].get(1), {'id':3})
+    ContentViewerWindow(loading_manager_override, sample_content, map_object)
 
-def test_content_viewer_window_challenge(loading_manager):
+def test_content_viewer_window_challenge(loading_manager_override, map_object):
 
-    sample_content = ContentItem(loading_manager, loading_manager['Challenge'].get(1), {'id':4})
-    ContentViewerWindow(loading_manager, sample_content, None)
+    sample_content = ContentItem(loading_manager_override, loading_manager_override['Challenge'].get(1), {'id':4})
+    ContentViewerWindow(loading_manager_override, sample_content, map_object)
 
-def test_content_viewer_window_unknown_content(loading_manager):
+def test_content_viewer_window_unknown_content(loading_manager_override, map_object):
 
-    sample_content = ContentItem(loading_manager, loading_manager['World'].get(1), {'id':42})
+    sample_content = ContentItem(loading_manager_override, loading_manager_override['World'].get(1), {'id':42})
     with pytest.raises(TypeError):
-        ContentViewerWindow(loading_manager, sample_content, None)
+        ContentViewerWindow(loading_manager_override, sample_content, map_object)
 
-def test_content_viewer_window_close(loading_manager, qtbot):
+def test_content_viewer_window_close(loading_manager_override, map_object, qtbot):
 
-    sample_content = ContentItem(loading_manager, loading_manager['Challenge'].get(1), {'id':4})
+    sample_content = ContentItem(loading_manager_override, loading_manager_override['Challenge'].get(1), {'id':4})
 
-    widget = ContentViewerWindow(loading_manager, sample_content, None)
+    widget = ContentViewerWindow(loading_manager_override, sample_content, map_object)
     qtbot.addWidget(widget)
 
     widget.show()

@@ -1,7 +1,5 @@
 from typing import TYPE_CHECKING
 
-from nexus_explorer.ui.content_viewer.labels import ContentLabel
-
 from .explorer import (
     explorer_cartography,
     explorer_exploration,
@@ -35,18 +33,16 @@ from .soldier import (
 if TYPE_CHECKING:
     from nexus_explorer.ui.content_viewer import ContentViewerWindow
 
-
 def display_mission(window: "ContentViewerWindow"):
+    
     content = window.content
 
     unlock = content.get('localizedTextIdUnlock')
-    if unlock:
-        window.right_layout.addWidget(ContentLabel(unlock, 'localizedTextIdUnlock'))
+    window.add_label(unlock, 'LabelSay')
     #Soldier orders
     if content.get('pathTypeEnum') == 0:
         soldier_orders = content.get('localizedTextIdSoldierOrders')
-        if soldier_orders:
-            window.right_layout.addWidget(ContentLabel(soldier_orders, 'localizedTextIdSoldierOrders'))
+        window.add_label(soldier_orders, 'LabelInfo')
     #Mission type specific
     mission_id = content['pathMissionTypeEnum']
 
@@ -96,5 +92,4 @@ def display_mission(window: "ContentViewerWindow"):
         raise TypeError(f'Cannot parse this path mission id {mission_id}.')
 
     comms = content.get('localizedTextIdCommunicator')
-    if comms:
-        window.right_layout.addWidget(ContentLabel(comms, 'localizedTextIdCommunicator'))
+    window.add_label(comms, 'LabelInfo')

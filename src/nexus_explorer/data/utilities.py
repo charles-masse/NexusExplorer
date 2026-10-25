@@ -37,7 +37,6 @@ def link_referenced(loading_manager: LoadingManager, text: str, hyperlink: bool 
         db_id = match.group(2) or match.group(4)
 
         linked = loading_manager[DATABASES[db_name.lower()]].get(int(db_id))
-
         if linked:
             linked_text = linked.get('localizedTextIdName')
 

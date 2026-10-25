@@ -60,14 +60,13 @@ class WorldSelectWindow(NEWidget):
         screen = QApplication.primaryScreen()
         if screen:
             geometry = screen.availableGeometry()
-
-        style = self.style()
-        if style:
-            self.setFixedSize(
-                WINDOW_WIDTH,
-                geometry.height() - style.pixelMetric(QStyle.PixelMetric.PM_TitleBarHeight)
-            )
-            self.move(geometry.topLeft())
+            style = self.style()
+            if style:
+                self.setFixedSize(
+                    WINDOW_WIDTH,
+                    geometry.height() - style.pixelMetric(QStyle.PixelMetric.PM_TitleBarHeight)
+                )
+                self.move(geometry.topLeft())
 
         layout = QVBoxLayout(self)
         #Add World list

@@ -1,9 +1,7 @@
 
-from pprint import pprint
 from typing import TYPE_CHECKING
 
 from nexus_explorer.data.utilities import link_referenced
-from nexus_explorer.ui.content_viewer.labels import ContentLabel
 
 if TYPE_CHECKING:
     from nexus_explorer.ui.content_viewer import ContentViewerWindow
@@ -12,8 +10,6 @@ def display_quest(window: "ContentViewerWindow"):
     #TODO faction req
     content = window.content
 
-    pprint(content)
-
     for string in [
         'localizedTextIdText',
         'localizedTextIdGiverTextUnknown',
@@ -21,10 +17,7 @@ def display_quest(window: "ContentViewerWindow"):
         'localizedTextIdAcceptResponse',
         'localizedTextIdGiverSayAccepted'
     ]:
-        text = content.get(string)
-        if text:
-            text = link_referenced(window.loading_manager, text)
-            window.right_layout.addWidget(ContentLabel(text, string))
+        window.add_label(content.get(string), string)
 
 #     for i in reversed(range(6)):
 
@@ -53,7 +46,4 @@ def display_quest(window: "ContentViewerWindow"):
         'localizedTextIdReceiverSayCompleted',
         'localizedTextIdCompletedSummary'
     ]:
-        text = content.get(string)
-        if text:
-            text = link_referenced(window.loading_manager, text)
-            window.right_layout.addWidget(ContentLabel(text, string))
+        window.add_label(content.get(string), string)

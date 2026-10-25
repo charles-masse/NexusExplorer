@@ -33,8 +33,7 @@ class ContentCategory(QTreeWidgetItem):
         if tree and tree.parent():
             loading_manager = tree.parent().loading_manager
         #Set category name and icon
-        name = content_type['name']
-        self.setText(0, name)
+        self.setText(0, content_type.get('name', ''))
         self.setExpanded(True)
 
         categoryFont = QFont()
@@ -147,7 +146,10 @@ class ContentSelectWindow(NEWidget):
         if item.childCount() == 0:
             #Focus on object
             self.object.map_scene.focus(self.object)
-
+            #Close old popup
+            if self.popup:
+                self.popup.close()
+            
             self.popup = ContentViewerWindow(self.loading_manager, item, self.object)
             self.popup.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, True)
             self.popup.show()
@@ -156,6 +158,6 @@ class ContentSelectWindow(NEWidget):
         #Remove focus from object
         self.object.setSelected(False)
         self.object.map_scene.focus()
-        self.object.map_scene.popup = None
+        # self.object.map_scene.popup = None
 
         super().closeEvent(event)

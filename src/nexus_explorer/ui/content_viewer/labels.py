@@ -9,10 +9,7 @@ class ContentLabel(QLabel):
         super().__init__()
         #Class name for stylesheet
         self.setObjectName(name)
-        #Create hyperlinks
-        # if '$' in text:
-        #     text = link_referenced(text)
-        #User input text
+        #User input text #TODO
         if any(name.startswith(string) for string in ['localizedTextIdMoreInfoSay0', 'localizedTextIdAcceptResponse', 'localizedTextIdCompleteResponse']):
             text = f'> <b>{text}</b>'
 

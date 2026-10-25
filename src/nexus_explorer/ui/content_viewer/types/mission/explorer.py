@@ -1,11 +1,8 @@
 
 from typing import TYPE_CHECKING
 
-from nexus_explorer.ui.content_viewer.labels import ContentLabel
-
 if TYPE_CHECKING:
     from nexus_explorer.ui.content_viewer import ContentViewerWindow
-
 
 def explorer_stalking(window: "ContentViewerWindow"):
     #What is this???
@@ -18,38 +15,35 @@ def explorer_exploration(window: "ContentViewerWindow"):
     doorEntrance = window.loading_manager['PathExplorerDoorEntrance'].get(content['objectId'])
     #There's also Door with group activate and kill
     if doorEntrance:
-        window.right_layout.addWidget(ContentLabel(f"<b>Entrance:</b> $(creature={doorEntrance['creature2IdSurface']})", 'PathObjective'))
-        window.right_layout.addWidget(ContentLabel(f"<b>Inside:</b> $(creature={doorEntrance['creature2IdMicro']})", 'PathObjective'))
+        window.add_label(f"<b>Entrance:</b> $(creature={doorEntrance['creature2IdSurface']})", 'LabelObjective')
+        window.add_label(f"<b>Inside:</b> $(creature={doorEntrance['creature2IdMicro']})", 'LabelObjective')
         # 'worldLocation2IdSurfaceRevealed' #TODO check
 
 def explorer_scavenger(window: "ContentViewerWindow"):
 
-    # hunt = loadManager['PathExplorerScavengerHunt'].get(data['objectId'])
+    content = window.content
 
-    # if hunt:
-    #     for i in range(7):
-    #         clue = loadManager['PathExplorerScavengerClue'].get(hunt[f'pathExplorerScavengerClueId0{i}'])
+    clueString = []
 
-    #         if clue:
-    #             clueString = LocalizedStrings[clue['Clue']]
+    hunt = window.loading_manager['PathExplorerScavengerHunt'].get(content['objectId'])
+    if hunt:
+        for i in range(7):
+            clue = window.loading_manager['PathExplorerScavengerClue'].get(hunt[f'pathExplorerScavengerClueId0{i}'])
+            if clue:
+                creature = window.loading_manager['Creature2'].get(clue['creature2Id'])
+                if creature:
+                    clueString += f'\\n$(creature={clue['creature2Id']})'
 
-    #             creature = loadManager['Creature2'].get(clue['creature2Id'])
+                else:
+                    test = window.loading_manager['TargetGroup'].get(clue['targetGroupId']) # REWORK ME
+                    if test:
+                        clueString += f'\\n{test['localizedTextIdDisplayString']}'
 
-    #             if creature:
-    #                 clueString += f'\\n$(creature={clue['creature2Id']})'
-
-    #             else:
-    #                 test = loadManager['TargetGroup'].get(clue['targetGroupId']) # REWORK ME
-
-    #                 if test:
-    #                     clueString += f'\\n{LocalizedStrings[test['DisplayString']]}'
-
-    #             self.layout.addWidget(ContentLabel(clueString, 'QuestObjective'))
+                window.add_label(' '.join(clueString), 'LabelObjective')
 
     #             pos = loadManager['WorldLocation2'].get(clue['worldLocation2IdMiniMap'])
     #             if pos:
     #                 self.mapView.drawObjective(pos['position0'], pos['position2'], i + 1)
-    pass
 
 def explorer_vista(window: "ContentViewerWindow"):
 
@@ -75,5 +69,4 @@ def explorer_operation(window: "ContentViewerWindow"):
     content = window.content
 
     operation = window.loading_manager['PathExplorerActivate'].get(content['objectId'])
-    if operation:
-        window.right_layout.addWidget(ContentLabel(f"Investigate {operation['count']} $(creature={operation['creature2Id']})", 'PathObjective'))
+    window.add_label(f"Investigate {operation['count']} $(creature={operation['creature2Id']})", 'LabelObjective')

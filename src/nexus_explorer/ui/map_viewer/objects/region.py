@@ -88,7 +88,7 @@ class RegionObject(QGraphicsObject):
     def paint(self, painter, option, widget=None):
 
         if self.contents["MapZone"][0]["mapZoneIdParent"]:
-            if self._pixmap:
+            if self._pixmap and self.contents.get('WorldLocation2'):
                 painter.drawPixmap(
                     round(self._pixmap_rect.x()),
                     round(self._pixmap_rect.y()),
@@ -118,15 +118,15 @@ class RegionObject(QGraphicsObject):
         super().mousePressEvent(event)
 
     def hoverEnterEvent(self, event):
+        
         self.is_hovered = True
-
         self.update()
 
         super().hoverEnterEvent(event)
 
     def hoverLeaveEvent(self, event):
-        self.is_hovered = False
 
+        self.is_hovered = False
         self.update()
 
         super().hoverLeaveEvent(event)

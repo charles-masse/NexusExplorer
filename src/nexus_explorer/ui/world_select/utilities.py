@@ -34,12 +34,11 @@ def prep_worlds(loading_manager: "LoadingManager"):
     replace_data(loading_manager, 'Quest2', 'objective0', 'QuestObjective')
     link_data(loading_manager, 'PublicEvent', 'publicEventId', ['PublicEventObjective'])
     #Zone datacubes
-    link_data(loading_manager, 'WorldZone', 'worldZoneId', ['Datacube'])
+    link_data(loading_manager, 'WorldZone', 'worldzoneid', ['Datacube']) # 'Challenge'
     #Link map zones to their zone
-    link_data(loading_manager, 'WorldZone', 'worldZoneId', ['MapZone'])
+    link_data(loading_manager, 'WorldZone', 'worldzoneid', ['MapZone'])
     #Location content
     link_data(loading_manager, 'WorldLocation2', 'worldlocation', [
-        'Challenge',
         'Datacube',
         'PublicEvent',
         'PublicEventObjective',
@@ -48,6 +47,8 @@ def prep_worlds(loading_manager: "LoadingManager"):
         'QuestHub',
         'PathMission'
     ])
+    #Only get the indicator for the challenge
+    link_data(loading_manager, 'WorldLocation2', 'worldLocation2Idindicator', ['Challenge'])
     #Link locations to their world
     link_data(loading_manager, 'World', 'worldId', ['WorldLocation2'])
     #Create world list
@@ -100,11 +101,9 @@ def prep_worlds(loading_manager: "LoadingManager"):
         for map_zone in loading_manager['MapZoneWorldJoin'].values():
 
             map_zone_data = loading_manager['MapZone'].get(map_zone['mapZoneId'])
-            
             if map_zone_data:
                 
                 world_zone_data = loading_manager['WorldZone'].get(map_zone_data['worldZoneId'])
-
                 if world_data and world_zone_data and world_data.id == map_zone['worldId'] and world_zone_data not in world_data.zones:
                     world_data.zones.append(world_zone_data)
 
