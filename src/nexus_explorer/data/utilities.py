@@ -28,7 +28,7 @@ DATABASES = {
 }
 
 def link_referenced(loading_manager: LoadingManager, text: str, hyperlink: bool = True) -> str:
-    """Add hypertext to a string.""" #TODO plural vs singular item
+    """Add hypertext to a string.""" #TODO plural vs singular,  <text Link="Location:19415">DREDplex: Skyhammer</text>',
     regex = re.finditer(r'(?:<text[^>]*?>)?\$\S*?\((\w+)=(\d+)\)|\$(\w+)=(\d+)(?:</text>)?', text)
     for match in regex:
 
@@ -37,7 +37,6 @@ def link_referenced(loading_manager: LoadingManager, text: str, hyperlink: bool 
         db_id = match.group(2) or match.group(4)
 
         linked = loading_manager[DATABASES[db_name.lower()]].get(int(db_id))
-
         if linked:
             linked_text = linked.get('localizedTextIdName')
 

@@ -19,7 +19,6 @@ from PyQt6.QtWidgets import (
 )
 
 from nexus_explorer.constants import HALF_MAP, MAP_SCALE
-from nexus_explorer.ui.content_select import ContentSelectWindow
 
 from .cluster import LocationData, cluster_locations
 from .generate import generate_map
@@ -28,6 +27,7 @@ from .utilities import screen_to_world_coordinates
 
 if TYPE_CHECKING:
     from nexus_explorer.data import LoadingManager
+    from nexus_explorer.ui.content_select import ContentSelectWindow
     from nexus_explorer.ui.world_select.utilities import WorldData
 
 SCALED_HALF = int(HALF_MAP * MAP_SCALE)
@@ -41,7 +41,7 @@ class MapScene(QGraphicsScene):
         self.loading_manager = loading_manager
         self.world = world
 
-        self.popup: ContentSelectWindow | None = None
+        self.popup: "ContentSelectWindow" | None = None
 
         self.world_x = 0
         self.world_y = 0
@@ -101,10 +101,12 @@ class MapScene(QGraphicsScene):
                 region_obj = RegionObject(zone, self)
                 self.addItem(region_obj)
 
-    # def draw_objective(self, objective_id: int):
-    #     """Place an Objective on the map"""
-    #     objective_obj = ObjectiveObject(objective_id, self.loading_manager.game_files)
-    #     self.addItem(objective_obj)
+    def draw_objective(self, pos, text):
+        """Place an Objective on the map"""
+        objective_obj = ObjectiveObject(text, pos)
+        self.addItem(objective_obj)
+
+        return objective_obj
 
     def focus(self, focus: LocationObject | None = None):
         """Focus on a specific icon on the map and clear objectives."""
@@ -117,14 +119,15 @@ class MapScene(QGraphicsScene):
                 else:
                     item.setOpacity(0.4)
 
-            elif isinstance(item, ObjectiveObject):
-                self.removeItem(item)
+            # elif isinstance(item, ObjectiveObject):
+            #     self.removeItem(item)
 
     def select_object(self, icon: LocationObject | RegionObject):
         """Open the window with current location's content"""
-        # if self.popup:
-        #     self.popup.close()
-        #     self.popup = None
+        if self.popup:
+            self.popup.close()
+            
+        from nexus_explorer.ui.content_select import ContentSelectWindow
 
         self.popup = ContentSelectWindow(self.loading_manager, icon)
         self.popup.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, True)

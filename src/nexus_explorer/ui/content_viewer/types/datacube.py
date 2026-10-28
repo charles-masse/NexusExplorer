@@ -4,22 +4,19 @@ from typing import TYPE_CHECKING
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtWidgets import QLabel
 
-from nexus_explorer.ui.content_viewer.labels import ContentLabel
-
 if TYPE_CHECKING:
     from nexus_explorer.ui.content_viewer import ContentViewerWindow
 
 
 def display_datacube(window: "ContentViewerWindow"):
-
-    content = window.content
-
-    datacube_text = []
-    """
+    """ datacubeTypeEnum
     0 - Voice-acted
     1 - with image (TfBtF)
     2 - Text-only
     """
+    content = window.content
+
+    datacube_text = []
     datacube_type_id = content['datacubeTypeEnum']
     
     if datacube_type_id == 0:
@@ -35,8 +32,6 @@ def display_datacube(window: "ContentViewerWindow"):
             pixmap = QPixmap(f'{window.loading_manager.game_files}/UI/Icon/Item/TBF/{image_file}/{image_file}.png')
             label.setPixmap(pixmap)
             window.main_layout.addWidget(label)
-        else:
-            print("Couldn't find image.")
     
     for datacube_string_id in range(6):
 
@@ -45,4 +40,4 @@ def display_datacube(window: "ContentViewerWindow"):
         if datacub_string:
             datacube_text.append(datacub_string)
 
-    window.main_layout.addWidget(ContentLabel('\n'.join(datacube_text), 'QuestObjective'))
+    window.add_label('\n'.join(datacube_text), 'LabelObjective')

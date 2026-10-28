@@ -71,7 +71,6 @@ class LocationData:
     def get_radius(self):
         return max(self.radius)
 
-
 def cluster_locations(locations: list[LocationData]) -> list[LocationData]:
     """Use sklearn to cluster the different world locations""" #TODO clean up
     #Separate locations by name

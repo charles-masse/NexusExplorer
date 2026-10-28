@@ -3,20 +3,12 @@ import csv
 
 
 class LoadingManager:
-    _instance = None
 
     def __init__(self, game_files: str, language: str="en-US"):
         self.game_files = game_files
         self.language = language
         #Load language file right away
         self._loaded = {language : self.read_csv(language, '')}
-
-    def __new__(cls, game_files: str):
-
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-
-        return cls._instance
 
     def __getitem__(self, db_name: str) -> dict:
 
@@ -45,7 +37,7 @@ class LoadingManager:
             id_field = reader.fieldnames[0]
             value_fields = [field for field in reader.fieldnames[1:]]
 
-            for row in reader: #convert to generator
+            for row in reader:
 
                 try:
                     new_entry = {'ID':int(row[id_field])}
