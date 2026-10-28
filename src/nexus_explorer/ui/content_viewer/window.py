@@ -2,12 +2,20 @@
 from pprint import pprint
 from typing import TYPE_CHECKING
 
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QCloseEvent, QShowEvent
-from PyQt6.QtWidgets import QApplication, QHBoxLayout, QVBoxLayout
+from PyQt6.QtWidgets import (
+    QApplication,
+    QGraphicsScene,
+    QGraphicsView,
+    QHBoxLayout,
+    QVBoxLayout,
+)
 
 from nexus_explorer.data.utilities import link_referenced
 from nexus_explorer.ui.content_viewer.labels import ContentLabel
 from nexus_explorer.ui.extensions import NEWidget
+from nexus_explorer.ui.map_viewer.objects import ObjectiveObject
 
 from .types import (
     display_challenge,
@@ -28,7 +36,7 @@ class ContentViewerWindow(NEWidget):
     def __init__(self, loading_manager: "LoadingManager", content, map_object: "LocationObject"):
         super().__init__()
 
-        pprint(content.content)
+        # pprint(content.content)
 
         self.loading_manager = loading_manager
         self.content = content.content
@@ -69,29 +77,32 @@ class ContentViewerWindow(NEWidget):
         #Resize
         self.setMinimumWidth(WINDOW_WIDTH)
         #Floating numbers
-        # view = QGraphicsView(self)
-        # view.setStyleSheet("background: transparent; border: 0;")
-        # view.setFixedSize(WINDOW_WIDTH, self.sizeHint().height())
-        # view.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
+        view = QGraphicsView(self)
+        view.setStyleSheet("background: transparent; border: 0;")
+        view.setFixedSize(WINDOW_WIDTH, self.sizeHint().height())
+        view.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
 
-        # scene = QGraphicsScene()
-        # scene.setSceneRect(0, 0, view.width(), view.height())
-        # view.setScene(scene)
+        scene = QGraphicsScene()
+        scene.setSceneRect(0, 0, view.width(), view.height())
+        view.setScene(scene)
 
-        # heightOffset = 0
-        # objId = 1
+        heightOffset = 0
+        objId = 1
 
-        # for i in range(self.main_layout.count()):
-        #     item = self.main_layout.itemAt(i)
-        #     widget = item.widget()
+        for i in range(self.right_layout.count()):
 
-        #     if widget.objectName() in ['QuestObjective', 'PublicEventObjective']:
-        #         test = mapViewer.ObjectiveObject(objId)
-        #         test.setPos(1, heightOffset)
-        #         scene.addItem(test)
-        #         objId += 1 
+            item = self.right_layout.itemAt(i)
+            widget = item.widget()
 
-        #     heightOffset += widget.sizeHint().height() + 3
+            if widget.objectName() == 'LabelObjective':
+
+                objective = ObjectiveObject(str(objId), [0,0])
+                objective.setPos(1, heightOffset)
+                scene.addItem(objective)
+
+                objId += 1
+
+            heightOffset += widget.sizeHint().height() + 3
 
     def add_label(self, text: str, type: str):
         if text:

@@ -28,15 +28,16 @@ def map_object(loading_manager_override):
 
     return obj
 
-def test_content_viewer_window_datacube(loading_manager_override, map_object):
+@pytest.mark.parametrize('content_id', range(1, 51))
+def test_content_viewer_window_datacube(loading_manager_override, content_id, map_object):
 
-    sample_content = ContentItem(loading_manager_override, loading_manager_override['Datacube'].get(1), {'id':0})
+    sample_content = ContentItem(loading_manager_override, loading_manager_override['Datacube'].get(content_id), {'id':0})
     ContentViewerWindow(loading_manager_override, sample_content, map_object)
 
+@pytest.mark.parametrize('content_id', range(1, 51))
+def test_content_viewer_window_quest(loading_manager_override, content_id, map_object):
 
-def test_content_viewer_window_quest(loading_manager_override, map_object):
-
-    sample_content = ContentItem(loading_manager_override, loading_manager_override['Quest2'].get(1), {'id':1})
+    sample_content = ContentItem(loading_manager_override, loading_manager_override['Quest2'].get(content_id), {'id':1})
     ContentViewerWindow(loading_manager_override, sample_content, map_object)
 
 """pathTypeEnum
@@ -110,19 +111,21 @@ def test_content_viewer_window_unknown_mission(loading_manager_override, map_obj
     with pytest.raises(TypeError):
         ContentViewerWindow(loading_manager_override, sample_content, map_object)
 
-def test_content_viewer_window_event(loading_manager_override, map_object):
+@pytest.mark.parametrize('content_id', range(1, 51))
+def test_content_viewer_window_event(loading_manager_override, content_id, map_object):
 
-    sample_content = ContentItem(loading_manager_override, loading_manager_override['PublicEvent'].get(1), {'id':3})
+    sample_content = ContentItem(loading_manager_override, loading_manager_override['PublicEvent'].get(content_id), {'id':3})
     ContentViewerWindow(loading_manager_override, sample_content, map_object)
 
-def test_content_viewer_window_challenge(loading_manager_override, map_object):
+@pytest.mark.parametrize('content_id', range(1, 51))
+def test_content_viewer_window_challenge(loading_manager_override, content_id, map_object):
 
-    sample_content = ContentItem(loading_manager_override, loading_manager_override['Challenge'].get(1), {'id':4})
+    sample_content = ContentItem(loading_manager_override, loading_manager_override['Challenge'].get(content_id), {'id':4})
     ContentViewerWindow(loading_manager_override, sample_content, map_object)
 
 def test_content_viewer_window_unknown_content(loading_manager_override, map_object):
 
-    sample_content = ContentItem(loading_manager_override, loading_manager_override['World'].get(1), {'id':42})
+    sample_content = ContentItem(loading_manager_override, loading_manager_override['Challenge'].get(1) , {'id':42})
     with pytest.raises(TypeError):
         ContentViewerWindow(loading_manager_override, sample_content, map_object)
 

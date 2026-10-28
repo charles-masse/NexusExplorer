@@ -1,13 +1,10 @@
-
 from typing import TYPE_CHECKING
-
-from nexus_explorer.data.utilities import link_referenced
 
 if TYPE_CHECKING:
     from nexus_explorer.ui.content_viewer import ContentViewerWindow
     
 def display_quest(window: "ContentViewerWindow"):
-    #TODO faction req
+    #TODO faction?
     content = window.content
 
     for string in [
@@ -17,28 +14,36 @@ def display_quest(window: "ContentViewerWindow"):
         'localizedTextIdAcceptResponse',
         'localizedTextIdGiverSayAccepted'
     ]:
-        window.add_label(content.get(string), string)
+        window.add_label(content.get(string), 'LabelInfo')
 
-#     for i in reversed(range(6)):
+    pos = window.loading_manager['WorldLocation2'].get(content['WorldLocation2IdReceiver'])
+    if pos:
+        window.add_map_location((pos['position0'], pos['position2']), str(-1))
+    #Objectives
+    for i in reversed(range(6)):
 
-#         objectiveString = '' if i == 0 else i
-#         objective = data.get(f'objective0{objectiveString}')
+        objective_id = content.get(f"objective0{'' if i == 0 else i}") #fix for the strange naming in the db
+        if objective_id:
+            objective_data = window.loading_manager['QuestObjective'].get(objective_id)
 
-#         if objective:
-#             objectiveData = loadManager['QuestObjective'].get(objective)
+            if objective_data:
 
-#             if objectiveData:
-#                 pprint(objectiveData)
-#                 self.createLabel(objectiveData['localizedTextIdFull'], 'QuestObjective')
+                window.add_label(objective_data['localizedTextIdFull'], 'LabelObjective')
 
-#                 for locId in range(4):
+                for x in range(4):
+                    pos = window.loading_manager['WorldLocation2'].get(objective_data[f'worldLocationsIdIndicator0{x}'])
+                    if pos:
+                        window.add_map_location((pos['position0'], pos['position2']), str(i + 1))
 
-#                     pos = loadManager['WorldLocation2'].get(objectiveData[f'worldLocationsIdIndicator0{locId}'])
-
-#                     if pos:
-#                         self.mapView.drawObjective(pos['position0'], pos['position2'], i + 1)
-
-#                 self.addQuestDirections(objectiveData['questDirectionId'], i + 1)
+                directions = window.loading_manager['QuestDirection'].get(objective_data['questDirectionId'])
+                if directions:
+                    for x in range(16):
+                        entry_id = directions.get(f'questDirectionEntryId{str(x).zfill(2)}')
+                        dir = window.loading_manager['QuestDirectionEntry'].get(entry_id)
+                        if dir:
+                            loc = window.loading_manager['WorldLocation2'].get(dir['worldLocation2Id'])
+                            if loc:
+                                window.add_map_location((loc['position0'], loc['position2']), str(i + 1))
 
     for string in [
         'localizedTextIdReceiverTextAchieved',
@@ -46,4 +51,4 @@ def display_quest(window: "ContentViewerWindow"):
         'localizedTextIdReceiverSayCompleted',
         'localizedTextIdCompletedSummary'
     ]:
-        window.add_label(content.get(string), string)
+        window.add_label(content.get(string), 'LabelInfo')

@@ -42,8 +42,7 @@ def display_challenge(window: "ContentViewerWindow"):
     if start:
         window.add_map_location((start['position0'], start['position2']), '-1')
 
-    direction_data = window.loading_manager['QuestDirection']
-    directions = direction_data.get(content['questDirectionIdActive'])
+    directions =  window.loading_manager['QuestDirection'].get(content['questDirectionIdActive'])
     if directions:
         for x in range(16):
 

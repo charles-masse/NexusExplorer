@@ -19,7 +19,6 @@ from PyQt6.QtWidgets import (
 )
 
 from nexus_explorer.constants import HALF_MAP, MAP_SCALE
-from nexus_explorer.ui.content_select import ContentSelectWindow
 
 from .cluster import LocationData, cluster_locations
 from .generate import generate_map
@@ -28,6 +27,7 @@ from .utilities import screen_to_world_coordinates
 
 if TYPE_CHECKING:
     from nexus_explorer.data import LoadingManager
+    from nexus_explorer.ui.content_select import ContentSelectWindow
     from nexus_explorer.ui.world_select.utilities import WorldData
 
 SCALED_HALF = int(HALF_MAP * MAP_SCALE)
@@ -41,7 +41,7 @@ class MapScene(QGraphicsScene):
         self.loading_manager = loading_manager
         self.world = world
 
-        self.popup: ContentSelectWindow | None = None
+        self.popup: "ContentSelectWindow" | None = None
 
         self.world_x = 0
         self.world_y = 0
@@ -126,7 +126,8 @@ class MapScene(QGraphicsScene):
         """Open the window with current location's content"""
         if self.popup:
             self.popup.close()
-            # self.popup = None
+            
+        from nexus_explorer.ui.content_select import ContentSelectWindow
 
         self.popup = ContentSelectWindow(self.loading_manager, icon)
         self.popup.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, True)

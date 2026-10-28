@@ -32,9 +32,6 @@ def display_datacube(window: "ContentViewerWindow"):
             pixmap = QPixmap(f'{window.loading_manager.game_files}/UI/Icon/Item/TBF/{image_file}/{image_file}.png')
             label.setPixmap(pixmap)
             window.main_layout.addWidget(label)
-            
-        else:
-            print("Couldn't find image.")
     
     for datacube_string_id in range(6):
 

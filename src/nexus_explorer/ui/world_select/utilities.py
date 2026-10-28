@@ -31,7 +31,7 @@ def prep_worlds(loading_manager: "LoadingManager"):
 
     worlds = []
     #Objectives for quests and events
-    replace_data(loading_manager, 'Quest2', 'objective0', 'QuestObjective')
+    # replace_data(loading_manager, 'Quest2', 'objective0', 'QuestObjective') #TODO
     link_data(loading_manager, 'PublicEvent', 'publicEventId', ['PublicEventObjective'])
     #Zone datacubes
     link_data(loading_manager, 'WorldZone', 'worldzoneid', ['Datacube']) # 'Challenge'
