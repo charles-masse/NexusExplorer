@@ -31,7 +31,6 @@ if TYPE_CHECKING:
     from nexus_explorer.ui.world_select.utilities import WorldData
 
 SCALED_HALF = int(HALF_MAP * MAP_SCALE)
-ICON_SIZE = 32 #TODO
 
 class MapScene(QGraphicsScene):
 
@@ -41,7 +40,7 @@ class MapScene(QGraphicsScene):
         self.loading_manager = loading_manager
         self.world = world
 
-        self.popup: "ContentSelectWindow" | None = None
+        self.popup: ContentSelectWindow | None = None
 
         self.world_x = 0
         self.world_y = 0
@@ -72,7 +71,7 @@ class MapScene(QGraphicsScene):
 
         return pixmap
 
-    def display_locations(self, locations, test=None):
+    def display_locations(self, locations, parent=None):
         
         if len(locations):
             #Convert to location data
@@ -81,8 +80,10 @@ class MapScene(QGraphicsScene):
             clustered_locations = cluster_locations(locations)
             for location in clustered_locations:
                 location_object = LocationObject(location, self)
-                if test: #TODO
-                    location_object.setParent(test)
+                #Parent location to their zone
+                if parent:
+                    location_object.setParent(parent)
+
                 self.addItem(location_object)
 
     def display_zones(self, zones):

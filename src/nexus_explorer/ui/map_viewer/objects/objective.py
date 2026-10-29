@@ -16,6 +16,10 @@ class ObjectiveObject(QGraphicsPixmapItem):
             im = QPixmap(str(Path(__file__).resolve().parents[3] / "assets" / "icon_start.png"))
             self.setPixmap(im)
 
+        elif objectiveId == '-2':
+            im = QPixmap(str(Path(__file__).resolve().parents[3] / "assets" / "icon_quest.png"))
+            self.setPixmap(im)
+
         else:
             im = QPixmap(str(Path(__file__).resolve().parents[3] / "assets" / "icon_objective.png"))
             self.setPixmap(im)

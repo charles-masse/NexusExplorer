@@ -50,15 +50,15 @@ def link_referenced(loading_manager: LoadingManager, text: str, hyperlink: bool 
 
     return text
 
-def replace_data(loading_manager: LoadingManager, target: str, field_name: str, source: str):
-    """Replace data that referenced the target with the actual data.
-    - loading_manager: The loading manager that contains the databases.
-    - target: The database referenced and that will be returned.
-    - field_name: Name of the field that contains the reference ids (in targetDb).
-    - source: The database that contains a reference to the target.
-    """
-    for item in loading_manager[target].values():
-        for key in [k for k in item if field_name.lower() in k.lower()]:
-            replacement_item = loading_manager[source].get(item[key])
-            if replacement_item:
-                item[key] = replacement_item
+# def replace_data(loading_manager: LoadingManager, target: str, field_name: str, source: str):
+#     """Replace data that referenced the target with the actual data.
+#     - loading_manager: The loading manager that contains the databases.
+#     - target: The database referenced and that will be returned.
+#     - field_name: Name of the field that contains the reference ids (in targetDb).
+#     - source: The database that contains a reference to the target.
+#     """
+#     for item in loading_manager[target].values():
+#         for key in [k for k in item if field_name.lower() in k.lower()]:
+#             replacement_item = loading_manager[source].get(item[key])
+#             if replacement_item:
+#                 item[key] = replacement_item

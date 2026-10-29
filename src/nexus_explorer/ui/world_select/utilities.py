@@ -2,7 +2,7 @@
 import os
 from typing import TYPE_CHECKING
 
-from nexus_explorer.data.utilities import link_data, replace_data
+from nexus_explorer.data.utilities import link_data  #replace_data
 
 if TYPE_CHECKING:
     from nexus_explorer.data import LoadingManager
@@ -31,19 +31,17 @@ def prep_worlds(loading_manager: "LoadingManager"):
 
     worlds = []
     #Objectives for quests and events
-    # replace_data(loading_manager, 'Quest2', 'objective0', 'QuestObjective') #TODO
+    # replace_data(loading_manager, 'Quest2', 'objective0', 'QuestObjective')
     link_data(loading_manager, 'PublicEvent', 'publicEventId', ['PublicEventObjective'])
-    #Zone datacubes
-    link_data(loading_manager, 'WorldZone', 'worldzoneid', ['Datacube']) # 'Challenge'
-    #Link map zones to their zone
-    link_data(loading_manager, 'WorldZone', 'worldzoneid', ['MapZone'])
+    #Linking zone related data
+    link_data(loading_manager, 'WorldZone', 'worldzoneid', ['Datacube', 'MapZone']) #TODO 'Challenge'?
     #Location content
     link_data(loading_manager, 'WorldLocation2', 'worldlocation', [
         'Datacube',
         'PublicEvent',
-        'PublicEventObjective',
+        # 'PublicEventObjective',
         'Quest2',
-        'QuestObjective',
+        # 'QuestObjective',
         'QuestHub',
         'PathMission'
     ])
@@ -68,34 +66,35 @@ def prep_worlds(loading_manager: "LoadingManager"):
         worlds.append(world_data)
         #Revealing zones
         new_locations = []
-        #TODO cleanup
+        
         for location in world_data.locations:
 
-            world_zone = loading_manager['WorldZone'].get(location['worldZoneId'])
+            if any(location.get(key) for key in [
+                'Challenge',
+                'Datacube',
+                'PublicEvent',
+                # 'PublicEventObjective',
+                'Quest2',
+                # 'QuestObjective',
+                'QuestHub',
+                'PathMission'
+            ]):
 
-            if world_zone:
-                map_zone = world_zone.get('MapZone')
+                world_zone = loading_manager['WorldZone'].get(location['worldZoneId'])
 
-            if world_zone and map_zone and map_zone[0]["mapZoneIdParent"]:
-                #Add it to the list
-                if world_zone not in world_data.zones:
-                    world_data.zones.append(world_zone)
-                #Link location to their zone
-                if any(location.get(key) for key in [
-                    'Challenge',
-                    'Datacube',
-                    'PublicEvent',
-                    'PublicEventObjective',
-                    'Quest2',
-                    'QuestObjective',
-                    'QuestHub',
-                    'PathMission'
-                ]):
+                if world_zone:
+                    map_zone = world_zone.get('MapZone')
+
+                if world_zone and map_zone and map_zone[0]["mapZoneIdParent"]:
+                    #Add it to the list
+                    if world_zone not in world_data.zones:
+                        world_data.zones.append(world_zone)
+                    #Link location to their zone
                     world_zone.setdefault('WorldLocation2', []).append(location)
-                
-            else:
-                new_locations.append(location)
                     
+                else:
+                    new_locations.append(location)
+
         world_data.locations = new_locations
         #Join zones #TODO FIX THIS
         for map_zone in loading_manager['MapZoneWorldJoin'].values():

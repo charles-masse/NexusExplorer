@@ -15,7 +15,7 @@ from PyQt6.QtWidgets import (
 from nexus_explorer.data.utilities import link_referenced
 from nexus_explorer.ui.content_viewer.labels import ContentLabel
 from nexus_explorer.ui.extensions import NEWidget
-from nexus_explorer.ui.map_viewer.objects import ObjectiveObject
+from nexus_explorer.ui.map_viewer.objects import ObjectiveObject, RegionObject
 
 from .types import (
     display_challenge,
@@ -36,13 +36,13 @@ class ContentViewerWindow(NEWidget):
     def __init__(self, loading_manager: "LoadingManager", content, map_object: "LocationObject"):
         super().__init__()
 
-        # pprint(content.content)
+        pprint(content.content)
 
         self.loading_manager = loading_manager
         self.content = content.content
         self.map_object = map_object
 
-        self.objects = []
+        self.cleanup: list[ObjectiveObject | RegionObject] = []
         #General title vs challenge title
         name = self.content.get('localizedTextIdName') or self.content.get('localizedTextIdTitle') or self.content.get('localizedTextIdShort') or '- Unnamed -'
         if '$' in name:
@@ -86,31 +86,47 @@ class ContentViewerWindow(NEWidget):
         scene.setSceneRect(0, 0, view.width(), view.height())
         view.setScene(scene)
 
+        objective_id = 1
         heightOffset = 0
-        objId = 1
-
+        #Go through all the labels
         for i in range(self.right_layout.count()):
-
             item = self.right_layout.itemAt(i)
-            widget = item.widget()
+            if item:
+                widget = item.widget()
+                if widget:
+                    #If label is an objective
+                    if widget.objectName() == 'LabelObjective':
 
-            if widget.objectName() == 'LabelObjective':
+                        objective = ObjectiveObject(str(objective_id), [0,0])
+                        objective.setPos(1, heightOffset)
+                        scene.addItem(objective)
 
-                objective = ObjectiveObject(str(objId), [0,0])
-                objective.setPos(1, heightOffset)
-                scene.addItem(objective)
-
-                objId += 1
-
-            heightOffset += widget.sizeHint().height() + 3
+                        objective_id += 1
+                    #Save the size of the widget
+                    heightOffset += widget.sizeHint().height() + 3
 
     def add_label(self, text: str, type: str):
         if text:
-            self.right_layout.addWidget(ContentLabel(link_referenced(self.loading_manager, text), type))
+            #TODO
+            if type == 'LabelSay':
+                prefix = '> '
+            else:
+                prefix = ''
 
-    def add_map_location(self, pos, text):
-        obj = self.map_object.map_scene.draw_objective(pos, text)
-        self.objects.append(obj)
+            self.right_layout.addWidget(ContentLabel(link_referenced(self.loading_manager, prefix + text), type))
+
+    def add_map_location(self, loc, text):
+        #Add icon #TODO make sure the icon is on the same map
+        obj = self.map_object.map_scene.draw_objective((loc['position0'], loc['position2']), text)
+        self.cleanup.append(obj)
+        #Reveal map zone
+        for map_object in self.map_object.map_scene.items():
+            if isinstance(map_object, RegionObject) and loc['worldZoneId'] == map_object.contents['MapZone'][0]['worldZoneId']:
+                map_object.show()
+                map_object.display_override = True
+                map_object.update()
+                self.cleanup.append(map_object)
+                break
 
     def showEvent(self, event: QShowEvent | None):
         super().showEvent(event)
@@ -128,8 +144,17 @@ class ContentViewerWindow(NEWidget):
 
         scene = self.map_object.map_scene
         #Remove map objects that were created by this window
-        for obj in self.objects:
-            scene.removeItem(obj)
+        for obj in self.cleanup:
+            if isinstance(obj, RegionObject):
+                #Hide the region
+                if obj.contents["MapZone"][0]["mapZoneIdParent"] and not obj.contents.get('WorldLocation2'):
+                    obj.hide()
+                
+                obj.display_override = False
+                obj.update()
+
+            else:
+                scene.removeItem(obj)
         #Remove focus from object
         if self.map_object:
             scene.focus()

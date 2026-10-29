@@ -3,7 +3,7 @@ import numpy
 from sklearn.cluster import DBSCAN  # type: ignore[import-untyped]
 from sklearn.neighbors import KDTree  # type: ignore[import-untyped]
 
-CLUSTER_DISTANCE = 128
+CLUSTER_DISTANCE = 200
 
 def merge_locations(locations):
 

@@ -13,6 +13,6 @@ def display_event(window: "ContentViewerWindow"):
 
         pos = window.loading_manager['WorldLocation2'].get(objective['worldLocation2Id'])
         if pos:
-            window.add_map_location((pos['position0'], pos['position2']), str(objective_id + 1))
+            window.add_map_location(pos, str(objective_id + 1))
 
     window.add_label(content.get('localizedTextIdEnd'), 'LabelInfo')

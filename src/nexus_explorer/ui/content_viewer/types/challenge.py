@@ -36,11 +36,11 @@ def display_challenge(window: "ContentViewerWindow"):
     #Map icons
     indicator = window.loading_manager['WorldLocation2'].get(content['worldLocation2IdIndicator'])
     if indicator:
-        window.add_map_location((indicator['position0'], indicator['position2']), '★')
+        window.add_map_location(indicator, '★')
 
     start = window.loading_manager['WorldLocation2'].get(content['worldLocation2IdStartLocation'])
     if start:
-        window.add_map_location((start['position0'], start['position2']), '-1')
+        window.add_map_location(start, '-1')
 
     directions =  window.loading_manager['QuestDirection'].get(content['questDirectionIdActive'])
     if directions:
@@ -51,4 +51,4 @@ def display_challenge(window: "ContentViewerWindow"):
             if dir:
                 loc = window.loading_manager['WorldLocation2'].get(dir['worldLocation2Id'])
                 if loc:
-                    window.add_map_location((loc['position0'], loc['position2']), str(x + 1))
+                    window.add_map_location(loc, str(x + 1))

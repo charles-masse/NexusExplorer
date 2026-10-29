@@ -39,7 +39,6 @@ class ContentCategory(QTreeWidgetItem):
         categoryFont = QFont()
         categoryFont.setBold(True)
         self.setFont(0, categoryFont)
-
         self.setIcon(0, QIcon(f"{loading_manager.game_files}/UI/Icon/{content_type['icon']}"))
         #Add content under this category
         for item in content:
@@ -117,14 +116,10 @@ class ContentSelectWindow(NEWidget):
         if content_id == 2:
             #One category per path
             for type_id in {mission['pathTypeEnum'] for mission in content_data}:
-                self.tree.addTopLevelItem(
-                    ContentCategory([mission for mission in content_data if mission['pathTypeEnum'] == type_id], CONTENT_TYPES[content_id][type_id], self.tree)
-                )
+                self.tree.addTopLevelItem(ContentCategory([mission for mission in content_data if mission['pathTypeEnum'] == type_id], CONTENT_TYPES[content_id][type_id], self.tree))
         #Everything else
         else:
-            self.tree.addTopLevelItem(
-                ContentCategory(content_data, CONTENT_TYPES[content_id], self.tree)
-            )
+            self.tree.addTopLevelItem(ContentCategory(content_data, CONTENT_TYPES[content_id], self.tree))
 
     def populate_list(self):
 
@@ -144,8 +139,6 @@ class ContentSelectWindow(NEWidget):
     def select_content(self, item: ContentItem):
         #If it's not a category header
         if item.childCount() == 0:
-            #Focus on object
-            self.object.map_scene.focus(self.object)
             #Close old popup
             if self.popup:
                 self.popup.close()
@@ -157,7 +150,5 @@ class ContentSelectWindow(NEWidget):
     def closeEvent(self, event: QCloseEvent | None):
         #Remove focus from object
         self.object.setSelected(False)
-        self.object.map_scene.focus()
-        # self.object.map_scene.popup = None
 
         super().closeEvent(event)
