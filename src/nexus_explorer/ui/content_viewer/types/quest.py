@@ -6,6 +6,7 @@ if TYPE_CHECKING:
 def display_quest(window: "ContentViewerWindow"):
     #TODO completion loc, faction?
     content = window.content
+    loading_manager = window.loading_manager
 
     for text in [
         ('localizedTextIdText', 'LabelInfo'),
@@ -20,24 +21,24 @@ def display_quest(window: "ContentViewerWindow"):
 
         objective_id = content.get(f"objective0{'' if i == 0 else i}")
         if objective_id:
-            objective_data = window.loading_manager['QuestObjective'].get(objective_id)
+            objective_data = loading_manager['QuestObjective'].get(objective_id)
 
             if objective_data:
 
                 window.add_label(objective_data['localizedTextIdFull'], 'LabelObjective')
 
                 for x in range(4):
-                    pos = window.loading_manager['WorldLocation2'].get(objective_data[f'worldLocationsIdIndicator0{x}'])
+                    pos = loading_manager['WorldLocation2'].get(objective_data[f'worldLocationsIdIndicator0{x}'])
                     if pos:
                         window.add_map_location(pos, str(i + 1))
 
-                directions = window.loading_manager['QuestDirection'].get(objective_data['questDirectionId'])
+                directions = loading_manager['QuestDirection'].get(objective_data['questDirectionId'])
                 if directions:
                     for x in range(16):
                         entry_id = directions.get(f'questDirectionEntryId{str(x).zfill(2)}')
-                        dir = window.loading_manager['QuestDirectionEntry'].get(entry_id)
+                        dir = loading_manager['QuestDirectionEntry'].get(entry_id)
                         if dir:
-                            loc = window.loading_manager['WorldLocation2'].get(dir['worldLocation2Id'])
+                            loc = loading_manager['WorldLocation2'].get(dir['worldLocation2Id'])
                             if loc:
                                 window.add_map_location(loc, str(i + 1))
 
@@ -49,6 +50,6 @@ def display_quest(window: "ContentViewerWindow"):
     ]:
         window.add_label(content.get(text[0]), text[1])
     #Start location #TODO alt receivers
-    pos = window.loading_manager['WorldLocation2'].get(content['WorldLocation2IdReceiver'])
+    pos = loading_manager['WorldLocation2'].get(content['WorldLocation2IdReceiver'])
     if pos:
         window.add_map_location(pos, str(-2))

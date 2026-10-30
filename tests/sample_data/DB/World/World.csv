@@ -1,7 +1,7 @@
 World;;;;;;;;;;;;;;;;;;
 ID [INT32 24];assetPath [STRING 104];flags [INT32 24];type [INT32 24];screenPath [STRING 104];screenModelPath [STRING 104];chunkBounds00 [INT32 24];chunkBounds01 [INT32 24];chunkBounds02 [INT32 24];chunkBounds03 [INT32 24];plugAverageHeight [INT32 24];localizedTextIdName [INT32 24];minItemLevel [INT32 24];maxItemLevel [INT32 24];primeLevelOffset [INT32 24];primeLevelMax [INT32 24];veteranTierScalingType [INT32 24];heroismMenaceLevel [INT32 24];rewardRotationContentId [INT32 24]
-1;Map/SampleWorld;26;31;et;a;45;0;45;44;49;14;31;11;33;0;37;21;7
-2;Map/NoWorld;32;50;cumque molestiae;deleniti sed;16;14;15;35;27;42;13;6;20;43;36;35;48
-3;Map/NoWorld;30;16;porro delectus eaque suscipit;sequi recusandae perferendis;22;3;20;19;3;39;18;33;50;2;48;15;49
-4;Map/SampleWorld;32;42;dolore suscipit numquam soluta itaque;voluptate;18;8;44;40;27;0;42;49;12;3;32;0;29
-5;Map/NoWorld;38;46;nam;cupiditate;23;2;30;33;42;24;10;28;22;17;12;23;38
+1;Map\SampleWorld;26;31;et;a;45;0;45;44;49;14;31;11;33;0;37;21;7
+2;Map\NoWorld;32;50;cumque molestiae;deleniti sed;16;14;15;35;27;42;13;6;20;43;36;35;48
+3;Map\NoWorld;30;16;porro delectus eaque suscipit;sequi recusandae perferendis;22;3;20;19;3;39;18;33;50;2;48;15;49
+4;Map\SampleWorld;32;42;dolore suscipit numquam soluta itaque;voluptate;18;8;44;40;27;0;42;49;12;3;32;0;29
+5;Map\NoWorld;38;46;nam;cupiditate;23;2;30;33;42;24;10;28;22;17;12;23;38

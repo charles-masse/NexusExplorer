@@ -16,6 +16,7 @@ def display_challenge(window: "ContentViewerWindow"):
     7 - Race to interact
     """
     content = window.content
+    loading_manager = window.loading_manager
     #Challenge description
     window.add_label(content.get('localizedTextIdProgress'), 'LabelInfo')
     #Link item
@@ -25,7 +26,7 @@ def display_challenge(window: "ContentViewerWindow"):
     for tier in range(3):
 
         tier_id = content.get(f'challengeTierId0{tier}', 0)
-        tier_data = window.loading_manager['ChallengeTier'].get(tier_id)
+        tier_data = loading_manager['ChallengeTier'].get(tier_id)
         if tier_data:
             tier_threshold = tier_data['count']
             #Races - Milliseconds to seconds #TODO not always a race
@@ -34,21 +35,21 @@ def display_challenge(window: "ContentViewerWindow"):
 
             window.add_label(str(tier_threshold), f'LabelChallenge{tier}')
     #Map icons
-    indicator = window.loading_manager['WorldLocation2'].get(content['worldLocation2IdIndicator'])
+    indicator = loading_manager['WorldLocation2'].get(content['worldLocation2IdIndicator'])
     if indicator:
         window.add_map_location(indicator, '★')
 
-    start = window.loading_manager['WorldLocation2'].get(content['worldLocation2IdStartLocation'])
+    start = loading_manager['WorldLocation2'].get(content['worldLocation2IdStartLocation'])
     if start:
         window.add_map_location(start, '-1')
 
-    directions =  window.loading_manager['QuestDirection'].get(content['questDirectionIdActive'])
+    directions =  loading_manager['QuestDirection'].get(content['questDirectionIdActive'])
     if directions:
         for x in range(16):
 
             entry_id = directions.get(f'questDirectionEntryId{str(x).zfill(2)}')
-            dir = window.loading_manager['QuestDirectionEntry'].get(entry_id)
+            dir = loading_manager['QuestDirectionEntry'].get(entry_id)
             if dir:
-                loc = window.loading_manager['WorldLocation2'].get(dir['worldLocation2Id'])
+                loc = loading_manager['WorldLocation2'].get(dir['worldLocation2Id'])
                 if loc:
                     window.add_map_location(loc, str(x + 1))

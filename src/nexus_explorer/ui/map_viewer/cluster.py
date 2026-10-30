@@ -3,7 +3,7 @@ import numpy
 from sklearn.cluster import DBSCAN  # type: ignore[import-untyped]
 from sklearn.neighbors import KDTree  # type: ignore[import-untyped]
 
-CLUSTER_DISTANCE = 200
+CLUSTER_DISTANCE = 128
 
 def merge_locations(locations):
 
@@ -20,19 +20,22 @@ def merge_locations(locations):
             contents = loc.contents[content_key]
 
             if isinstance(contents, list):
-                merged_location.contents.setdefault(content_key, []).extend(contents)
+                merged_contents = merged_location.contents.setdefault(content_key, [])
+                for content in contents:
+                    if content not in merged_contents:
+                        merged_contents.append(content)
 
     return merged_location
 
 class LocationData:
 
     def __init__(
-            self,
-            position0: float,
-            position2: float,
-            radius: float = 1,
-            **kwargs
-        ):
+        self,
+        position0: float,
+        position2: float,
+        radius: float = 1,
+        **kwargs
+    ):
         
         self.position = [[position0, position2]]
         self.radius = [radius]
@@ -53,9 +56,9 @@ class LocationData:
 
         for hub in [h for h in self.contents.get('QuestHub', []) if h.get('localizedTextIdName')]:
             names.append(hub.get('localizedTextIdName'))
-        #TODO double-check if we're not losing any interesting names from non-mapZones
-        # for zone in [z for z in self.contents.get('WorldZone', []) if z.get('localizedTextIdName')]:
-        #     names.append(zone.get('localizedTextIdName'))
+
+        for zone in [z for z in self.contents.get('WorldZone', []) if z.get('localizedTextIdName')]:
+            names.append(zone.get('localizedTextIdName'))
 
         for challenge in [c for c in self.contents.get('Challenge', []) if c.get('localizedTextIdLocation')]:
             names.append(challenge.get('localizedTextIdLocation'))
@@ -72,8 +75,8 @@ class LocationData:
         return max(self.radius)
 
 def cluster_locations(locations: list[LocationData]) -> list[LocationData]:
-    """Use sklearn to cluster the different world locations""" #TODO clean up
-    #Separate locations by name
+    """Use sklearn to cluster the different world locations"""
+    #Separate locations by name #TODO rework to still use the distance between locations first
     location_names: dict[str, list[LocationData]] = {}
 
     for loc in locations:

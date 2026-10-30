@@ -15,6 +15,7 @@ def display_datacube(window: "ContentViewerWindow"):
     2 - Text-only
     """
     content = window.content
+    loading_manager = window.loading_manager
 
     datacube_text = []
     datacube_type_id = content['datacubeTypeEnum']
@@ -29,7 +30,7 @@ def display_datacube(window: "ContentViewerWindow"):
             image_file = image.replace('Icon_ItemTBF_', '')
 
             label = QLabel()
-            pixmap = QPixmap(f'{window.loading_manager.game_files}/UI/Icon/Item/TBF/{image_file}/{image_file}.png')
+            pixmap = QPixmap(f'{loading_manager.game_files}/UI/Icon/Item/TBF/{image_file}/{image_file}.png')
             label.setPixmap(pixmap)
             window.main_layout.addWidget(label)
     

@@ -80,10 +80,10 @@ class LoadingManager:
 
                         new_entry.setdefault(field_name, data)
                     #Cleanup data with no human readable strings
-                    localized_values = [value for field, value in new_entry.items() if field.startswith('localizedTextId')]
+                    # localized_values = [value for field, value in new_entry.items() if field.startswith('localizedTextId')]
 
-                    if db_name == 'World' or not localized_values or any(value.strip() != '' for value in localized_values):
-                        new_dict.setdefault(int(row[id_field]), new_entry)
+                    # if db_name == 'World' or not localized_values or any(value.strip() != '' for value in localized_values):
+                    new_dict.setdefault(int(row[id_field]), new_entry)
 
                 except ValueError:
                     print(f'[LoadingManager][{db_name}] "{row[id_field]}" is not a valid Id. -SKIPPED-') #TODO

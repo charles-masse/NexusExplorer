@@ -5,68 +5,123 @@ if TYPE_CHECKING:
     from nexus_explorer.ui.content_viewer import ContentViewerWindow
 
 def explorer_stalking(window: "ContentViewerWindow"):
-    #What is this???
+    #Place flags on important spots : no locations, scanner acts up when close to loc #TODO investigate
     pass
 
 def explorer_exploration(window: "ContentViewerWindow"):
 
     content = window.content
+    loading_manager = window.loading_manager
 
-    doorEntrance = window.loading_manager['PathExplorerDoorEntrance'].get(content['objectId'])
-    #There's also Door with group activate and kill
-    if doorEntrance:
-        window.add_label(f"<b>Entrance:</b> $(creature={doorEntrance['creature2IdSurface']})", 'LabelObjective')
-        window.add_label(f"<b>Inside:</b> $(creature={doorEntrance['creature2IdMicro']})", 'LabelObjective')
-        # 'worldLocation2IdSurfaceRevealed' #TODO check
+    door_entrance = loading_manager['PathExplorerDoorEntrance'].get(content['objectId'])
 
+    if not door_entrance:
+        window.add_label("Go through the secret passageway.", 'LabelObjective')
+
+    else:
+        #Entrance
+        micro_name = 'the secret passageway'
+
+        door = loading_manager['PathExplorerDoor'].get(door_entrance['pathExplorerDoorId'])
+        if door:
+            zone = loading_manager['WorldZone'].get(door.get('worldZoneIdInsideMicro'))
+            if zone:
+                micro_name = zone.get('localizedTextIdName') or micro_name
+        # TODO show the door model on the left side
+        window.add_label(f"Go through the $(creature={door_entrance['creature2IdSurface']}) into {micro_name}.",'LabelObjective')
+        #Inside
+        if door:
+            target_group_id_activate = door.get('targetGroupIdActivate', 0)
+            if target_group_id_activate != 0:
+                window.add_label(f"Activate $(target={target_group_id_activate}).", 'LabelObjective')
+
+            target_group_id_kill = door.get('targetGroupIdKill', 0)
+            if target_group_id_kill != 0:
+                window.add_label(f"Kill $(target={target_group_id_kill}).", 'LabelObjective')
+    #Map start location(s)
+    for i in range(4):
+        loc = loading_manager['WorldLocation2'].get(content[f'worldLocation2Id0{i}'])
+        if loc:
+            window.add_map_location(loc, '1')
+        
 def explorer_scavenger(window: "ContentViewerWindow"):
-
+    #TODO icon, spell, start model, clue models
     content = window.content
+    loading_manager = window.loading_manager
 
-    clueString = []
-
-    hunt = window.loading_manager['PathExplorerScavengerHunt'].get(content['objectId'])
+    hunt = loading_manager['PathExplorerScavengerHunt'].get(content['objectId'])
     if hunt:
+        #start
+        window.add_label(hunt['localizedTextIdStart'], 'LabelRespond') #TODO special label
+        #Clues
         for i in range(7):
-            clue = window.loading_manager['PathExplorerScavengerClue'].get(hunt[f'pathExplorerScavengerClueId0{i}'])
+            clue = loading_manager['PathExplorerScavengerClue'].get(hunt[f'pathExplorerScavengerClueId0{i}'])
             if clue:
-                creature = window.loading_manager['Creature2'].get(clue['creature2Id'])
-                if creature:
-                    clueString += f'\\n$(creature={clue['creature2Id']})'
-
-                else:
-                    test = window.loading_manager['TargetGroup'].get(clue['targetGroupId']) # REWORK ME
-                    if test:
-                        clueString += f'\\n{test['localizedTextIdDisplayString']}'
-
-                window.add_label(' '.join(clueString), 'LabelObjective')
-
-    #             pos = loadManager['WorldLocation2'].get(clue['worldLocation2IdMiniMap'])
-    #             if pos:
-    #                 self.mapView.drawObjective(pos['position0'], pos['position2'], i + 1)
+                window.add_label(clue['localizedTextIdClue'], 'LabelObjective')
+                #Clue objective
+                loc = loading_manager['WorldLocation2'].get(clue['worldLocation2IdMiniMap'])
+                if loc:
+                    window.add_map_location(loc, str(i + 1))
+        #Start location(s)
+        for i in range(4):
+            loc = loading_manager['WorldLocation2'].get(content[f'worldLocation2Id0{i}'])
+            if loc:
+                window.add_map_location(loc, '-1')
+    #For hunts where you have to follow a NPC
+    else:
+        window.add_label('Follow.', 'LabelObjective')
+        #Start location(s)
+        for i in range(4):
+            loc = loading_manager['WorldLocation2'].get(content[f'worldLocation2Id0{i}'])
+            if loc:
+                window.add_map_location(loc, '1')
 
 def explorer_vista(window: "ContentViewerWindow"):
 
-    # node = window.loading_manager['PathExplorerNode']
+    content = window.content
+    loading_manager = window.loading_manager
 
-    # for x in node.values():
-    #     if x['pathExplorerAreaId'] == data['objectId']:
+    vista = loading_manager['PathExplorerNode'].get(content['objectId'])
+    if vista:
+        loc = loading_manager['WorldLocation2'].get(vista['worldLocation2Id'])
+        if loc:
+            #Add objective with vista's name
+            vista_name = loading_manager['WorldZone'].get(loc['worldZoneId'], {}).get('localizedTextIdName') or 'the vista'
+            window.add_label(f"Survey {vista_name}.", 'LabelObjective')
 
-    #         pos = loadManager['WorldLocation2'].get(x['worldLocation2Id'])
-    #         if pos:
-    #             self.mapView.drawObjective(pos['position0'], pos['position2'], i + 1)
+            window.add_map_location(loc, '1')
+        #Start location(s)
+        for i in range(4):
+            loc = loading_manager['WorldLocation2'].get(content[f'worldLocation2Id0{i}'])
+            if loc:
+                window.add_map_location(loc, '-1')
 
-    #         self.addQuestDirections(x['questDirectionId'], 1)
-
-    pass
+    else:
+        window.add_label("Survey vista.", 'LabelObjective')
+        for i in range(4):
+            loc = loading_manager['WorldLocation2'].get(content[f'worldLocation2Id0{i}'])
+            if loc:
+                window.add_map_location(loc, '1')
 
 def explorer_cartography(window: "ContentViewerWindow"):
-    #explore whole map 'PathExplorerPowerMap'
+    #explore whole map #TODO objectId == MapZone 
     pass
 
 def explorer_operation(window: "ContentViewerWindow"):
 
     content = window.content
+    loading_manager = window.loading_manager
 
-    operation = window.loading_manager['PathExplorerActivate'].get(content['objectId'])
-    window.add_label(f"Investigate {operation['count']} $(creature={operation['creature2Id']})", 'LabelObjective')
+    operation = loading_manager['PathExplorerActivate'].get(content['objectId'])
+    if operation:
+        #Specific creature
+        if operation['creature2Id']:
+            window.add_label(f"Investigate {operation['count']} $(creature={operation['creature2Id']}).", 'LabelObjective')
+        #Group of creatures
+        else:
+            window.add_label(f"Investigate {operation['count']} $(target={operation['targetGroupId']}).", 'LabelObjective')
+    #Target location
+    for i in range(4):
+        loc = loading_manager['WorldLocation2'].get(content[f'worldLocation2Id0{i}'])
+        if loc:
+            window.add_map_location(loc, '1')

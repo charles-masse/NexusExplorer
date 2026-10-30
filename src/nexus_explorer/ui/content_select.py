@@ -1,4 +1,5 @@
 
+from pprint import pprint
 from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import Qt
@@ -86,6 +87,8 @@ class ContentSelectWindow(NEWidget):
     """Categorize the content into their different types"""
     def __init__(self, loading_manager: "LoadingManager", object):
         super().__init__()
+
+        # pprint(object.contents)
 
         self.loading_manager = loading_manager
         self.object = object

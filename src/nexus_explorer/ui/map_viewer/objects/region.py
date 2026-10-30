@@ -100,15 +100,13 @@ class RegionObject(QGraphicsObject):
             painter.drawPolygon(self._polygon)
 
         if self.is_hovered or self.display_override:
-            self.setOpacity(1)
-            for child in self.children():
-                child.setOpacity(1)
-
+            opacity = 1
         else:
-            faded_opacity = 0.6
-            self.setOpacity(faded_opacity)
-            for child in self.children():
-                child.setOpacity(faded_opacity)
+            opacity = 0.6
+
+        self.setOpacity(opacity)
+        for child in self.children():
+            child.setOpacity(opacity)
 
     def mousePressEvent(self, event):
 

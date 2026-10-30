@@ -56,4 +56,4 @@ def soldier_SWAT(window: "ContentViewerWindow"):
     else:
         group_name = f'<i>{group_name}</i>'
 
-    window.add_label(f"Kill {swat['count']} {group_name} with $(vitem={swat['virtualItemIdDisplay']})", 'LabelObjective')
+    window.add_label(f"Use $(vitem={swat['virtualItemIdDisplay']}) on {swat['count']} {group_name}", 'LabelObjective')

@@ -51,8 +51,8 @@ class MapScene(QGraphicsScene):
             pixmap = self.display_map()
             self.addPixmap(pixmap)
         #Add map objects
-        self.display_locations(self.world.locations)
         self.display_zones(self.world.zones)
+        self.display_locations(self.world.locations)
         #Add coords on mouse pointer
         self.coords_text = QGraphicsTextItem()
         self.coords_text.setDefaultTextColor(QColor(79, 204, 60))
