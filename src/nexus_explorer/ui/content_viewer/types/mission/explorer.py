@@ -45,14 +45,14 @@ def explorer_exploration(window: "ContentViewerWindow"):
             window.add_map_location(loc, '1')
         
 def explorer_scavenger(window: "ContentViewerWindow"):
-    #TODO icon, spell, start model, clue models
+    #TODO spell, models
     content = window.content
     loading_manager = window.loading_manager
 
     hunt = loading_manager['PathExplorerScavengerHunt'].get(content['objectId'])
     if hunt:
         #start
-        window.add_label(hunt['localizedTextIdStart'], 'LabelRespond') #TODO special label
+        window.add_label(hunt['localizedTextIdStart'], 'LabelRespond', hunt['assetPathSprite']) #TODO special label
         #Clues
         for i in range(7):
             clue = loading_manager['PathExplorerScavengerClue'].get(hunt[f'pathExplorerScavengerClueId0{i}'])

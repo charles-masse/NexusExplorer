@@ -82,7 +82,7 @@ def prep_worlds(loading_manager: "LoadingManager"):
                         location.setdefault('WorldZone', []).append(world_zone)
                     
                     map_zones = world_zone.get('MapZone')
-                    if map_zones:
+                    if map_zones and any(zone['mapZoneIdParent'] for zone in map_zones):
                         world_zone.setdefault('WorldLocation2', []).append(location)
                         #Add it to the list
                         if world_zone not in world_data.zones:
@@ -92,7 +92,7 @@ def prep_worlds(loading_manager: "LoadingManager"):
                         new_locations.append(location)
 
         world_data.locations = new_locations
-        # #Join zones #TODO Double-check
+        #Join zones #TODO Double-check
         for map_zone in loading_manager['MapZoneWorldJoin'].values():
 
             map_zone_data = loading_manager['MapZone'].get(map_zone['mapZoneId'])

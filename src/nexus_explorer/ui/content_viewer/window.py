@@ -1,9 +1,10 @@
 
+import os
 from pprint import pprint
 from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QCloseEvent, QShowEvent
+from PyQt6.QtGui import QCloseEvent, QPixmap, QShowEvent
 from PyQt6.QtWidgets import (
     QApplication,
     QGraphicsScene,
@@ -82,9 +83,9 @@ class ContentViewerWindow(NEWidget):
         view.setFixedSize(WINDOW_WIDTH, self.sizeHint().height())
         view.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
 
-        scene = QGraphicsScene()
-        scene.setSceneRect(0, 0, view.width(), view.height())
-        view.setScene(scene)
+        self.scene = QGraphicsScene()
+        self.scene.setSceneRect(0, 0, view.width(), view.height())
+        view.setScene(self.scene)
 
         objective_id = 1
         heightOffset = 0
@@ -94,26 +95,42 @@ class ContentViewerWindow(NEWidget):
             if item:
                 widget = item.widget()
                 if widget:
-                    #If label is an objective
+                    #Icon
+                    if widget.icon:
+                        pixmap = QPixmap(widget.icon).scaled(30, 30, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+                        pixmap_item = self.scene.addPixmap(pixmap)
+                        pixmap_item.setPos(1, heightOffset + (widget.sizeHint().height() / 2) - self.right_layout.spacing())
+                        #Outline--some icons have alphas
+                        # rect = QRectF(pixmap_item.boundingRect())
+                        # border_item = self.scene.addRect(
+                        #     QRectF(rect.x(), rect.y(), rect.width() - 1, rect.height() - 1),
+                        #     pen=QPen(QColor(89, 167, 200), 3),
+                        #     brush=QBrush(Qt.BrushStyle.NoBrush),
+                        # )
+                        # border_item.setPos(pixmap_item.pos())
+                    #Objective id
                     if widget.objectName() == 'LabelObjective':
 
                         objective = ObjectiveObject(str(objective_id), [0,0])
-                        objective.setPos(1, heightOffset)
-                        scene.addItem(objective)
+                        objective.setPos(WINDOW_WIDTH - objective.boundingRect().width() - 2, heightOffset + 2)
+                        self.scene.addItem(objective)
 
                         objective_id += 1
                     #Save the size of the widget
-                    heightOffset += widget.sizeHint().height() + 3
+                    heightOffset += widget.sizeHint().height() + self.right_layout.spacing()
 
-    def add_label(self, text: str, type: str):
+    def add_label(self, text: str, type: str, icon: str | None = None):
+
         if text:
-            #TODO
-            if type == 'LabelSay':
-                prefix = '> '
-            else:
-                prefix = ''
-
-            self.right_layout.addWidget(ContentLabel(link_referenced(self.loading_manager, prefix + text), type))
+            #Find icon's path
+            if icon:
+                path = icon.split('_', 2)
+                icon_path = '/'.join([self.loading_manager.game_files, 'UI/IconHD/Item/Misc/', path[2], path[2] + '.png'])
+                if os.path.exists(icon_path):
+                    icon = icon_path
+            #Add label
+            label = ContentLabel(link_referenced(self.loading_manager, text), type, icon)
+            self.right_layout.addWidget(label)
 
     def add_map_location(self, loc, text):
         #Add icon #TODO make sure the icon is on the same map

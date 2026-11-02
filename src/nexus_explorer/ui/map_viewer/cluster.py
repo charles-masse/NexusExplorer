@@ -10,8 +10,9 @@ def merge_locations(locations):
     radius = [loc.radius for loc in locations]
 
     merged_location = LocationData(0, 0, radius)
-    #TODO fix this
+
     merged_location.position = []
+
     for loc in locations:
         merged_location.position.extend(loc.position)
 

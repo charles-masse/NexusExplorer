@@ -4,40 +4,90 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from nexus_explorer.ui.content_viewer import ContentViewerWindow
 
-def scientist_analysis(window: "ContentViewerWindow"):  #Biology/Botany/Analysis/Diagnostic/Chemistry/Archeology??
-    pass
+def scientist_analysis(window: "ContentViewerWindow"):
+    #TODO buffs
+    content = window.content
+    loading_manager = window.loading_manager
+
+    icon = loading_manager['PathScientistCreatureInfo'].get(content['objectId'], {}).get('displayIcon') or ''
+    window.add_label("Scan.", 'LabelObjective', icon)
+    #Target location
+    for i in range(4):
+        loc = loading_manager['WorldLocation2'].get(content[f'worldLocation2Id0{i}'])
+        if loc:
+            window.add_map_location(loc, '1')
 
 def scientist_study(window: "ContentViewerWindow"):
 
-    # study = loadManager['PathScientistFieldStudy'][data['objectId']]
+    content = window.content
+    loading_manager = window.loading_manager
 
-    # for i in range(8):
-    #     self.createLabel(study[f'Checklist0{i}'], 'QuestObjective')
-
-    #     pos = loadManager['WorldLocation2'].get(study[f'worldLocation2IdIndicator0{i}'])
-        
-    #     if pos:
-    #         self.mapView.drawObjective(pos['position0'], pos['position2'], i + 1)
-    pass
+    study = loading_manager['PathScientistFieldStudy'][content['objectId']]
+    if study:
+        #Objectives
+        for i in range(8):
+            window.add_label(study[f'localizedTextIdChecklist0{i}'], 'LabelObjective')
+            #Map icon
+            loc = loading_manager['WorldLocation2'].get(study[f'worldLocation2IdIndicator0{i}'])
+            if loc:
+                window.add_map_location(loc, str(i + 1))
+    #Start location(s)
+    for i in range(4):
+        loc = loading_manager['WorldLocation2'].get(content[f'worldLocation2Id0{i}'])
+        if loc:
+            window.add_map_location(loc, '-1')
 
 def scientist_experimentation(window: "ContentViewerWindow"):
-    pass
+    #TODO link to the other path mission
+    content = window.content
+    loading_manager = window.loading_manager
+
+    experiment = loading_manager['PathScientistExperimentationPattern']
+    for i, x in enumerate(experiment.values()):
+        if x['pathScientistExperimentationId'] == content['objectId']:
+            #Description
+            window.add_label(x['localizedTextIdDescription'], 'LabelObjective', "C:/Users/charl/Documents/scripts/NexusExplorer/Nexusvault/output/export/UI/Icon/Item/Misc/rune_0001/rune_0001.png")
+            #Linked mission
+            mission = loading_manager['PathMission'].get(x['pathMissionId'])
+            if mission:
+                for i in range(4):
+                    loc = loading_manager['WorldLocation2'].get(mission[f'worldLocation2Id0{i}'])
+                    if loc:
+                        window.add_map_location(loc, str(i + 1))
+
+            break
+    #Start location(s)
+    for i in range(4):
+        loc = loading_manager['WorldLocation2'].get(content[f'worldLocation2Id0{i}'])
+        if loc:
+            window.add_map_location(loc, '-1')
 
 def scientist_speciment(window: "ContentViewerWindow"):
 
-    # specimen = loadManager['PathScientistSpecimenSurvey'][data['objectId']]
+    content = window.content
+    loading_manager = window.loading_manager
 
-    # for i in range(10):
-    #     self.createLabel(specimen[f'Objective0{i}'], 'QuestObjective')
+    specimen = loading_manager['PathScientistSpecimenSurvey'].get(content['objectId'])
 
-    #     pos = loadManager['WorldLocation2'].get(specimen[f'worldLocation2Id0{i}'])
-        
-    #     if pos:
-    #         self.mapView.drawObjective(pos['position0'], pos['position2'], i + 1)
-
-    #     self.addQuestDirections(specimen[f'questDirectionId0{i}'], i + 1)
-    
-    pass
+    if specimen:
+        for i in range(10):
+            #Text
+            window.add_label(specimen[f'localizedTextIdObjective0{i}'], 'LabelObjective')
+            #Objectives
+            loc = loading_manager['WorldLocation2'].get(specimen[f'worldLocation2Id0{i}'])
+            if loc:
+                window.add_map_location(loc, str(i + 1))
+            #Quest directions
+            directions = loading_manager['QuestDirection'].get(specimen[f'questDirectionId0{i}'])
+            if directions:
+                for x in range(16):
+                    entry_id = directions.get(f'questDirectionEntryId{str(x).zfill(2)}')
+                    dir = loading_manager['QuestDirectionEntry'].get(entry_id)
+                    if dir:
+                        loc = loading_manager['WorldLocation2'].get(dir['worldLocation2Id'])
+                        if loc:
+                            window.add_map_location(loc, str(i + 1))
 
 def scientist_datacube(window: "ContentViewerWindow"):
+    #Find all datacubes #TODO put in the right zone
     pass
