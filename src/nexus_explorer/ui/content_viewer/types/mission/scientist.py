@@ -38,24 +38,26 @@ def scientist_study(window: "ContentViewerWindow"):
             window.add_map_location(loc, '-1')
 
 def scientist_experimentation(window: "ContentViewerWindow"):
+    #In creature2, 'pathScientistExperimentationId' == content['objectId']
     #TODO link to the other path mission
     content = window.content
     loading_manager = window.loading_manager
 
-    experiment = loading_manager['PathScientistExperimentationPattern']
-    for i, x in enumerate(experiment.values()):
-        if x['pathScientistExperimentationId'] == content['objectId']:
-            #Description
-            window.add_label(x['localizedTextIdDescription'], 'LabelObjective', "C:/Users/charl/Documents/scripts/NexusExplorer/Nexusvault/output/export/UI/Icon/Item/Misc/rune_0001/rune_0001.png")
-            #Linked mission
-            mission = loading_manager['PathMission'].get(x['pathMissionId'])
-            if mission:
-                for i in range(4):
-                    loc = loading_manager['WorldLocation2'].get(mission[f'worldLocation2Id0{i}'])
-                    if loc:
-                        window.add_map_location(loc, str(i + 1))
+    experiment_id = 1
 
-            break
+    for experiment in loading_manager['PathScientistExperimentationPattern'].values():
+        if experiment['pathScientistExperimentationId'] == content['objectId']:
+            #Description
+            window.add_label(experiment['localizedTextIdDescription'], 'LabelObjective', "C:/Users/charl/Documents/scripts/NexusExplorer/Nexusvault/output/export/UI/Icon/Item/Misc/rune_0001/rune_0001.png")
+            #Linked mission
+            mission = loading_manager['PathMission'].get(experiment['pathMissionId'])
+            if mission:
+                for x in range(4):
+                    loc = loading_manager['WorldLocation2'].get(mission[f'worldLocation2Id0{x}'])
+                    if loc:
+                        window.add_map_location(loc, str(experiment_id))
+
+            experiment_id += 1
     #Start location(s)
     for i in range(4):
         loc = loading_manager['WorldLocation2'].get(content[f'worldLocation2Id0{i}'])
