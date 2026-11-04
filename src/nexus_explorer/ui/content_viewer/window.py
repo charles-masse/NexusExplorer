@@ -61,13 +61,13 @@ class ContentViewerWindow(NEWidget):
         if content_id == 0:
             display_datacube(self)
 
-        elif content_id in [1]: # , 6
+        elif content_id == 1: # , 6
             display_quest(self)
 
         elif content_id == 2:
             display_mission(self)
 
-        elif content_id in [3]: # , 5
+        elif content_id == 3: # , 5
             display_event(self)
 
         elif content_id == 4:
@@ -112,7 +112,7 @@ class ContentViewerWindow(NEWidget):
                     if widget.objectName() == 'LabelObjective':
 
                         objective = ObjectiveObject(str(objective_id), [0,0])
-                        objective.setPos(WINDOW_WIDTH - objective.boundingRect().width() - 2, heightOffset + 2)
+                        objective.setPos(WINDOW_WIDTH - objective.boundingRect().width(), heightOffset + 2)
                         self.scene.addItem(objective)
 
                         objective_id += 1

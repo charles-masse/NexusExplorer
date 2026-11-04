@@ -5,7 +5,7 @@ from PyQt6.QtWidgets import QLabel
 
 class ContentLabel(QLabel):
 
-    def __init__(self, text: str, name: str, icon: str | None = 'Caca'):
+    def __init__(self, text: str, name: str, icon: str | None = None):
         super().__init__()
 
         self.icon = icon
@@ -16,6 +16,8 @@ class ContentLabel(QLabel):
             text = f'> <b>{text}</b>'
 
         self.setText(f'<div>{text.replace('\\n', '<br>')}</div>')
+
+        self.setMinimumWidth(375 - (10 * 2) + 1) # Window width + padding + threshold
         self.setWordWrap(True)
         #Handle links
         self.setOpenExternalLinks(False)

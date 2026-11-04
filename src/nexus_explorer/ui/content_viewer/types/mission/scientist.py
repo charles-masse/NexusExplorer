@@ -87,6 +87,11 @@ def scientist_speciment(window: "ContentViewerWindow"):
                         loc = loading_manager['WorldLocation2'].get(dir['worldLocation2Id'])
                         if loc:
                             window.add_map_location(loc, str(i + 1))
+    #Start location(s)
+    for i in range(4):
+        loc = loading_manager['WorldLocation2'].get(content[f'worldLocation2Id0{i}'])
+        if loc:
+            window.add_map_location(loc, '-1')
 
 def scientist_datacube(window: "ContentViewerWindow"):
     #Find all datacubes #TODO put in the right zone

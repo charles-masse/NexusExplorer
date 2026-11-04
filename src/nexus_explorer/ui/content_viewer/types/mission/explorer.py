@@ -31,12 +31,12 @@ def explorer_exploration(window: "ContentViewerWindow"):
         window.add_label(f"Go through the $(creature={door_entrance['creature2IdSurface']}) into {micro_name}.",'LabelObjective')
         #Inside
         if door:
-            target_group_id_activate = door.get('targetGroupIdActivate', 0)
-            if target_group_id_activate != 0:
+            target_group_id_activate = door['targetGroupIdActivate']
+            if target_group_id_activate:
                 window.add_label(f"Activate $(target={target_group_id_activate}).", 'LabelObjective')
 
-            target_group_id_kill = door.get('targetGroupIdKill', 0)
-            if target_group_id_kill != 0:
+            target_group_id_kill = door['targetGroupIdKill']
+            if target_group_id_kill:
                 window.add_label(f"Kill $(target={target_group_id_kill}).", 'LabelObjective')
     #Map start location(s)
     for i in range(4):
@@ -52,7 +52,7 @@ def explorer_scavenger(window: "ContentViewerWindow"):
     hunt = loading_manager['PathExplorerScavengerHunt'].get(content['objectId'])
     if hunt:
         #start
-        window.add_label(hunt['localizedTextIdStart'], 'LabelRespond', hunt['assetPathSprite']) #TODO special label
+        window.add_label(hunt['localizedTextIdStart'], 'LabelRespond', hunt['assetPathSprite'])
         #Clues
         for i in range(7):
             clue = loading_manager['PathExplorerScavengerClue'].get(hunt[f'pathExplorerScavengerClueId0{i}'])

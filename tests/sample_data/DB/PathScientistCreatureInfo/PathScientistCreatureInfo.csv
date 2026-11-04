@@ -1,0 +1,52 @@
+PathScientistCreatureInfo
+ID [INT32 24];scientistCreatureFlags [INT32 24];displayIcon [STRING 104];prerequisiteIdScan [INT32 24];prerequisiteIdRawScan [INT32 24];prerequisiteIdScanCreature [INT32 24];prerequisiteIdRawScanCreature [INT32 24];spell4IdBuff00 [INT32 24];spell4IdBuff01 [INT32 24];spell4IdBuff02 [INT32 24];spell4IdBuff03 [INT32 24];checklistCount [INT32 24];scientistCreatureTypeEnum [INT32 24];lootId [INT32 24]
+1;28;reiciendis ab veritatis necessitatibus saepe;50;20;41;31;44;5;3;5;4;45;37
+2;45;deserunt;21;3;27;47;43;8;23;21;44;46;43
+3;35;eligendi;40;49;23;7;10;1;42;13;23;31;2
+4;42;est;42;4;2;23;50;24;18;24;42;29;46
+5;49;iusto soluta;19;3;2;50;47;2;8;0;14;34;45
+6;6;tempore corporis;50;27;24;25;22;49;48;19;9;44;42
+7;10;natus;35;37;24;25;22;42;14;13;43;50;29
+8;12;odio ratione harum asperiores reiciendis;3;38;49;18;20;17;7;22;48;34;37
+9;5;alias;30;43;38;7;11;8;7;21;40;38;21
+10;48;facere nostrum voluptatem;25;11;50;21;25;32;0;2;45;46;45
+11;50;assumenda;39;12;33;50;25;7;34;47;6;11;14
+12;11;dignissimos enim eos ea minima;36;36;1;4;45;49;24;22;27;12;44
+13;29;sint incidunt nesciunt;14;29;24;32;47;33;46;24;33;42;47
+14;31;consequuntur incidunt facere;47;20;31;2;19;5;44;35;50;35;44
+15;18;in deserunt asperiores;48;23;44;26;50;42;15;39;47;40;39
+16;26;fugit veritatis consequuntur;33;40;41;49;42;17;44;38;0;24;32
+17;15;fuga debitis;43;43;9;3;19;15;3;1;26;10;5
+18;0;accusantium voluptates aspernatur;1;19;40;24;10;14;22;16;31;50;26
+19;33;sapiente dolorem beatae neque;44;39;34;37;8;9;28;24;32;4;8
+20;48;beatae facilis iste obcaecati suscipit;47;17;0;45;25;9;49;10;25;19;42
+21;38;nostrum doloremque illo amet;27;40;25;25;6;30;7;6;27;49;37
+22;49;enim ipsa;49;36;19;9;39;47;34;19;14;47;23
+23;12;optio sed magni;38;18;36;2;2;28;17;6;48;10;0
+24;27;unde expedita aut adipisci;11;22;25;0;22;16;35;14;34;16;24
+25;14;possimus id;8;24;15;29;49;30;23;33;39;9;6
+26;25;repellat provident voluptas;30;49;3;40;28;49;48;30;0;41;12
+27;43;explicabo aut suscipit;47;36;22;10;13;23;8;12;10;17;31
+28;47;consequatur totam;3;44;9;49;3;6;44;17;15;11;33
+29;21;ducimus dolorum consequuntur numquam;48;20;3;46;6;11;23;44;45;22;41
+30;7;aperiam eius;1;32;18;37;1;46;9;7;23;30;1
+31;11;culpa architecto et dolores;8;0;15;42;15;5;4;5;31;13;36
+32;33;officia fuga;14;27;29;1;15;50;46;9;45;27;49
+33;19;magni natus impedit ipsum minima;0;23;42;22;49;14;26;41;8;2;32
+34;6;praesentium;33;7;49;1;18;49;17;27;8;3;39
+35;23;sapiente;35;6;14;17;24;6;8;26;29;46;25
+36;43;laboriosam voluptates adipisci veniam nam;48;11;48;12;13;5;3;5;41;32;4
+37;37;eligendi illo necessitatibus;14;23;20;46;36;26;12;23;12;41;17
+38;3;soluta;21;7;46;22;15;30;24;24;1;14;41
+39;23;voluptatem soluta;16;21;45;20;48;30;3;28;27;31;11
+40;41;assumenda corporis accusamus adipisci provident;16;26;29;17;5;8;41;11;8;10;35
+41;41;reiciendis architecto cum;8;21;20;8;40;19;6;9;2;11;13
+42;37;incidunt ullam;2;18;21;2;21;33;27;3;37;3;31
+43;11;maxime provident;9;26;18;43;35;6;44;30;40;35;1
+44;27;fugiat hic;39;43;10;18;26;10;28;23;46;27;21
+45;26;enim molestiae in at;20;27;8;2;35;50;35;45;50;44;16
+46;6;sit illum;26;32;7;12;47;24;30;15;0;36;4
+47;4;porro harum incidunt ab repellat;35;35;45;21;37;22;19;28;0;26;24
+48;36;rerum nisi laudantium voluptatibus voluptatum;1;36;39;25;1;16;15;16;50;38;34
+49;34;molestiae;46;40;15;41;47;11;49;46;39;42;2
+50;33;vitae;2;21;9;15;42;13;0;23;27;37;33
