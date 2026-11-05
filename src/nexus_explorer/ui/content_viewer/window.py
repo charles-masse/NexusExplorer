@@ -150,9 +150,9 @@ class ContentViewerWindow(NEWidget):
 
         screen = QApplication.primaryScreen()
         if screen:
-            frame_geometry = self.frameGeometry()
-            frame_geometry.moveCenter(screen.availableGeometry().center())
-            self.move(frame_geometry.topLeft())
+            # frame_geometry = self.frameGeometry()
+            # frame_geometry.moveCenter(screen.availableGeometry().center())
+            self.move(screen.geometry().topLeft())
         #Focus on object
         if self.map_object:
             self.map_object.map_scene.focus(self.map_object)
