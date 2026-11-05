@@ -30,10 +30,9 @@ def test_world_select_window(world_select_window):
 def test_world_select_list_contains_worlds(world_select_window):
     assert world_select_window.world_list.count() > 0
 
-def test_world_select_load_world_button(qtbot, world_select_window):
+def test_world_select_load_world_button(world_select_window):
 
     world_select_window.world_list.setCurrentRow(0)
     world_select_window.load_world_button.click()
 
     assert world_select_window.popup
-    qtbot.addWidget(world_select_window.popup)

@@ -91,6 +91,10 @@ def test_content_viewer_window_mission_types(
             'localizedTextIdUnlock': 'Lorem Ipsum',
             'localizedTextIdSoldierOrders': 'Lorem Ipsum, maggot!',
             'localizedTextIdCommunicator': 'Lorem Ipsum',
+            'worldLocation2Id00': 1,
+            'worldLocation2Id01': 1,
+            'worldLocation2Id02': 1,
+            'worldLocation2Id03': 1,
         }, 
         {'id': 2}
     )

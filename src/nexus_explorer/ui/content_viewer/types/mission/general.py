@@ -37,15 +37,13 @@ def display_mission(window: "ContentViewerWindow"):
     
     content = window.content
 
-    unlock = content.get('localizedTextIdUnlock')
-    window.add_label(unlock, 'LabelSay')
+    window.add_label(content.get('localizedTextIdSummary'), 'LabelInfo')
+    window.add_label(content.get('localizedTextIdUnlock'), 'LabelRespond')
     #Soldier orders
     if content.get('pathTypeEnum') == 0:
-        soldier_orders = content.get('localizedTextIdSoldierOrders')
-        window.add_label(soldier_orders, 'LabelInfo')
+        window.add_label(content.get('localizedTextIdSoldierOrders'), 'LabelRespond')
     #Mission type specific
     mission_id = content['pathMissionTypeEnum']
-
     if mission_id in [0]:
         soldier_security(window)
     elif mission_id in [2, 14]:
@@ -64,7 +62,7 @@ def display_mission(window: "ContentViewerWindow"):
         explorer_exploration(window)
     elif mission_id in [13, 18]:
         explorer_scavenger(window)
-    elif mission_id in [15]:
+    elif mission_id in [15, 29]:
         explorer_vista(window)
     elif mission_id in [16]:
         explorer_cartography(window)
@@ -91,5 +89,4 @@ def display_mission(window: "ContentViewerWindow"):
     else:
         raise TypeError(f'Cannot parse this path mission id {mission_id}.')
 
-    comms = content.get('localizedTextIdCommunicator')
-    window.add_label(comms, 'LabelInfo')
+    window.add_label(content.get('localizedTextIdCommunicator'), 'LabelRespond')

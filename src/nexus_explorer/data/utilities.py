@@ -24,11 +24,12 @@ DATABASES = {
     'vitem' : 'VirtualItem',
     'item' : 'Item2',
     'schematic' : 'TradeskillSchematic2',
-    'quest' : 'Quest2'
+    'quest' : 'Quest2',
+    'target' : 'TargetGroup'
 }
 
 def link_referenced(loading_manager: LoadingManager, text: str, hyperlink: bool = True) -> str:
-    """Add hypertext to a string.""" #TODO plural vs singular,  <text Link="Location:19415">DREDplex: Skyhammer</text>',
+    """Add hypertext to a string.""" #TODO plural vs singular, faction, <text Link="Location:19415">DREDplex: Skyhammer</text>',
     regex = re.finditer(r'(?:<text[^>]*?>)?\$\S*?\((\w+)=(\d+)\)|\$(\w+)=(\d+)(?:</text>)?', text)
     for match in regex:
 
@@ -38,27 +39,44 @@ def link_referenced(loading_manager: LoadingManager, text: str, hyperlink: bool 
 
         linked = loading_manager[DATABASES[db_name.lower()]].get(int(db_id))
         if linked:
-            linked_text = linked.get('localizedTextIdName')
+            #Fix for TargetGroups without a name #TODO fix '[[...]]'
+            if db_name.lower() == 'target':
+
+                linked_text = linked.get('localizedTextIdDisplayString')
+                if not linked_text:
+
+                    test = []
+
+                    for x in range(7):
+                        creature = loading_manager['Creature2'].get(linked[f'data{x}'])
+                        if creature:
+                            test.append(f'$(creature={creature['ID']})')
+
+                    linked_text = link_referenced(loading_manager, ', '.join(test))
+                    hyperlink = False
+
+            else:
+                linked_text = linked.get('localizedTextIdName')
 
         if not linked or not linked_text:
             linked_text = f"{db_name} id:{db_id} not found"
 
-        if hyperlink: #TODO CBB
+        if hyperlink:
             text = text.replace(full_match, f'<b><a style="color: rgb(125, 251, 182);" href="{linked}">[{linked_text}]</a></b>')
         else:
             text = text.replace(full_match, f'[{linked_text}]')
 
     return text
 
-def replace_data(loading_manager: LoadingManager, target: str, field_name: str, source: str):
-    """Replace data that referenced the target with the actual data.
-    - loading_manager: The loading manager that contains the databases.
-    - target: The database referenced and that will be returned.
-    - field_name: Name of the field that contains the reference ids (in targetDb).
-    - source: The database that contains a reference to the target.
-    """
-    for item in loading_manager[target].values():
-        for key in [k for k in item if field_name.lower() in k.lower()]:
-            replacement_item = loading_manager[source].get(item[key])
-            if replacement_item:
-                item[key] = replacement_item
+# def replace_data(loading_manager: LoadingManager, target: str, field_name: str, source: str):
+#     """Replace data that referenced the target with the actual data.
+#     - loading_manager: The loading manager that contains the databases.
+#     - target: The database referenced and that will be returned.
+#     - field_name: Name of the field that contains the reference ids (in targetDb).
+#     - source: The database that contains a reference to the target.
+#     """
+#     for item in loading_manager[target].values():
+#         for key in [k for k in item if field_name.lower() in k.lower()]:
+#             replacement_item = loading_manager[source].get(item[key])
+#             if replacement_item:
+#                 item[key] = replacement_item

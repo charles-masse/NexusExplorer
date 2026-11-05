@@ -1,8 +1,8 @@
 <h1>Nexus Explorer</h1>
 
-![Static Badge](https://img.shields.io/badge/Status-Work_in_Progress-orange) [![Run Tests](https://github.com/charles-masse/NexusExplorer/actions/workflows/test.yml/badge.svg)](https://github.com/charles-masse/NexusExplorer/actions/workflows/test.yml) <!-- Pytest Coverage Comment:Begin --> <a href="https://github.com/charles-masse/NexusExplorer/blob/main/README.md"><img alt="Coverage" src="https://img.shields.io/badge/Coverage-89%25-green.svg" /></a> <!-- Pytest Coverage Comment:End -->
+![Static Badge](https://img.shields.io/badge/Status-Work_in_Progress-orange) [![Run Tests](https://github.com/charles-masse/NexusExplorer/actions/workflows/test.yml/badge.svg)](https://github.com/charles-masse/NexusExplorer/actions/workflows/test.yml) <!-- Pytest Coverage Comment:Begin --> <a href="https://github.com/charles-masse/NexusExplorer/blob/main/README.md"><img alt="Coverage" src="https://img.shields.io/badge/Coverage-87%25-green.svg" /></a> <!-- Pytest Coverage Comment:End -->
 
-![Demo](/../gh-images/images//demo.gif)
+![Demo](/../gh-images//demo.gif)
 
 Explore the worlds of the defunct MMORPG **WildStar**.
 
@@ -42,24 +42,26 @@ uv run nexus_explorer "PATH_TO_EXTRACTED_GAME_DATA"
 
 - Use the WorldSelect window to choose the world you want to load.
 
-![WorldSelect](/../gh-images/images//worldSelect.png)
+![WorldSelect](/../gh-images//worldSelect.png)
 > [!NOTE]
 > **[WORLD_ID]** MAP_NAME **(NUMBER_OF_FEATURES)**
 
 - Explore the map features by clicking on the different icons.
 
-![MapViewer](/../gh-images/images//mapViewer.png)
+![MapViewer](/../gh-images//mapViewer.png)
 > [!TIP]
 > By clicking on the minimap, the in-game teleport command for this location will be copied to your clipboard.
 
-![linked game object](/../gh-images/images//linkedObject.png)
+![linked game object](/../gh-images//linkedObject.png)
 > [!TIP]
 > You can click on underlined names to have more info on that game object.
 
 ## Roadmap
 
 - [X] Map Zones
-- [ ] Linked items
-- [ ] Linked NPC/creature models
-- [ ] Show Episodes/Quest chains
-- [ ] Communicator messages
+- [ ] Linked Items
+- [ ] Linked Models
+- [ ] Episodes/Quest chains
+
+## Special Mention
+https://wildstar-lore-export.vercel.app/ -- A great tool to explore the lore of WildStar without needing to extract the game data. It is a great complement to NexusExplorer.
