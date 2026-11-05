@@ -27,22 +27,28 @@ class RegionObject(QGraphicsObject):
 
         map_scene.display_locations(self.contents.get('WorldLocation2', []), self)
 
-        if self.contents["MapZone"][0]["mapZoneIdParent"] and not self.contents.get('WorldLocation2'):
+        if all(zone["mapZoneIdParent"] for zone in self.contents["MapZone"]) and not self.contents.get('WorldLocation2'):
             self.hide()
-        #TODO double check if it causes problems
-        # if len(self.contents["MapZone"]) > 1:
-        #     print(self.contents["MapZone"])
 
         self.name = self.contents.get('localizedTextIdName', 'Untitled Region')
 
         self._pixmap = None
         self._pixmap_rect = QRectF()
-        # Create polygon
+        #Find biggest zone
+        map_zones = self.contents['MapZone']
+        largest_zone = max(
+            map_zones,
+            key=lambda x: (
+                (x["hexLimX"] - x["hexMinX"]) *
+                (x["hexLimY"] - x["hexMinY"])
+            )
+        )       
+        #Create polygon
         min_x, min_y = world_to_screen_pos(
-            *hex_to_world_coordinates(self.contents["MapZone"][0]["hexMinX"] - 1, self.contents["MapZone"][0]["hexMinY"])
+            *hex_to_world_coordinates(largest_zone["hexMinX"] - 1, largest_zone["hexMinY"])
         )
         max_x, max_y = world_to_screen_pos(
-            *hex_to_world_coordinates(self.contents["MapZone"][0]["hexLimX"] + 1, self.contents["MapZone"][0]["hexLimY"] + 0.5)
+            *hex_to_world_coordinates(largest_zone["hexLimX"] + 1, largest_zone["hexLimY"] + 0.5)
         )
 
         self._polygon = QPolygonF(
@@ -57,7 +63,7 @@ class RegionObject(QGraphicsObject):
         self._pen = QPen(QColor("green"), 2)
 
         try:
-            base_image = Image.open(f'{self.map_scene.loading_manager.game_files}/UI/Maps/{self.contents["MapZone"][0]["folder"]}/UI_CRB_Revealed/UI_CRB_Revealed.png')
+            base_image = Image.open(f'{self.map_scene.loading_manager.game_files}/UI/Maps/{largest_zone["folder"]}/UI_CRB_Revealed/UI_CRB_Revealed.png')
             mask_image = Image.open(Path(__file__).resolve().parents[3] / "assets" / "region_alpha.png").convert("L")
             base_image.putalpha(mask_image)
 
@@ -75,27 +81,27 @@ class RegionObject(QGraphicsObject):
             self._pixmap_rect = QRectF(x, y, self._pixmap.width(), self._pixmap.height())
 
         except FileNotFoundError:
-            print(f"Error loading region map for {self.contents["MapZone"][0]['folder']}. -SKIPPED-")
+            print(f"Error loading region map for {largest_zone['folder']}. -SKIPPED-")
 
     def boundingRect(self):
         pad = self._pen.widthF() / 2.0
         bounds = self._polygon.boundingRect().adjusted(-pad, -pad, pad, pad)
 
-        if self.contents["MapZone"][0]["mapZoneIdParent"]:
+        if all(zone["mapZoneIdParent"] for zone in self.contents["MapZone"]):
             bounds = bounds.united(self._pixmap_rect)
 
         return bounds
 
     def paint(self, painter, option, widget=None):
 
-        if self.contents["MapZone"][0]["mapZoneIdParent"]:
+        if all(zone["mapZoneIdParent"] for zone in self.contents["MapZone"]):
             if self._pixmap:
                 painter.drawPixmap(
                     round(self._pixmap_rect.x()),
                     round(self._pixmap_rect.y()),
                     self._pixmap,
                 )
-        else: #TODO
+        else: #TODO Hex border
             painter.setPen(self._pen)
             painter.drawPolygon(self._polygon)
 
@@ -110,7 +116,7 @@ class RegionObject(QGraphicsObject):
 
     def mousePressEvent(self, event):
 
-        if self.is_hovered and not self.contents["MapZone"][0]["mapZoneIdParent"]:
+        if self.is_hovered and not all(zone["mapZoneIdParent"] for zone in self.contents["MapZone"]):
             self.map_scene.select_object(self)
 
         super().mousePressEvent(event)

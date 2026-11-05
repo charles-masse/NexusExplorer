@@ -5,13 +5,20 @@ if TYPE_CHECKING:
     from nexus_explorer.ui.content_viewer import ContentViewerWindow
 
 def soldier_security(window: "ContentViewerWindow"):
-    #TODO
+
     content = window.content
     loading_manager = window.loading_manager
 
     # for creature in loading_manager['Creature2'].values():
     #     if creature['pathMissionIdSoldier'] == content['ID']:
     #         break
+
+    window.add_label("Defend.", 'LabelObjective')
+    #Target location
+    for i in range(4):
+        loc = loading_manager['WorldLocation2'].get(content[f'worldLocation2Id0{i}'])
+        if loc:
+            window.add_map_location(loc, '1')
 
 def soldier_assassinate(window: "ContentViewerWindow"):
 

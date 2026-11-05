@@ -17,7 +17,7 @@ class ContentLabel(QLabel):
 
         self.setText(f'<div>{text.replace('\\n', '<br>')}</div>')
 
-        self.setMinimumWidth(375 - (10 * 2) + 1) # Window width + padding + threshold
+        self.setMinimumWidth(425 - (10 * 2) + 1) # Window width + padding + threshold
         self.setWordWrap(True)
         #Handle links
         self.setOpenExternalLinks(False)

@@ -73,7 +73,7 @@ class LoadingManager:
                                 data = row[field]
 
                             else:
-                                print(f'[LoadingManager] Cannot convert data to data type "{field_type}"') #TODO
+                                print(f'[LoadingManager] Cannot convert data to data type "{field_type}"')
 
                         else:
                             data = row[field]
@@ -86,6 +86,6 @@ class LoadingManager:
                     new_dict.setdefault(int(row[id_field]), new_entry)
 
                 except ValueError:
-                    print(f'[LoadingManager][{db_name}] "{row[id_field]}" is not a valid Id. -SKIPPED-') #TODO
+                    print(f'[LoadingManager][{db_name}] "{row[id_field]}" is not a valid Id. -SKIPPED-')
 
         return new_dict

@@ -30,7 +30,7 @@ if TYPE_CHECKING:
     from nexus_explorer.data import LoadingManager
     from nexus_explorer.ui.map_viewer.objects import LocationObject
         
-WINDOW_WIDTH = 375
+WINDOW_WIDTH = 425
 
 class ContentViewerWindow(NEWidget):
 

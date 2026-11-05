@@ -2,7 +2,7 @@
 import os
 from typing import TYPE_CHECKING
 
-from nexus_explorer.data.utilities import link_data  #replace_data
+from nexus_explorer.data.utilities import link_data
 
 if TYPE_CHECKING:
     from nexus_explorer.data import LoadingManager
@@ -92,7 +92,7 @@ def prep_worlds(loading_manager: "LoadingManager"):
                         new_locations.append(location)
 
         world_data.locations = new_locations
-        #Join zones #TODO Double-check
+        #Join zones
         for map_zone in loading_manager['MapZoneWorldJoin'].values():
 
             map_zone_data = loading_manager['MapZone'].get(map_zone['mapZoneId'])

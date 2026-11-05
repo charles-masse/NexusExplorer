@@ -15,13 +15,14 @@ def display_challenge(window: "ContentViewerWindow"):
     6 - —
     7 - Race to interact
     """
+    #TODO add item
     content = window.content
     loading_manager = window.loading_manager
     #Challenge description
     window.add_label(content.get('localizedTextIdProgress'), 'LabelInfo')
     #Link item
     # if content['challengeTypeEnum'] == 1:
-    #     pass #TODO add item
+    #     pass
     #Tiers
     for tier in range(3):
 
