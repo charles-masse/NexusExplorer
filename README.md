@@ -1,6 +1,6 @@
 <h1>Nexus Explorer</h1>
 
-[![Run Tests](https://github.com/charles-masse/NexusExplorer/actions/workflows/test.yml/badge.svg)](https://github.com/charles-masse/NexusExplorer/actions/workflows/test.yml) <!-- Pytest Coverage Comment:Begin --> <a href="https://github.com/charles-masse/NexusExplorer/blob/main/README.md"><img alt="Coverage" src="https://img.shields.io/badge/Coverage-87%25-green.svg" /></a> <!-- Pytest Coverage Comment:End --> [![XERJ Corpus Hub contributor](https://hub.xerj.org/contributors/charles-masse/badge.svg)](https://hub.xerj.org/contributors/charles-masse)
+[![Run Tests](https://github.com/charles-masse/NexusExplorer/actions/workflows/test.yml/badge.svg)](https://github.com/charles-masse/NexusExplorer/actions/workflows/test.yml) <!-- Pytest Coverage Comment:Begin --> <a href="https://github.com/charles-masse/NexusExplorer/blob/main/README.md"><img alt="Coverage" src="https://img.shields.io/badge/Coverage-54%25-orange.svg" /></a> <!-- Pytest Coverage Comment:End --> [![XERJ Corpus Hub contributor](https://hub.xerj.org/contributors/charles-masse/badge.svg)](https://hub.xerj.org/contributors/charles-masse)
 
 ![Demo](/../gh-images//demo.gif)
 
