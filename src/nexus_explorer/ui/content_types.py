@@ -10,6 +10,6 @@ CONTENT_TYPES = [
     ],
     {'id': 3, 'name': 'Public Events', 'icon': 'Map/Node/UI_Map_Events/UI_Map_Events.png'},
     {'id': 4, 'name': 'Challenges', 'icon': 'Map/Node/UI_Map_Challenges/UI_Map_Challenges.png'},
-    {'id': 5, 'name': 'Quest Objectives', 'icon': 'Map/Node/Map_NavPoint/Map_NavPoint.png'},
-    {'id': 6, 'name': 'Public Event Objectives', 'icon': 'Map/Node/Map_NavPoint/Map_NavPoint.png'}
+    # {'id': 5, 'name': 'Quest Objectives', 'icon': 'Map/Node/Map_NavPoint/Map_NavPoint.png'},
+    # {'id': 6, 'name': 'Public Event Objectives', 'icon': 'Map/Node/Map_NavPoint/Map_NavPoint.png'}
 ]

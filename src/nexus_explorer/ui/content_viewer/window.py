@@ -3,8 +3,8 @@ import os
 from pprint import pprint
 from typing import TYPE_CHECKING
 
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QCloseEvent, QPixmap, QShowEvent
+from PyQt6.QtCore import QRectF, Qt
+from PyQt6.QtGui import QBrush, QCloseEvent, QColor, QPen, QPixmap, QShowEvent
 from PyQt6.QtWidgets import (
     QApplication,
     QGraphicsScene,
@@ -34,20 +34,18 @@ WINDOW_WIDTH = 425
 
 class ContentViewerWindow(NEWidget):
 
-    def __init__(self, loading_manager: "LoadingManager", content, map_object: "LocationObject"):
+    def __init__(self, loading_manager: "LoadingManager", content: dict, map_object: "LocationObject"):
         super().__init__()
 
-        pprint(content.content)
+        pprint(content)
 
         self.loading_manager = loading_manager
-        self.content = content.content
+        self.content = content
         self.map_object = map_object
 
         self.cleanup: list[ObjectiveObject | RegionObject] = []
         #General title vs challenge title
         name = self.content.get('localizedTextIdName') or self.content.get('localizedTextIdTitle') or self.content.get('localizedTextIdShort') or '- Unnamed -'
-        if '$' in name:
-            name = link_referenced(loading_manager, name, False)
         self.setWindowTitle(name)
 
         self.main_layout = QHBoxLayout(self)
@@ -56,21 +54,19 @@ class ContentViewerWindow(NEWidget):
         self.right_layout.setSpacing(3)
         self.main_layout.addLayout(self.right_layout)
 
-        content_id = content.content_id
-
-        if content_id == 0:
+        if content.get('datacubeTypeEnum') != None:
             display_datacube(self)
 
-        elif content_id == 1: # , 6
+        elif content.get('questPlayerFactionEnum') != None:
             display_quest(self)
 
-        elif content_id == 2:
+        elif content.get('pathMissionTypeEnum') != None:
             display_mission(self)
 
-        elif content_id == 3: # , 5
+        elif content.get('publicEventTypeEnum') != None:
             display_event(self)
 
-        elif content_id == 4:
+        elif content.get('challengeTypeEnum') != None:
             display_challenge(self)
 
         else:
@@ -79,16 +75,17 @@ class ContentViewerWindow(NEWidget):
         self.setMinimumWidth(WINDOW_WIDTH)
         #Floating numbers
         view = QGraphicsView(self)
+        #Transparent view that you can click through
+        view.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
         view.setStyleSheet("background: transparent; border: 0;")
         view.setFixedSize(WINDOW_WIDTH, self.sizeHint().height())
-        view.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
 
         self.scene = QGraphicsScene()
         self.scene.setSceneRect(0, 0, view.width(), view.height())
         view.setScene(self.scene)
 
-        objective_id = 1
         heightOffset = 0
+        objective_id = 1
         #Go through all the labels
         for i in range(self.right_layout.count()):
             item = self.right_layout.itemAt(i)
@@ -97,17 +94,19 @@ class ContentViewerWindow(NEWidget):
                 if widget:
                     #Icon
                     if widget.icon:
+
                         pixmap = QPixmap(widget.icon).scaled(30, 30, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+                        
                         pixmap_item = self.scene.addPixmap(pixmap)
-                        pixmap_item.setPos(1, heightOffset + (widget.sizeHint().height() / 2) - self.right_layout.spacing())
-                        #Outline--some icons have alphas
-                        # rect = QRectF(pixmap_item.boundingRect())
-                        # border_item = self.scene.addRect(
-                        #     QRectF(rect.x(), rect.y(), rect.width() - 1, rect.height() - 1),
-                        #     pen=QPen(QColor(89, 167, 200), 3),
-                        #     brush=QBrush(Qt.BrushStyle.NoBrush),
-                        # )
-                        # border_item.setPos(pixmap_item.pos())
+                        pixmap_item.setPos(3, heightOffset + (widget.sizeHint().height() / 2) - self.right_layout.spacing())
+                        #Outline
+                        rect = QRectF(pixmap_item.boundingRect())
+                        border_item = self.scene.addRect(
+                            QRectF(rect.x(), rect.y(), rect.width() - 1, rect.height() - 1),
+                            pen=QPen(QColor(89, 167, 200), 3),
+                            # brush=QBrush(QColor(0, 0, 0)),
+                        )
+                        border_item.setPos(pixmap_item.pos())
                     #Objective id
                     if widget.objectName() == 'LabelObjective':
 
@@ -125,11 +124,11 @@ class ContentViewerWindow(NEWidget):
             #Find icon's path
             if icon:
                 path = icon.split('_', 2)
-                icon_path = '/'.join([self.loading_manager.game_files, 'UI/IconHD/Item/Misc/', path[2], path[2] + '.png'])
+                icon_path = '/'.join([self.loading_manager.game_files, 'UI/IconHD/Item/Misc/', path[2], path[2] + '.png']) #TODO not always in Item/Misc
                 if os.path.exists(icon_path):
                     icon = icon_path
             #Add label
-            label = ContentLabel(link_referenced(self.loading_manager, text), type, icon)
+            label = ContentLabel(link_referenced(self.loading_manager, text.replace('\\n', '<br>')), type, icon)
             self.right_layout.addWidget(label)
 
     def add_map_location(self, loc, text):

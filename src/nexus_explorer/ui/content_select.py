@@ -1,5 +1,4 @@
 
-from pprint import pprint
 from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import Qt
@@ -11,8 +10,6 @@ from PyQt6.QtWidgets import (
     QTreeWidgetItem,
     QVBoxLayout,
 )
-
-from nexus_explorer.data.utilities import link_referenced
 
 from .content_types import CONTENT_TYPES
 from .content_viewer import ContentViewerWindow
@@ -56,7 +53,7 @@ class ContentItem(QTreeWidgetItem):
 
         self.loading_manager = loading_manager
         self.content = content
-        self.content_id = content_type['id']
+        # self.content_id = content_type['id']
 
         self.setText(0, self.get_name())
 
@@ -65,10 +62,7 @@ class ContentItem(QTreeWidgetItem):
         name_list = []
         #Name
         name = self.content.get('localizedTextIdName') or self.content.get('localizedTextIdTitle') or self.content.get('localizedTextIdShort') or '- Unnamed -'
-        #Display referenced object
-        if '$' in name:
-            name = link_referenced(self.loading_manager, name)
-            
+
         name_list.append(name)
         #Level range
         min_level = self.content.get('preq_level') or self.content.get('minPlayerLevel')
@@ -143,10 +137,9 @@ class ContentSelectWindow(NEWidget):
         #If it's not a category header
         if item.childCount() == 0:
             #Close old popup
-            if self.popup:
-                self.popup.close()
+            self.close_popup()
             
-            self.popup = ContentViewerWindow(self.loading_manager, item, self.object)
+            self.popup = ContentViewerWindow(self.loading_manager, item.content, self.object)
             self.popup.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, True)
             self.popup.show()
 

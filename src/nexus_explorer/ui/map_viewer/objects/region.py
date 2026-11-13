@@ -1,4 +1,5 @@
 
+import warnings
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -81,7 +82,7 @@ class RegionObject(QGraphicsObject):
             self._pixmap_rect = QRectF(x, y, self._pixmap.width(), self._pixmap.height())
 
         except FileNotFoundError:
-            print(f"Error loading region map for {largest_zone['folder']}. -SKIPPED-")
+            warnings.warn(f"Error loading region map for {largest_zone['folder']}. -SKIPPED-")
 
     def boundingRect(self):
         pad = self._pen.widthF() / 2.0

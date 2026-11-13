@@ -52,9 +52,9 @@ def display_quest(window: "ContentViewerWindow"):
     #Start location
     pos = loading_manager['WorldLocation2'].get(content['WorldLocation2IdReceiver'])
     if pos:
-        window.add_map_location(pos, str(-2))
+        window.add_map_location(pos, '-2')
     #Alt receivers
     for i in range(3):
         pos = loading_manager['WorldLocation2'].get(content[f'worldLocation2IdAltReceiver0{i}'])
         if pos:
-            window.add_map_location(pos, str(-2))
+            window.add_map_location(pos, '-2')

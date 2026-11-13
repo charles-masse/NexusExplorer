@@ -1,5 +1,6 @@
 
 from typing import TYPE_CHECKING
+from urllib.parse import quote
 
 if TYPE_CHECKING:
     from nexus_explorer.ui.content_viewer import ContentViewerWindow
@@ -26,6 +27,7 @@ def scientist_study(window: "ContentViewerWindow"):
     if study:
         #Objectives
         for i in range(8):
+
             window.add_label(study[f'localizedTextIdChecklist0{i}'], 'LabelObjective')
             #Map icon
             loc = loading_manager['WorldLocation2'].get(study[f'worldLocation2IdIndicator0{i}'])
@@ -39,7 +41,6 @@ def scientist_study(window: "ContentViewerWindow"):
 
 def scientist_experimentation(window: "ContentViewerWindow"):
     #In creature2, 'pathScientistExperimentationId' == content['objectId']
-    #TODO link to the other path mission
     content = window.content
     loading_manager = window.loading_manager
 
@@ -47,11 +48,12 @@ def scientist_experimentation(window: "ContentViewerWindow"):
 
     for experiment in loading_manager['PathScientistExperimentationPattern'].values():
         if experiment['pathScientistExperimentationId'] == content['objectId']:
-            #Description
-            window.add_label(experiment['localizedTextIdDescription'], 'LabelObjective', "C:/Users/charl/Documents/scripts/NexusExplorer/Nexusvault/output/export/UI/Icon/Item/Misc/rune_0001/rune_0001.png")
             #Linked mission
             mission = loading_manager['PathMission'].get(experiment['pathMissionId'])
             if mission:
+                #Description
+                window.add_label(f'<b><a style="color: rgb(125, 251, 182);" href="{quote(str(mission))}">{experiment['localizedTextIdDescription']}</a></b>', 'LabelObjective', experiment['iconAssetPath'])
+                #Map icons
                 for x in range(4):
                     loc = loading_manager['WorldLocation2'].get(mission[f'worldLocation2Id0{x}'])
                     if loc:
@@ -70,7 +72,6 @@ def scientist_speciment(window: "ContentViewerWindow"):
     loading_manager = window.loading_manager
 
     specimen = loading_manager['PathScientistSpecimenSurvey'].get(content['objectId'])
-
     if specimen:
         for i in range(10):
             #Text

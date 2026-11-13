@@ -94,8 +94,7 @@ class WorldSelectWindow(NEWidget):
         current_item = self.world_list.currentItem()
         if current_item:
             #Delete the old map viewer
-            if self.popup:
-                self.popup.close()
+            self.close_popup()
             #Show map viewer
             self.popup = MapViewer(self.loading_manager, current_item.world)
             self.popup.showMaximized()

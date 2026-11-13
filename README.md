@@ -1,6 +1,6 @@
 <h1>Nexus Explorer</h1>
 
-![Static Badge](https://img.shields.io/badge/Status-Work_in_Progress-orange) [![Run Tests](https://github.com/charles-masse/NexusExplorer/actions/workflows/test.yml/badge.svg)](https://github.com/charles-masse/NexusExplorer/actions/workflows/test.yml) <!-- Pytest Coverage Comment:Begin --> <a href="https://github.com/charles-masse/NexusExplorer/blob/main/README.md"><img alt="Coverage" src="https://img.shields.io/badge/Coverage-87%25-green.svg" /></a> <!-- Pytest Coverage Comment:End --> [![XERJ Corpus Hub contributor](https://hub.xerj.org/contributors/charles-masse/badge.svg)](https://hub.xerj.org/contributors/charles-masse)
+[![Run Tests](https://github.com/charles-masse/NexusExplorer/actions/workflows/test.yml/badge.svg)](https://github.com/charles-masse/NexusExplorer/actions/workflows/test.yml) <!-- Pytest Coverage Comment:Begin --> <a href="https://github.com/charles-masse/NexusExplorer/blob/main/README.md"><img alt="Coverage" src="https://img.shields.io/badge/Coverage-87%25-green.svg" /></a> <!-- Pytest Coverage Comment:End --> [![XERJ Corpus Hub contributor](https://hub.xerj.org/contributors/charles-masse/badge.svg)](https://hub.xerj.org/contributors/charles-masse)
 
 ![Demo](/../gh-images//demo.gif)
 
@@ -12,13 +12,25 @@ Explore the worlds of the defunct MMORPG **WildStar**.
 
 - [Install uv](https://docs.astral.sh/uv/getting-started/installation/).
 
-- Clone the repo and install dependencies :
+### Installation from release [Option 1]
+
+- Check the latest release on [GitHub](https://github.com/charles-masse/NexusExplorer/releases).
+
+```bash
+uv tool install https://github.com/charles-masse/NexusExplorer/releases/download/v0.8.0/nexusexplorer-0.8.0-py3-none-any.whl
+```
+
+### Installation from source [Option 2]
+
+- Clone the repo and install the tool :
 
 ```bash
 git clone https://github.com/charles-masse/NexusExplorer.git
 cd NexusExplorer
-uv sync
+uv tool install .
 ```
+
+### Extracting the game data [Required]
 
 - You will need the game assets extracted with a tool like [NexusVault](https://github.com/MarbleBag/NexusVault-CLI).
 
@@ -34,10 +46,8 @@ uv sync
 
 ## How to use NexusExplorer
 
-- Go to the cloned repo and :
-
 ```bash
-uv run nexus_explorer "PATH_TO_EXTRACTED_GAME_DATA"
+nexus_explorer "PATH_TO_EXTRACTED_GAME_DATA"
 ```
 
 - Use the WorldSelect window to choose the world you want to load.
@@ -56,13 +66,6 @@ uv run nexus_explorer "PATH_TO_EXTRACTED_GAME_DATA"
 > [!TIP]
 > You can click on underlined names to have more info on that game object.
 
-## Roadmap
-
-- [X] Map Zones
-- [ ] Linked Items
-- [ ] Linked Models
-- [ ] Episodes/Quest chains
-
 ## Special Mention
 
-[Wildstar Lore Export](https://wildstar-lore-export.vercel.app/) - A great tool to explore the lore of WildStar without needing to extract the game data.
+[Wildstar Lore Export](https://wildstar-lore-export.vercel.app/) - A great tool to explore the lore of WildStar without needing to extract the game files.

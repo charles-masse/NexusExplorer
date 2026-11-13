@@ -1,5 +1,6 @@
 
 from typing import TYPE_CHECKING
+from urllib.parse import quote
 
 if TYPE_CHECKING:
     from nexus_explorer.ui.content_viewer import ContentViewerWindow
@@ -18,7 +19,7 @@ def settler_expansion(window: "ContentViewerWindow"):
                 if loc:
                     window.add_map_location(loc, 'X')
 
-    depots: list[int, str] = []
+    depots: list[list] = []
 
     for improvement in loading_manager['PathSettlerImprovementGroup'].values():
 
@@ -83,20 +84,26 @@ def settler_service(window: "ContentViewerWindow"):
                             window.add_map_location(loc, str(i + 1))
 
 def settler_safety(window: "ContentViewerWindow"):
-    #TODO title reward, link to quest
+    #TODO title reward
     content = window.content
     loading_manager = window.loading_manager
 
     sheriff = loading_manager['PathSettlerSheriff'].get(content['objectId'])
     if sheriff:
         for i in range(8):
-            window.add_label(sheriff.get(f'localizedTextIdDescription0{i}'), 'LabelObjective')
             #Linked quest
             quest = loading_manager['Quest2'].get(sheriff[f'quest2IdSheriff0{i}'])
             if quest:
-                loc = loading_manager['WorldLocation2'].get(quest['WorldLocation2IdReceiver']) #TODO alt receivers
+                window.add_label(f'<b><a style="color: rgb(125, 251, 182);" href="{quote(str(quest))}">{sheriff[f"localizedTextIdDescription0{i}"]}</a></b>', 'LabelObjective')
+
+                loc = loading_manager['WorldLocation2'].get(quest['WorldLocation2IdReceiver'])
                 if loc:
                     window.add_map_location(loc, str(i + 1))
+                #Alt receivers
+                for i in range(3):
+                    pos = loading_manager['WorldLocation2'].get(quest[f'worldLocation2IdAltReceiver0{i}'])
+                    if pos:
+                        window.add_map_location(pos, i + 1)
     #Start location(s)
     for i in range(4):
         loc = loading_manager['WorldLocation2'].get(content[f'worldLocation2Id0{i}'])

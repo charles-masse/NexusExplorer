@@ -56,9 +56,12 @@ class NEWidget(QWidget):
 
         self.popup = None
 
-    def closeEvent(self, event: QCloseEvent | None):
-
+    def close_popup(self):
+        
         if self.popup:
             self.popup.close()
 
+    def closeEvent(self, event: QCloseEvent | None):
+
+        self.close_popup()
         super().closeEvent(event)

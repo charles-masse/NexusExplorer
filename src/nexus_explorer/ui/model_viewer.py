@@ -1,160 +1,151 @@
 
-import sys
+# import sys
 
 import numpy as np
 import trimesh
-from OpenGL import GL
-from OpenGL.GL import *
-from OpenGL.GLU import *
+from OpenGL.GL import *  # type: ignore[import-untyped]
+from OpenGL.GLU import *  # type: ignore[import-untyped]
 from PIL import Image
-from PyQt6.QtCore import *
-from PyQt6.QtGui import *
 from PyQt6.QtOpenGLWidgets import QOpenGLWidget
-from PyQt6.QtWidgets import *
 
-# from singletons import settings
 
-# def compile_shader(source, shader_type):
+def compile_shader(source, shader_type):
 
-#     shader = glCreateShader(shader_type)
+    shader = glCreateShader(shader_type)
 
-#     glShaderSource(shader, source)
-#     glCompileShader(shader)
+    glShaderSource(shader, source)
+    glCompileShader(shader)
 
-#     return shader
+    return shader
 
-# def create_shader_program(vertex_src, fragment_src):
+def create_shader_program(vertex_src, fragment_src):
 
-#     vs = compile_shader(vertex_src, GL_VERTEX_SHADER)
-#     fs = compile_shader(fragment_src, GL_FRAGMENT_SHADER)
-#     program = glCreateProgram()
+    vs = compile_shader(vertex_src, GL_VERTEX_SHADER)
+    fs = compile_shader(fragment_src, GL_FRAGMENT_SHADER)
+    program = glCreateProgram()
 
-#     glAttachShader(program, vs)
-#     glAttachShader(program, fs)
-#     glLinkProgram(program)
+    glAttachShader(program, vs)
+    glAttachShader(program, fs)
+    glLinkProgram(program)
 
-#     glDeleteShader(vs)
-#     glDeleteShader(fs)
+    glDeleteShader(vs)
+    glDeleteShader(fs)
 
-#     return program
+    return program
 
-# class ModelViewer(QOpenGLWidget):
+class ModelViewerWindow(QOpenGLWidget):
 
-#     def __init__(self, modelPath, texturePath=None):
-#         super().__init__()
+    def __init__(self, loading_manager, creature):
+        super().__init__()
 
-#         self.modelPath = modelPath
-#         self.texturePath = texturePath
+        self.creature = creature
+        self.loading_manager = loading_manager
 
-    # def load_model(self):
-        # Load model in Trimesh
-        # scene = trimesh.load(self.modelPath)
-        # scene.show()
-        # mesh = trimesh.util.concatenate(tuple(scene.geometry.values()))
-        # # Create vertices
-        # vertex_data = []
+        self.setWindowTitle("Model Viewer")
+
+    def load_model(self):
+
+        model_info = self.loading_manager['Creature2ModelInfo'].get(self.creature['creature2ModelInfoId'])
+        #Load model in Trimesh
+        model = model_info['assetPath'].split('.')[0]
+        scene = trimesh.load(f'{self.loading_manager.game_files}/{model}/{model.split('\\')[-1]}.gltf')
+        mesh = trimesh.util.concatenate(tuple(scene.geometry.values()))
+        #Create vertices
+        vertex_data = []
         
-        # for face in mesh.faces:
-        #     for idx in face:
-        #         pos = mesh.vertices[idx]
-        #         uv = mesh.visual.uv[idx] if mesh.visual.uv is not None else [0.0, 0.0]
-        #         vertex_data.extend([*pos, *uv])
+        for face in mesh.faces:
+            for idx in face:
+                pos = mesh.vertices[idx]
+                uv = mesh.visual.uv[idx] if mesh.visual.uv is not None else [0.0, 0.0]
+                vertex_data.extend([*pos, *uv])
 
-        # vertex_data_np = np.array(vertex_data, dtype=np.float32)
-        # # VAO + VBO
-        # vao = glGenVertexArrays(1)
-        # vbo = glGenBuffers(1)
+        vertex_data_np = np.array(vertex_data, dtype=np.float32)
+        #VAO + VBO
+        vao = glGenVertexArrays(1)
+        vbo = glGenBuffers(1)
 
-        # glBindVertexArray(vao)
-        # glBindBuffer(GL_ARRAY_BUFFER, vbo)
-        # glBufferData(GL_ARRAY_BUFFER, vertex_data_np.nbytes, vertex_data_np, GL_STATIC_DRAW)
+        glBindVertexArray(vao)
+        glBindBuffer(GL_ARRAY_BUFFER, vbo)
+        glBufferData(GL_ARRAY_BUFFER, vertex_data_np.nbytes, vertex_data_np, GL_STATIC_DRAW)
 
-        # glEnableVertexAttribArray(0)
-        # glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * 4, ctypes.c_void_p(0))
+        glEnableVertexAttribArray(0)
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * 4, ctypes.c_void_p(0))
 
-        # glEnableVertexAttribArray(1)
-        # glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * 4, ctypes.c_void_p(3 * 4))
+        glEnableVertexAttribArray(1)
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * 4, ctypes.c_void_p(3 * 4))
 
-        # glBindBuffer(GL_ARRAY_BUFFER, 0)
-        # glBindVertexArray(0)
-        # # Load texture
-        # texture = glGenTextures(1)
-        # glBindTexture(GL_TEXTURE_2D, texture)
+        glBindBuffer(GL_ARRAY_BUFFER, 0)
+        glBindVertexArray(0)
+        #Load texture
+        texture_id = glGenTextures(1)
+        glBindTexture(GL_TEXTURE_2D, texture_id)
 
-        # image = Image.open(self.texturePath)
-        # image_data = image.tobytes()
-        # width, height = image.size
+        texture_path = model_info['assetTexture0'].split('.')[0]
 
-        # glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data)
-        # glGenerateMipmap(GL_TEXTURE_2D)
+        if texture_path:
+            image = Image.open(f'{self.loading_manager.game_files}/{texture_path}/textures/{texture_path.split('\\')[-1]}.png')
 
-        # glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
-        # glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
-        # glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR)
-        # glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+        else:
+            print(f'{self.loading_manager.game_files}/{model}/textures/{model.split('\\')[-1]}_Color.0.png')
+            image = Image.open(f'{self.loading_manager.game_files}/{model}/textures/{model.split('\\')[-1]}_Color.0.png')
 
-        # glBindTexture(GL_TEXTURE_2D, 0)
-        # # Shaders
-        # vertex_src = """
-        # #version 330 core
-        # layout(location = 0) in vec3 aPos;
-        # layout(location = 1) in vec2 aUV;
-        # out vec2 TexCoord;
-        # void main() {
-        #     gl_Position = vec4(aPos, 1.0);
-        #     TexCoord = aUV;
-        # }
-        # """
+        image = image.convert("RGBA")
+        image_data = image.tobytes()
+        width, height = image.size
 
-        # fragment_src = """
-        # #version 330 core
-        # in vec2 TexCoord;
-        # out vec4 FragColor;
-        # uniform sampler2D texture1;
-        # void main() {
-        #     FragColor = texture(texture1, TexCoord);
-        # }
-        # """
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data)
+        glGenerateMipmap(GL_TEXTURE_2D)
 
-        # shader = create_shader_program(vertex_src, fragment_src)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
 
-        # return {
-        #     "vao": vao,
-        #     "vbo": vbo,
-        #     # "shader": shader,
-        #     # "texture": texture,
-        #     "vertex_count": len(vertex_data_np) // 5
-        # }
+        glBindTexture(GL_TEXTURE_2D, 0)
+        #Shaders
+        vertex_src = """#version 330 core
+        layout(location = 0) in vec3 aPos;
+        layout(location = 1) in vec2 aUV;
+        out vec2 TexCoord;
+        void main() {
+            gl_Position = vec4(aPos, 1.0);
+            TexCoord = aUV;
+        }"""
 
-    # def initializeGL(self):
-    #     glClearColor(0.1, 0.1, 0.1, 1.0)
-    #     glEnable(GL_DEPTH_TEST)
+        fragment_src = """#version 330 core
+        in vec2 TexCoord;
+        out vec4 FragColor;
+        uniform sampler2D texture1;
+        void main() {
+            FragColor = texture(texture1, TexCoord);
+        }"""
 
-    #     self.model = self.load_model()
+        shader = create_shader_program(vertex_src, fragment_src)
+        #Move camera
+        glTranslatef(0, -1.5, -2.5)
 
-    # def paintGL(self):
-    #     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        return {
+            "vao": vao,
+            "vbo": vbo,
+            "shader": shader,
+            "texture": texture_id,
+            "vertex_count": len(vertex_data_np) // 5
+        }
 
-    #     # glUseProgram(self.model["shader"])
-    #     glBindVertexArray(self.model["vao"])
-    #     # glBindTexture(GL_TEXTURE_2D, self.model["texture"])
-    #     glDrawArrays(GL_TRIANGLES, 0, self.model["vertex_count"])
-    #     glBindVertexArray(0)
+    def initializeGL(self):
+        glClearColor(0.1, 0.1, 0.1, 1.0)
+        glEnable(GL_DEPTH_TEST)
 
-    # def resizeGL(self, w, h):
-    #     glViewport(0, 0, w, h)
+        self.model = self.load_model()
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
+    def paintGL(self):
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
-    model = 'D:/Desktop/Scripts/NexusExplorer/Nexusvault/output/export/Art/Creature/Spider/Spider/Spider.gltf'
-    # texture = 'D:/Desktop/Scripts/NexusExplorer/tools/Nexusvault/output/export/Art/Creature/EldanProtectorBot/Textures/EldanProtectorBot_Circuitry_002_Color/EldanProtectorBot_Circuitry_002_Color.png'
+        glUseProgram(self.model["shader"])
+        glBindVertexArray(self.model["vao"])
+        glBindTexture(GL_TEXTURE_2D, self.model["texture"])
+        glDrawArrays(GL_TRIANGLES, 0, self.model["vertex_count"])
+        glBindVertexArray(0)
 
-    scene = trimesh.load(model)
-    scene.show()
-
-    # viewer = ModelViewer(model) # texture
-    # viewer.setWindowTitle("Model Viewer")
-    # viewer.resize(1920, 1080)
-    # viewer.show()
-    # sys.exit(app.exec())
+    def resizeGL(self, w, h):
+        glViewport(0, 0, w, h)
