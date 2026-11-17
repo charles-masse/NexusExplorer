@@ -17,5 +17,5 @@ def test_link_databases(loading_manager):
 def test_link_referenced(loading_manager):
     link_referenced(loading_manager, "$(creature=1)")
 
-def test_link_referenced_no_hyperlink(loading_manager):
-    link_referenced(loading_manager, "$(creature=1)", False)
+# def test_link_referenced_no_hyperlink(loading_manager):
+#     link_referenced(loading_manager, "$(creature=1)", False)

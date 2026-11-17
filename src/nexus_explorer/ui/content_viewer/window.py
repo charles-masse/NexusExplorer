@@ -4,7 +4,7 @@ from pprint import pprint
 from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import QRectF, Qt
-from PyQt6.QtGui import QBrush, QCloseEvent, QColor, QPen, QPixmap, QShowEvent
+from PyQt6.QtGui import QCloseEvent, QColor, QPen, QPixmap, QShowEvent
 from PyQt6.QtWidgets import (
     QApplication,
     QGraphicsScene,
@@ -118,7 +118,7 @@ class ContentViewerWindow(NEWidget):
                     #Save the size of the widget
                     heightOffset += widget.sizeHint().height() + self.right_layout.spacing()
 
-    def add_label(self, text: str, type: str, icon: str | None = None):
+    def add_label(self, text: str, type: str, nb: int = 0, icon: str | None = None):
 
         if text:
             #Find icon's path
@@ -128,7 +128,7 @@ class ContentViewerWindow(NEWidget):
                 if os.path.exists(icon_path):
                     icon = icon_path
             #Add label
-            label = ContentLabel(link_referenced(self.loading_manager, text.replace('\\n', '<br>')), type, icon)
+            label = ContentLabel(link_referenced(self.loading_manager, text.replace('\\n', '<br>')), type, nb, icon)
             self.right_layout.addWidget(label)
 
     def add_map_location(self, loc, text):

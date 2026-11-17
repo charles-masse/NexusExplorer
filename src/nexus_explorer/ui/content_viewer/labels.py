@@ -1,5 +1,6 @@
+
 import ast
-from pprint import pprint
+import re
 from urllib.parse import unquote
 
 from PyQt6.QtCore import Qt
@@ -8,15 +9,29 @@ from PyQt6.QtWidgets import QLabel
 
 class ContentLabel(QLabel):
 
-    def __init__(self, text: str, name: str, icon: str | None = None):
+    def __init__(self, text: str, name: str, number: int = 1, icon: str | None = None):
         super().__init__()
 
         self.icon = icon
-        #Class name for stylesheet
+
         self.setObjectName(name)
-        #Player input text
+        #PC dialog
         if any(name.startswith(string) for string in ['LabelSay']):
             text = f'> <b>{text}</b>'
+        #Singular vs Plural
+        for match in [m for m in re.finditer(r'([A-Za-z0-9 ]+)(?:\{\w+:([A-Za-z0-9 ]+)\})?', text) if m.group(2)]:
+
+            full_match = match.group(0)
+
+            print(match.group(0))
+
+            if number == 1:
+                singular = match.group(1)
+                text = text.replace(full_match, singular)
+
+            else:
+                plural = match.group(2) or match.group(1)
+                text = text.replace(full_match, plural)
 
         self.setText(f'<div>{text}</div>')
 
@@ -25,23 +40,18 @@ class ContentLabel(QLabel):
         #Handle links
         self.setOpenExternalLinks(False)
         self.setTextInteractionFlags(Qt.TextInteractionFlag.TextBrowserInteraction)
-
         self.linkActivated.connect(self.link_manager)
-        self.linkHovered.connect(self.link_tooltip)
+        # self.linkHovered.connect(self.link_tooltip)
     """
     'creature' : model viewer
-
     'vitem' : tooltip
     'item' : tooltip
     'schematic' : tooltip
-
-    'target' : 'TargetGroup' #TODO can be managed outside
+    'location' : select on map
     """
     def link_manager(self, link):
-
+        #TODO Link location on map
         decoded_link = ast.literal_eval(unquote(link))
-
-        pprint(decoded_link)
 
         if any(decoded_link.get(enum) != None for enum in ['questPlayerFactionEnum', 'pathMissionTypeEnum']):
 
@@ -63,7 +73,7 @@ class ContentLabel(QLabel):
             self.parent().popup.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, True)
             self.parent().popup.show()
 
-    def link_tooltip(self, link):
-        pass
-        # decoded_link = ast.literal_eval(unquote(link))
-        # print(decoded_link)
+    # def link_tooltip(self, link):
+    #     pass
+    #     # decoded_link = ast.literal_eval(unquote(link))
+    #     # print(decoded_link)

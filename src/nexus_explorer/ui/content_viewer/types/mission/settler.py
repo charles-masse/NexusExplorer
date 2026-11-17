@@ -2,13 +2,14 @@
 from typing import TYPE_CHECKING
 from urllib.parse import quote
 
+from ..utilities import add_mission_locations, get_mission_context
+
 if TYPE_CHECKING:
     from nexus_explorer.ui.content_viewer import ContentViewerWindow
 
 def settler_expansion(window: "ContentViewerWindow"):
      #TODO items, spells in PathSettlerImprovement
-    content = window.content
-    loading_manager = window.loading_manager
+    content, loading_manager = get_mission_context(window)
 
     hub = loading_manager['PathSettlerHub'].get(content['objectId'])
     if hub:
@@ -46,22 +47,17 @@ def settler_expansion(window: "ContentViewerWindow"):
 
 def settler_project(window: "ContentViewerWindow"):
     #TODO models, spells
-    content = window.content
-    loading_manager = window.loading_manager
+    content, loading_manager = get_mission_context(window)
 
     infrastructure =  loading_manager['PathSettlerInfrastructure'].get(content['objectId'])
     if infrastructure:
         window.add_label(infrastructure.get('localizedTextIdObjective'), 'LabelObjective')
         #Target location
-        for i in range(4):
-            loc = loading_manager['WorldLocation2'].get(content[f'worldLocation2Id0{i}'])
-            if loc:
-                window.add_map_location(loc, '1')
+        add_mission_locations(window, content, '1')
 
 def settler_service(window: "ContentViewerWindow"):
     #TODO title reward
-    content = window.content
-    loading_manager = window.loading_manager
+    content, loading_manager = get_mission_context(window)
 
     mayor = loading_manager['PathSettlerMayor'].get(content['objectId'])
     if mayor:        
@@ -85,8 +81,7 @@ def settler_service(window: "ContentViewerWindow"):
 
 def settler_safety(window: "ContentViewerWindow"):
     #TODO title reward
-    content = window.content
-    loading_manager = window.loading_manager
+    content, loading_manager = get_mission_context(window)
 
     sheriff = loading_manager['PathSettlerSheriff'].get(content['objectId'])
     if sheriff:
@@ -105,17 +100,10 @@ def settler_safety(window: "ContentViewerWindow"):
                     if pos:
                         window.add_map_location(pos, i + 1)
     #Start location(s)
-    for i in range(4):
-        loc = loading_manager['WorldLocation2'].get(content[f'worldLocation2Id0{i}'])
-        if loc:
-            window.add_map_location(loc, '-1')
+    add_mission_locations(window, content, '-1')
 
 def settler_cache(window: "ContentViewerWindow"):
     #TODO ???
-    content = window.content
-    loading_manager = window.loading_manager
+    content, loading_manager = get_mission_context(window)
     #Target location(s)
-    for i in range(4):
-        loc = loading_manager['WorldLocation2'].get(content[f'worldLocation2Id0{i}'])
-        if loc:
-            window.add_map_location(loc, '1')
+    add_mission_locations(window, content, '1')

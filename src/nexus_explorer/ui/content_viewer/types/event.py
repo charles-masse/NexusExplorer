@@ -1,13 +1,14 @@
 
 from typing import TYPE_CHECKING
 
+from .utilities import get_mission_context
+
 if TYPE_CHECKING:
     from nexus_explorer.ui.content_viewer import ContentViewerWindow
 
 def display_event(window: "ContentViewerWindow"):
 
-    content = window.content
-    loading_manager = window.loading_manager
+    content, loading_manager = get_mission_context(window)
     #Objectives
     for objective_id, objective in enumerate(content.get('PublicEventObjective', [])):
         window.add_label(objective['localizedTextId'], 'LabelObjective')

@@ -22,50 +22,35 @@ def link_data(loading_manager: LoadingManager, target:str, field_name:str, sourc
 
 DATABASES = {
     'creature' : 'Creature2',
-    'vitem' : 'VirtualItem',
     'item' : 'Item2',
-    'schematic' : 'TradeskillSchematic2',
-    'quest' : 'Quest2',
+    'location' : 'WorldLocation2',
     'mission' : 'PathMission',
-    'target' : 'TargetGroup' #TODO can be managed outside
+    'quest' : 'Quest2',
+    'schematic' : 'TradeskillSchematic2',
+    'vitem' : 'VirtualItem',
 }
 
-def link_referenced(loading_manager: LoadingManager, text: str, hyperlink: bool = True) -> str:
-    """Add hypertext to a string.""" #TODO plural vs singular, faction, <text Link="Location:19415">DREDplex: Skyhammer</text>',
-    regex = re.finditer(r'(?:<text[^>]*?>)?\$\S*?\((\w+)=(\d+)\)|\$(\w+)=(\d+)(?:</text>)?', text)
-    for match in regex:
+def link_referenced(loading_manager: LoadingManager, text: str) -> str:
+    """Add hypertext to a string."""
+    for match in re.finditer(r'(?:<text[^>]*?>)?\$\S*?\((\w+)=(\d+)\)|\$(\w+)=(\d+)(?:</text>)?|<text\s+Link="(\w+):(\d+)">([\s\S]*?)</text>', text):
 
         full_match = match.group(0)
-        db_name = match.group(1) or match.group(3)
-        db_id = match.group(2) or match.group(4)
+        link_name = match.group(1) or match.group(3) or match.group(5)
+        link_id = match.group(2) or match.group(4) or match.group(6)
+        link_text = match.group(7) or None
 
-        linked = loading_manager[DATABASES[db_name.lower()]].get(int(db_id))
-        if linked:
-            #Fix for TargetGroups without a name #TODO fix '[[...]]'
-            if db_name.lower() == 'target':
+        db_name = DATABASES[link_name.lower()]
 
-                linked_text = linked.get('localizedTextIdDisplayString')
-                if not linked_text:
+        linked = loading_manager[db_name].get(int(link_id))
 
-                    test = []
+        if not link_text:
+            
+            if linked:
+                link_text = linked.get('localizedTextIdName')
 
-                    for x in range(7):
-                        creature = loading_manager['Creature2'].get(linked[f'data{x}'])
-                        if creature:
-                            test.append(f'$(creature={creature['ID']})')
+            elif not link_text:
+                link_text = f"{db_name} id:{link_id} not found"
 
-                    linked_text = link_referenced(loading_manager, ', '.join(test))
-                    hyperlink = False
-
-            else:
-                linked_text = linked.get('localizedTextIdName')
-
-        if not linked or not linked_text:
-            linked_text = f"id:{db_id} not found in {db_name}"
-
-        if hyperlink:
-            text = text.replace(full_match, f'<b><a style="color: rgb(125, 251, 182);" href="{quote(str(linked))}">[{linked_text}]</a></b>')
-        else:
-            text = text.replace(full_match, f'[{linked_text}]')
+        text = text.replace(full_match, f'<b><a style="color: rgb(125, 251, 182);" href="{quote(str(linked))}">[{link_text}]</a></b>')
 
     return text

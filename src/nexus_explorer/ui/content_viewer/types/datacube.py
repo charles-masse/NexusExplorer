@@ -4,6 +4,8 @@ from typing import TYPE_CHECKING
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtWidgets import QLabel
 
+from .utilities import get_mission_context
+
 if TYPE_CHECKING:
     from nexus_explorer.ui.content_viewer import ContentViewerWindow
 
@@ -14,8 +16,7 @@ def display_datacube(window: "ContentViewerWindow"):
     1 - with image (TfBtF)
     2 - Text-only
     """
-    content = window.content
-    loading_manager = window.loading_manager
+    content, loading_manager = get_mission_context(window)
 
     datacube_text = []
     datacube_type_id = content['datacubeTypeEnum']

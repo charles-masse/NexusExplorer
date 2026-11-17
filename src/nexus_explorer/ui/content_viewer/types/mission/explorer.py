@@ -1,6 +1,8 @@
 
 from typing import TYPE_CHECKING
 
+from ..utilities import add_mission_locations, get_mission_context, get_target_group
+
 if TYPE_CHECKING:
     from nexus_explorer.ui.content_viewer import ContentViewerWindow
 
@@ -10,8 +12,7 @@ def explorer_stalking(window: "ContentViewerWindow"):
 
 def explorer_exploration(window: "ContentViewerWindow"):
 
-    content = window.content
-    loading_manager = window.loading_manager
+    content, loading_manager = get_mission_context(window)
 
     door_entrance = loading_manager['PathExplorerDoorEntrance'].get(content['objectId'])
 
@@ -33,21 +34,17 @@ def explorer_exploration(window: "ContentViewerWindow"):
         if door:
             target_group_id_activate = door['targetGroupIdActivate']
             if target_group_id_activate:
-                window.add_label(f"Activate $(target={target_group_id_activate}).", 'LabelObjective')
+                window.add_label(f"Activate {get_target_group(loading_manager, target_group_id_activate)}.", 'LabelObjective')
 
             target_group_id_kill = door['targetGroupIdKill']
             if target_group_id_kill:
-                window.add_label(f"Kill $(target={target_group_id_kill}).", 'LabelObjective')
+                window.add_label(f"Kill {get_target_group(loading_manager, target_group_id_kill)}.", 'LabelObjective')
     #Map start location(s)
-    for i in range(4):
-        loc = loading_manager['WorldLocation2'].get(content[f'worldLocation2Id0{i}'])
-        if loc:
-            window.add_map_location(loc, '1')
+    add_mission_locations(window, content, '-1')
         
 def explorer_scavenger(window: "ContentViewerWindow"):
     #TODO spell, models
-    content = window.content
-    loading_manager = window.loading_manager
+    content, loading_manager = get_mission_context(window)
 
     hunt = loading_manager['PathExplorerScavengerHunt'].get(content['objectId'])
     if hunt:
@@ -63,26 +60,20 @@ def explorer_scavenger(window: "ContentViewerWindow"):
                 if loc:
                     window.add_map_location(loc, str(i + 1))
         #Start location(s)
-        for i in range(4):
-            loc = loading_manager['WorldLocation2'].get(content[f'worldLocation2Id0{i}'])
-            if loc:
-                window.add_map_location(loc, '-1')
+        add_mission_locations(window, content, '-1')
     #For hunts where you have to follow a NPC
     else:
         window.add_label('Follow.', 'LabelObjective')
         #Start location(s)
-        for i in range(4):
-            loc = loading_manager['WorldLocation2'].get(content[f'worldLocation2Id0{i}'])
-            if loc:
-                window.add_map_location(loc, '1')
+        add_mission_locations(window, content, '1')
 
 def explorer_vista(window: "ContentViewerWindow"):
 
-    content = window.content
-    loading_manager = window.loading_manager
+    content, loading_manager = get_mission_context(window)
 
     vista = loading_manager['PathExplorerNode'].get(content['objectId'])
     if vista:
+
         loc = loading_manager['WorldLocation2'].get(vista['worldLocation2Id'])
         if loc:
             #Add objective with vista's name
@@ -91,17 +82,11 @@ def explorer_vista(window: "ContentViewerWindow"):
 
             window.add_map_location(loc, '1')
         #Start location(s)
-        for i in range(4):
-            loc = loading_manager['WorldLocation2'].get(content[f'worldLocation2Id0{i}'])
-            if loc:
-                window.add_map_location(loc, '-1')
+        add_mission_locations(window, content, '-1')
 
     else:
         window.add_label("Survey vista.", 'LabelObjective')
-        for i in range(4):
-            loc = loading_manager['WorldLocation2'].get(content[f'worldLocation2Id0{i}'])
-            if loc:
-                window.add_map_location(loc, '1')
+        add_mission_locations(window, content, '1')
 
 def explorer_cartography(window: "ContentViewerWindow"):
     #explore whole map #TODO objectId == MapZone 
@@ -109,19 +94,15 @@ def explorer_cartography(window: "ContentViewerWindow"):
 
 def explorer_operation(window: "ContentViewerWindow"):
 
-    content = window.content
-    loading_manager = window.loading_manager
+    content, loading_manager = get_mission_context(window)
 
     operation = loading_manager['PathExplorerActivate'].get(content['objectId'])
     if operation:
         #Specific creature
         if operation['creature2Id']:
-            window.add_label(f"Investigate {operation['count']} $(creature={operation['creature2Id']}).", 'LabelObjective')
+            window.add_label(f"Investigate {operation['count']} $(creature={operation['creature2Id']}).", 'LabelObjective', operation['count'])
         #Group of creatures
         else:
-            window.add_label(f"Investigate {operation['count']} $(target={operation['targetGroupId']}).", 'LabelObjective')
+            window.add_label(f"Investigate {operation['count']} $(target={operation['targetGroupId']}).", 'LabelObjective', operation['count'])
     #Target location
-    for i in range(4):
-        loc = loading_manager['WorldLocation2'].get(content[f'worldLocation2Id0{i}'])
-        if loc:
-            window.add_map_location(loc, '1')
+    add_mission_locations(window, content, '1')

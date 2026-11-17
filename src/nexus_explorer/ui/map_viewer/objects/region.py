@@ -61,7 +61,7 @@ class RegionObject(QGraphicsObject):
             ]
         )
 
-        self._pen = QPen(QColor("green"), 2)
+        self._pen = QPen(QColor(0, 251, 247), 2)
 
         try:
             base_image = Image.open(f'{self.map_scene.loading_manager.game_files}/UI/Maps/{largest_zone["folder"]}/UI_CRB_Revealed/UI_CRB_Revealed.png')

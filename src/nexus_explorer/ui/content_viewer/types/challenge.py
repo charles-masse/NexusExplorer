@@ -1,6 +1,8 @@
 
 from typing import TYPE_CHECKING
 
+from .utilities import get_mission_context
+
 if TYPE_CHECKING:
     from nexus_explorer.ui.content_viewer import ContentViewerWindow
 
@@ -16,8 +18,7 @@ def display_challenge(window: "ContentViewerWindow"):
     7 - Race to interact
     """
     #TODO add item
-    content = window.content
-    loading_manager = window.loading_manager
+    content, loading_manager = get_mission_context(window)
     #Challenge description
     window.add_label(content.get('localizedTextIdProgress'), 'LabelInfo')
     #Link item
